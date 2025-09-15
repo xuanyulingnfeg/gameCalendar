@@ -4,43 +4,43 @@
       "events": [
         "2.2上半更新"
       ],
-      "img": "src/assets/images/zzz/2.2/up.png"
+      "img": "src/static/images/zzz/2.2/up.png"
     },
     "2025-09-09": {
       "events": [
         "寻梦瓶游记"
       ],
-      "img": "src/assets/images/zzz/2.2/0909.png"
+      "img": "src/static/images/zzz/2.2/0909.png"
     },
     "2025-09-13": {
       "events": [
         "激战聚光决胜"
       ],
-      "img": "src/assets/images/zzz/2.2/0913.png"
+      "img": "src/static/images/zzz/2.2/0913.png"
     },
     "2025-09-18": {
       "events": [
         "先遣赏金"
       ],
-      "img": "src/assets/images/zzz/2.2/0918.png"
+      "img": "src/static/images/zzz/2.2/0918.png"
     },
     "2025-09-24": {
       "events": [
         "2.3下半更新"
       ],
-      "img": "src/assets/images/zzz/2.2/down.png"
+      "img": "src/static/images/zzz/2.2/down.png"
     },
     "2025-09-29": {
       "events": [
         "音跃狂澜"
       ],
-      "img": "src/assets/images/zzz/2.2/0929.png"
+      "img": "src/static/images/zzz/2.2/0929.png"
     },
     "2025-10-04": {
       "events": [
         "嗯呢大寻宝"
       ],
-      "img": "src/assets/images/zzz/2.2/1004.png"
+      "img": "src/static/images/zzz/2.2/1004.png"
     }
   },
   "mc": {
@@ -48,45 +48,45 @@
       "events": [
         "2.6上半更新"
       ],
-      "img": "src/assets/images/mc/2.6/up.png"
+      "img": "src/static/images/mc/2.6/up.png"
     },
     "2025-09-01": {
       "events": [
         "冥歌海虚"
       ],
-      "img": "src/assets/images/mc/mingge.png"
+      "img": "src/static/images/mc/mingge.png"
     },
     "2025-09-04": {
       "events": [
         "兽痕解析"
       ],
-      "img": "src/assets/images/mc/2.6/0904.png"
+      "img": "src/static/images/mc/2.6/0904.png"
     },
     "2025-09-11": {
       "events": [
         "回音盈域"
       ],
-      "img": "src/assets/images/mc/2.6/0911.png"
+      "img": "src/static/images/mc/2.6/0911.png"
     },
     "2025-09-15": {
       "events": [
         "深塔"
       ],
-      "img": "src/assets/images/mc/shenta.png"
+      "img": "src/static/images/mc/shenta.png"
     },
     "2025-09-17": {
       "events": [
         "2.6下半更新",
         "第二索拉终极版"
       ],
-      "img": "src/assets/images/mc/2.6/down.png"
+      "img": "src/static/images/mc/2.6/down.png"
     },
     "2025-09-25": {
       "events": [
         "月华解明",
         "踏潮探历"
       ],
-      "img": "src/assets/images/mc/2.6/0925.png"
+      "img": "src/static/images/mc/2.6/0925.png"
     },
     "2025-09-27": {
       "events": [
@@ -97,7 +97,7 @@
       "events": [
         "声弦涤荡"
       ],
-      "img": "src/assets/images/mc/2.6/1001.png"
+      "img": "src/static/images/mc/2.6/1001.png"
     }
   }
 }

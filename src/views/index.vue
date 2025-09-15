@@ -94,19 +94,19 @@ const gameList: any = ref([
   {
     name: "绝区零",
     key: "zzz",
-    bgImg: "src/assets/images/zzz.png",
+    bgImg: "/static/images/zzz.png",
   },
   {
     name: "鸣潮",
     key: "mc",
-    bgImg: "src/assets/images/mc.png",
+    bgImg: "/static/images/mc.png",
   },
 ]);
 
 const showGameList: any = ref(["zzz", "mc"]);
 
 onMounted(() => {
-  importFile("../assets/config.json").then((res) => {
+  importFile("../static/config.json").then((res) => {
     eventsData.value = res;
     creatDayList();
   });
@@ -227,7 +227,7 @@ function chooseGame(key: string) {
 .pageContent {
   width: 100vw;
   height: 100vh;
-  background-image: url("../assets/images/bg.jpg");
+  background-image: url("/static/images/bg.jpg");
   background-size: cover;
   color: #ffffff;
 
