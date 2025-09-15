@@ -109,7 +109,7 @@ onMounted(() => {
   let path =
     import.meta.env.VITE_ENV == "development"
       ? "../static/config.json"
-      : "/static/config.json";
+      : "./static/config.json";
   importFile(path).then((res) => {
     eventsData.value = res;
     creatDayList();
