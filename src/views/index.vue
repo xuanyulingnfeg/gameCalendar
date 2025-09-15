@@ -106,7 +106,11 @@ const gameList: any = ref([
 const showGameList: any = ref(["zzz", "mc"]);
 
 onMounted(() => {
-  importFile("../static/config.json").then((res) => {
+  let path =
+    import.meta.env.VITE_ENV == "development"
+      ? "../static/config.json"
+      : "/static/config.json";
+  importFile(path).then((res) => {
     eventsData.value = res;
     creatDayList();
   });
@@ -119,7 +123,6 @@ async function importFile(path: string) {
 
 function setBgImg(bgSrc: string, bgIndex: number, length: number) {
   let style = "display: none";
-  console.log(bgSrc, bgIndex, length);
   if (length === 1) {
     style = `background-image: url('${bgSrc}')`;
   } else if (length === 2) {
@@ -204,8 +207,6 @@ function creatDayList() {
       }
     });
   });
-
-  console.log(list);
 
   dayList.value = list;
 }
