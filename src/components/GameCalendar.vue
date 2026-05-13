@@ -233,6 +233,21 @@ onUnmounted(() => {
   padding: 10px 0;
   overflow: hidden;
   min-height: 400px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.activities-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.activities-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.activities-area::-webkit-scrollbar-thumb {
+  background: #acacac;
+  border-radius: 3px;
 }
 
 .activity-row.red-row {
@@ -250,8 +265,11 @@ onUnmounted(() => {
 .game-type-switcher {
   display: flex;
   gap: 15px;
-  margin-bottom: 32px;
   align-self: flex-start;
+  width: 100%;
+  min-width: 1400px;
+  max-width: 1600px;
+  margin: 0 auto 32px;
 }
 
 .game-type-btn {

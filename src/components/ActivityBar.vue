@@ -6,23 +6,21 @@
       <span class="dollar-sign-text">S</span>
     </div>
 
-    <!-- 左侧角色图标 -->
-    <div class="char-icon" v-if="activity.hasCharIcon">
+    <!-- 角色图标区域 -->
+    <div
+      class="char-icon"
+      v-if="
+        activity.hasCharIcon &&
+        activity.charIcons &&
+        activity.charIcons.length > 0
+      "
+      :style="{ width: activity.charIcons.length * 56 + 'px' }"
+    >
       <div
-        class="char-left"
-        :style="{
-          backgroundImage: activity.charIconLeft
-            ? `url(${activity.charIconLeft})`
-            : '',
-        }"
-      ></div>
-      <div
-        class="char-right"
-        :style="{
-          backgroundImage: activity.charIconRight
-            ? `url(${activity.charIconRight})`
-            : '',
-        }"
+        v-for="(icon, idx) in activity.charIcons"
+        :key="idx"
+        class="char-segment"
+        :style="getSegmentStyle(idx, activity.charIcons.length, icon)"
       ></div>
     </div>
 
@@ -65,11 +63,54 @@ const props = defineProps({
   },
 });
 
-function parseTime(timeStr) {
-  // timeStr 格式: "2026-05-07 10"
-  const [datePart, hour] = timeStr.split(" ");
-  const [year, month, day] = datePart.split("-");
-  return new Date(year, month - 1, day, parseInt(hour), 0, 0, 0);
+function parseTime(timeStr, isEnd = false) {
+  // timeStr 格式: "2026-05-07 10" 或 "2026-05-07"
+  const parts = timeStr.split(" ");
+  const [year, month, day] = parts[0].split("-");
+  let hour = 0;
+  if (parts.length > 1) {
+    hour = parseInt(parts[1]);
+  } else {
+    // 无小时部分：开始默认00，结束默认24
+    hour = isEnd ? 24 : 0;
+  }
+  return new Date(year, month - 1, day, hour, 0, 0, 0);
+}
+
+function getSegmentStyle(index, total, iconUrl) {
+  const style = {
+    position: "absolute",
+    top: "0",
+    bottom: "0",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  };
+
+  if (iconUrl) {
+    style.backgroundImage = `url(${iconUrl})`;
+  }
+
+  if (total === 1) {
+    style.left = "0";
+    style.width = "100%";
+  } else {
+    // 每个区域占据自己的位置，background-position:center 在段内居中
+    const segWidth = 100 / total;
+    style.left = index * segWidth + "%";
+    style.width = segWidth + "%";
+
+    // 斜线裁切，用段内坐标系（百分比相对于段自身宽度）
+    const skew = 18;
+    if (index === 0) {
+      style.clipPath = `polygon(0 0, ${100 + skew}% 0, ${100 - skew}% 100%, 0 100%)`;
+    } else if (index === total - 1) {
+      style.clipPath = `polygon(${-skew}% 0, 100% 0, 100% 100%, ${skew}% 100%)`;
+    } else {
+      style.clipPath = `polygon(${-skew}% 0, ${100 + skew}% 0, ${100 - skew}% 100%, ${skew}% 100%)`;
+    }
+  }
+
+  return style;
 }
 
 const barStyle = computed(() => {
@@ -80,8 +121,8 @@ const barStyle = computed(() => {
 
   const totalHours = props.totalDays * 24;
 
-  const actStart = parseTime(props.activity.startTime);
-  const actEnd = parseTime(props.activity.endTime);
+  const actStart = parseTime(props.activity.startTime, false);
+  const actEnd = parseTime(props.activity.endTime, true);
 
   const startHoursOffset = (actStart - calStart) / (1000 * 60 * 60);
   const durationHours = (actEnd - actStart) / (1000 * 60 * 60);
@@ -205,26 +246,13 @@ const barStyle = computed(() => {
   background: #222;
 }
 
-.char-left {
+.char-segment {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%);
   background-size: cover;
-  background-position: -17px center;
-}
-
-.char-right {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  clip-path: polygon(60% 0, 100% 0, 100% 100%, 40% 100%);
-  background-size: cover;
-  background-position: 23px center;
 }
 
 .activity-name {
