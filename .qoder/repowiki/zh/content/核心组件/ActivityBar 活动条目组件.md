@@ -12,6 +12,14 @@
 - [main.js](file://src/main.js)
 </cite>
 
+## 更新摘要
+**变更内容**
+- 更新了样式系统部分，反映复杂的CSS渐变背景和重复线性渐变纹理效果
+- 新增了字符图标显示系统的详细说明
+- 增强了美元符号装饰系统的描述
+- 更新了视觉呈现系统的架构图
+- 完善了响应式设计和动画效果的说明
+
 ## 目录
 1. [简介](#简介)
 2. [项目结构](#项目结构)
@@ -26,9 +34,11 @@
 
 ## 简介
 
-ActivityBar 是游戏日历应用中的核心组件，负责渲染单个游戏活动条目。该组件实现了复杂的时间轴可视化功能，能够根据活动的开始和结束周数精确计算其在6周时间轴上的显示位置，并通过颜色编码系统直观地展示不同类型的活动。
+ActivityBar 是游戏日历应用中的核心组件，负责渲染单个游戏活动条目。该组件实现了复杂的时间轴可视化功能，能够根据活动的开始和结束周数精确计算其在6周时间轴上的显示位置，并通过增强的样式系统提供丰富的视觉效果。
 
-该组件采用现代化的Vue 3 Composition API实现，结合CSS Grid和Flexbox布局技术，提供了响应式的视觉呈现和流畅的用户体验。组件支持多种活动类型（红色、橙色、灰色），每种类型都有独特的视觉风格和样式特征。
+**更新** 组件大幅增强了样式系统，包括复杂的CSS渐变背景、重复线性渐变纹理效果、字符图标显示系统、美元符号装饰等高级视觉效果，为用户提供更加精美和专业的视觉体验。
+
+该组件采用现代化的Vue 3 Composition API实现，结合CSS Grid和Flexbox布局技术，提供了响应式的视觉呈现和流畅的用户体验。组件支持多种活动类型（红色、橙色、灰色），每种类型都有独特的渐变背景和视觉风格。
 
 ## 项目结构
 
@@ -81,6 +91,8 @@ ActivityBar 组件是整个游戏日历系统的核心视觉元素，负责将�
 - **内容展示**：动态渲染活动名称、图标和装饰元素
 - **响应式布局**：适配不同屏幕尺寸和设备类型
 
+**更新** 组件现在支持复杂的样式系统，包括渐变背景、纹理效果、字符图标和装饰元素。
+
 ### Props 参数结构
 
 组件接收的 activity 对象包含以下关键属性：
@@ -95,18 +107,20 @@ ActivityBar 组件是整个游戏日历系统的核心视觉元素，负责将�
 | icons | Number | 否 | 0 | 右侧图标数量 |
 | hasDollarSign | Boolean | 否 | false | 是否显示美元符号标记 |
 | hasCharIcon | Boolean | 否 | false | 是否显示角色图标 |
+| charIconLeft | String | 否 | "" | 左侧角色图标URL |
+| charIconRight | String | 否 | "" | 右侧角色图标URL |
 
-### 样式系统
+### 增强的样式系统
 
-组件采用基于类名的颜色编码系统，支持三种活动类型：
+**更新** 组件采用基于类名的颜色编码系统，支持三种活动类型，每种类型都具有独特的渐变背景和纹理效果：
 
-- **红色类型**：用于重要或高优先级活动，具有强烈的视觉冲击力
-- **橙色类型**：用于普通活动，采用较温和的色彩方案
-- **灰色类型**：用于特殊或低优先级活动，保持简洁的外观
+- **红色类型**：深红色到橙色的线性渐变背景，带有半透明的阴影效果
+- **橙色类型**：橙色到金黄色的线性渐变背景，具有温暖的视觉感受
+- **灰色类型**：深灰色到浅灰色的线性渐变背景，保持简洁和专业感
 
 **章节来源**
 - [ActivityBar.vue:27-36](file://src/components/ActivityBar.vue#L27-L36)
-- [activities.js:1-53](file://src/config/activities.js#L1-L53)
+- [activities.js:1-57](file://src/config/activities.js#L1-L57)
 
 ## 架构概览
 
@@ -123,6 +137,7 @@ GC->>DU : 计算时间轴参数
 GC->>AB : 渲染活动条目
 AB->>AB : 计算位置样式
 AB->>AB : 应用类型样式
+AB->>AB : 渲染装饰元素
 AB-->>GC : 完成渲染
 Note over GC,AB : 组件间的数据流和交互
 ```
@@ -130,11 +145,11 @@ Note over GC,AB : 组件间的数据流和交互
 **图表来源**
 - [GameCalendar.vue:12-18](file://src/components/GameCalendar.vue#L12-L18)
 - [ActivityBar.vue:38-49](file://src/components/ActivityBar.vue#L38-L49)
-- [activities.js:1-53](file://src/config/activities.js#L1-L53)
+- [activities.js:1-57](file://src/config/activities.js#L1-L57)
 
 **章节来源**
-- [GameCalendar.vue:1-85](file://src/components/GameCalendar.vue#L1-L85)
-- [ActivityBar.vue:1-164](file://src/components/ActivityBar.vue#L1-L164)
+- [GameCalendar.vue:1-148](file://src/components/GameCalendar.vue#L1-L148)
+- [ActivityBar.vue:1-255](file://src/components/ActivityBar.vue#L1-L255)
 
 ## 详细组件分析
 
@@ -170,9 +185,9 @@ CheckRange --> |有效| CalcWidth
    - 确保计算结果在0-100%范围内
    - 处理重叠活动的显示问题
 
-### 视觉呈现系统
+### 增强的视觉呈现系统
 
-组件采用多层次的视觉设计，每个元素都有特定的功能和样式：
+**更新** 组件采用多层次的视觉设计，每个元素都有特定的功能和样式特征。现在支持复杂的CSS渐变背景、重复线性渐变纹理效果和字符图标显示系统：
 
 ```mermaid
 classDiagram
@@ -191,28 +206,33 @@ class ActivityItem {
 +Number icons
 +Boolean hasDollarSign
 +Boolean hasCharIcon
++String charIconLeft
++String charIconRight
 }
-class StyleSystem {
+class EnhancedStyleSystem {
 +String type-red
 +String type-orange
 +String type-gray
 +String dollar-sign
 +String char-icon
 +String right-icons
++String repeating-linear-gradient
++String background-texture
 }
 ActivityBar --> ActivityItem : "接收"
-ActivityBar --> StyleSystem : "应用"
+ActivityBar --> EnhancedStyleSystem : "应用"
 ```
 
 **图表来源**
 - [ActivityBar.vue:27-36](file://src/components/ActivityBar.vue#L27-L36)
-- [ActivityBar.vue:52-163](file://src/components/ActivityBar.vue#L52-L163)
+- [ActivityBar.vue:52-255](file://src/components/ActivityBar.vue#L52-L255)
 
-#### 样式层次结构
+#### 增强的样式层次结构
 
 1. **基础容器**：圆角矩形设计，54px高度，27px半径
-2. **类型样式**：基于活动类型应用不同的渐变背景
-3. **装饰元素**：
+2. **渐变背景系统**：基于活动类型应用不同的线性渐变背景
+3. **纹理效果系统**：使用重复线性渐变创建微妙的纹理效果
+4. **装饰元素**：
    - 美元符号标记（可选）
    - 角色图标（可选）
    - 右侧图标网格
@@ -220,7 +240,7 @@ ActivityBar --> StyleSystem : "应用"
 
 ### 颜色编码系统
 
-组件支持三种活动类型的颜色编码，每种类型都有独特的视觉特征：
+**更新** 组件支持三种活动类型的颜色编码，每种类型都有独特的渐变背景和视觉特征：
 
 | 类型 | CSS类名 | 背景渐变 | 阴影效果 | 文本颜色 |
 |------|---------|----------|----------|----------|
@@ -229,12 +249,12 @@ ActivityBar --> StyleSystem : "应用"
 | gray | type-gray | `#666 → #888` | `rgba(100, 100, 100, 0.3)` | `#fff` |
 
 **章节来源**
-- [ActivityBar.vue:65-78](file://src/components/ActivityBar.vue#L65-L78)
+- [ActivityBar.vue:83-97](file://src/components/ActivityBar.vue#L83-L97)
 - [ActivityBar.vue:129-132](file://src/components/ActivityBar.vue#L129-L132)
 
-### 图标显示逻辑
+### 增强的图标显示逻辑
 
-组件支持多种图标显示模式，通过条件渲染实现灵活的内容展示：
+**更新** 组件支持多种图标显示模式，通过条件渲染实现灵活的内容展示。现在包括复杂的字符图标显示系统：
 
 ```mermaid
 flowchart TD
@@ -252,19 +272,19 @@ RenderIcons --> End([渲染完成])
 **图表来源**
 - [ActivityBar.vue:4-20](file://src/components/ActivityBar.vue#L4-L20)
 
-#### 图标系统特性
+#### 增强的图标系统特性
 
-1. **美元符号**：绝对定位的黄色圆形标记，用于突出重要活动
-2. **角色图标**：圆形边框的装饰性图标，增加视觉趣味性
+1. **美元符号**：绝对定位的装饰性标记，包含图像和文字元素
+2. **角色图标**：复杂的双面板设计，支持左右两侧的角色图标
 3. **右侧图标**：可配置数量的网格图标，反映活动的重要程度
 4. **箭头按钮**：圆形按钮，提供导航和交互功能
 
 **章节来源**
-- [ActivityBar.vue:80-162](file://src/components/ActivityBar.vue#L80-L162)
+- [ActivityBar.vue:80-255](file://src/components/ActivityBar.vue#L80-L255)
 
 ### 响应式设计
 
-组件采用Flexbox布局系统，确保在不同设备上都能提供良好的用户体验：
+**更新** 组件采用Flexbox布局系统，确保在不同设备上都能提供良好的用户体验。现在支持更精细的响应式控制：
 
 ```mermaid
 graph LR
@@ -272,6 +292,7 @@ subgraph "桌面端布局"
 Desktop[1100px 最大宽度]
 Flex[Flexbox 主布局]
 Content[内容区域]
+Enhanced[增强的响应式控制]
 end
 subgraph "移动端优化"
 Mobile[自动缩放]
@@ -280,6 +301,7 @@ Touch[触摸友好]
 end
 Desktop --> Flex
 Flex --> Content
+Enhanced --> Content
 Mobile --> Responsive
 Responsive --> Touch
 ```
@@ -340,11 +362,12 @@ ActivityBar --> Browser
 
 ### 渲染优化
 
-ActivityBar 组件在性能方面采用了多项优化策略：
+**更新** ActivityBar 组件在性能方面采用了多项优化策略：
 
 1. **计算属性缓存**：使用 Vue 的 computed 属性避免重复计算
 2. **条件渲染**：仅渲染必要的装饰元素
 3. **样式复用**：通过类名系统减少内联样式的使用
+4. **CSS渐变优化**：使用硬件加速的CSS渐变效果
 
 ### 内存管理
 
@@ -354,13 +377,14 @@ ActivityBar 组件在性能方面采用了多项优化策略：
 - **事件监听**：正确移除事件监听器
 - **引用管理**：避免循环引用
 
-### 动画性能
+### 增强的动画性能
 
-组件支持流畅的动画效果：
+**更新** 组件支持流畅的动画效果，包括：
 
 - **CSS3 过渡**：利用硬件加速的 CSS 动画
 - **GPU 加速**：使用 transform 和 opacity 属性
 - **帧率优化**：避免触发强制同步布局的操作
+- **渐变动画**：平滑的颜色过渡效果
 
 ## 故障排除指南
 
@@ -382,47 +406,72 @@ ActivityBar 组件在性能方面采用了多项优化策略：
 
 #### 问题2：样式显示不正确
 
-**症状**：活动条目样式不符合预期
+**更新** 症状：活动条目样式不符合预期
 
 **可能原因**：
 - CSS 类名拼写错误
 - 样式覆盖冲突
 - 浏览器兼容性问题
+- 渐变背景渲染问题
 
 **解决方法**：
 1. 检查活动类型字符串是否正确
 2. 验证 CSS 选择器的优先级
 3. 测试不同浏览器的兼容性
+4. 检查CSS渐变语法的正确性
 
 #### 问题3：图标显示异常
 
-**症状**：装饰图标没有正确显示
+**更新** 症状：装饰图标没有正确显示
 
 **可能原因**：
 - hasDollarSign 或 hasCharIcon 标志位设置错误
 - 图标数量配置不正确
 - CSS 样式冲突
+- 字符图标URL无效
 
 **解决方法**：
 1. 验证布尔标志位的设置
 2. 检查 icons 数量的有效性
 3. 排查 CSS 样式冲突问题
+4. 验证字符图标URL的有效性和可访问性
+
+#### 问题4：纹理效果不显示
+
+**更新** 症状：重复线性渐变纹理效果缺失
+
+**可能原因**：
+- CSS3渐变属性不被支持
+- mask-image属性兼容性问题
+- 浏览器版本过低
+
+**解决方法**：
+1. 检查浏览器对CSS3渐变的支持情况
+2. 验证mask-image属性的兼容性
+3. 提供降级方案或回退样式
 
 **章节来源**
 - [ActivityBar.vue:38-49](file://src/components/ActivityBar.vue#L38-L49)
-- [activities.js:1-53](file://src/config/activities.js#L1-L53)
+- [activities.js:1-57](file://src/config/activities.js#L1-L57)
 
 ## 结论
 
-ActivityBar 活动条目组件是一个设计精良、功能完整的视觉渲染组件。它成功地将复杂的时间轴概念转化为直观的图形界面，为用户提供了清晰的活动信息展示。
+**更新** ActivityBar 活动条目组件是一个设计精良、功能完整的视觉渲染组件。经过大幅增强的样式系统，它现在提供了更加丰富和专业的视觉效果，为用户带来了卓越的用户体验。
 
 组件的主要优势包括：
 
 1. **精确的算法实现**：基于数学公式的准确位置计算
-2. **灵活的样式系统**：支持多种颜色编码和视觉效果
-3. **优秀的响应式设计**：适应各种设备和屏幕尺寸
-4. **良好的性能表现**：优化的渲染和内存管理
-5. **完善的错误处理**：健壮的边界条件处理
+2. **增强的样式系统**：支持复杂的CSS渐变背景、重复线性渐变纹理效果
+3. **丰富的视觉效果**：字符图标显示系统、美元符号装饰等高级视觉效果
+4. **优秀的响应式设计**：适应各种设备和屏幕尺寸
+5. **良好的性能表现**：优化的渲染和内存管理
+6. **完善的错误处理**：健壮的边界条件处理
+
+**更新** 特别值得一提的是，组件现在支持复杂的CSS渐变背景系统，包括：
+- 线性渐变背景（`repeating-linear-gradient`）
+- 多角度纹理效果（45°和135°）
+- 半透明遮罩效果
+- GPU加速的渲染性能
 
 该组件为游戏日历应用奠定了坚实的视觉基础，为用户提供了直观、美观且功能丰富的活动展示体验。
 
@@ -443,16 +492,20 @@ ActivityBar 活动条目组件是一个设计精良、功能完整的视觉渲�
 
 #### 自定义配置
 
+**更新** 增强的配置选项：
+
 ```javascript
-const customActivity = {
+const enhancedActivity = {
   id: 1,
-  name: "自定义活动",
+  name: "增强活动",
   startWeek: 2,
   endWeek: 4,
   type: "red",
   icons: 3,
   hasDollarSign: true,
-  hasCharIcon: false
+  hasCharIcon: true,
+  charIconLeft: "path/to/left-icon.png",
+  charIconRight: "path/to/right-icon.png"
 }
 ```
 
@@ -460,12 +513,42 @@ const customActivity = {
 
 #### 添加新活动类型
 
-1. 在 CSS 中添加新的类型样式
+**更新** 新增活动类型步骤：
+
+1. 在 CSS 中添加新的类型样式，包括渐变背景和纹理效果
 2. 更新活动配置数据
 3. 确保样式系统的一致性
+4. 测试不同浏览器的兼容性
 
 #### 修改视觉效果
 
-1. 调整颜色编码方案
-2. 修改图标设计
-3. 优化动画效果
+**更新** 增强的修改选项：
+
+1. 调整颜色编码方案，包括渐变色彩
+2. 修改图标设计，支持更复杂的字符图标
+3. 优化动画效果，包括纹理动画
+4. 调整纹理效果，包括渐变角度和密度
+
+#### 自定义纹理效果
+
+**更新** 纹理效果自定义：
+
+```css
+.activity-bar::before {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1px,
+      transparent 5px
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1px,
+      transparent 5px
+    );
+}
+```
