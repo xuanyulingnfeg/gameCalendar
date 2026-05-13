@@ -14,11 +14,12 @@
 
 ## 更新摘要
 **变更内容**
-- 更新了样式系统部分，反映复杂的CSS渐变背景和重复线性渐变纹理效果
-- 新增了字符图标显示系统的详细说明
-- 增强了美元符号装饰系统的描述
-- 更新了视觉呈现系统的架构图
-- 完善了响应式设计和动画效果的说明
+- 更新了小时级精度定位算法，支持精确到小时的时间计算
+- 新增了红活动行系统，支持红色活动在同一行显示
+- 新增了绝对定位支持，通过`absolute`属性控制定位方式
+- 新增了时间连续性处理机制，确保活动时间的正确衔接
+- 更新了活动时间格式，支持"YYYY-MM-DD HH"格式的时间字符串
+- 增强了样式系统，包括改进的渐变背景和纹理效果
 
 ## 目录
 1. [简介](#简介)
@@ -34,9 +35,9 @@
 
 ## 简介
 
-ActivityBar 是游戏日历应用中的核心组件，负责渲染单个游戏活动条目。该组件实现了复杂的时间轴可视化功能，能够根据活动的开始和结束周数精确计算其在6周时间轴上的显示位置，并通过增强的样式系统提供丰富的视觉效果。
+ActivityBar 是游戏日历应用中的核心组件，负责渲染单个游戏活动条目。该组件实现了精确的小时级时间轴可视化功能，能够根据活动的开始和结束时间精确计算其在时间轴上的显示位置，并通过增强的样式系统提供丰富的视觉效果。
 
-**更新** 组件大幅增强了样式系统，包括复杂的CSS渐变背景、重复线性渐变纹理效果、字符图标显示系统、美元符号装饰等高级视觉效果，为用户提供更加精美和专业的视觉体验。
+**更新** 组件现已支持小时级精度定位，能够精确到小时的时间计算，同时新增了红活动行系统，支持红色活动在同一行显示，以及绝对定位功能，为用户提供更加精准和灵活的活动展示体验。
 
 该组件采用现代化的Vue 3 Composition API实现，结合CSS Grid和Flexbox布局技术，提供了响应式的视觉呈现和流畅的用户体验。组件支持多种活动类型（红色、橙色、灰色），每种类型都有独特的渐变背景和视觉风格。
 
@@ -86,12 +87,13 @@ GameCalendar --> dateUtils
 
 ActivityBar 组件是整个游戏日历系统的核心视觉元素，负责将抽象的活动数据转换为直观的图形表示。组件的主要职责包括：
 
-- **位置计算**：基于活动的开始和结束周数计算在时间轴上的精确位置
+- **小时级位置计算**：基于活动的开始和结束时间计算在时间轴上的精确位置
 - **样式渲染**：根据活动类型应用相应的颜色编码和视觉效果
 - **内容展示**：动态渲染活动名称、图标和装饰元素
 - **响应式布局**：适配不同屏幕尺寸和设备类型
+- **绝对定位支持**：支持绝对定位和相对定位两种模式
 
-**更新** 组件现在支持复杂的样式系统，包括渐变背景、纹理效果、字符图标和装饰元素。
+**更新** 组件现在支持小时级精度定位，能够精确到小时的时间计算，并新增了绝对定位功能。
 
 ### Props 参数结构
 
@@ -99,10 +101,18 @@ ActivityBar 组件是整个游戏日历系统的核心视觉元素，负责将�
 
 | 属性名 | 类型 | 必需 | 默认值 | 描述 |
 |--------|------|------|--------|------|
-| id | Number | 是 | - | 活动唯一标识符 |
+| activity | Object | 是 | - | 活动对象，包含活动详情 |
+| calendarStartDate | String | 是 | - | 日历起始日期（YYYY/MM/DD格式） |
+| calendarEndDate | String | 是 | - | 日历结束日期（YYYY/MM/DD格式） |
+| totalDays | Number | 是 | - | 日历总天数 |
+| absolute | Boolean | 否 | false | 是否使用绝对定位 |
+
+**活动对象(activity)属性**：
+| 属性名 | 类型 | 必需 | 默认值 | 描述 |
+|--------|------|------|--------|------|
 | name | String | 是 | - | 活动显示名称 |
-| startWeek | Number | 是 | - | 活动开始周数（1-6） |
-| endWeek | Number | 是 | - | 活动结束周数（1-6） |
+| startTime | String | 是 | - | 活动开始时间（YYYY-MM-DD HH格式） |
+| endTime | String | 是 | - | 活动结束时间（YYYY-MM-DD HH格式） |
 | type | String | 是 | - | 活动类型（red/orange/gray） |
 | icons | Number | 否 | 0 | 右侧图标数量 |
 | hasDollarSign | Boolean | 否 | false | 是否显示美元符号标记 |
@@ -119,8 +129,8 @@ ActivityBar 组件是整个游戏日历系统的核心视觉元素，负责将�
 - **灰色类型**：深灰色到浅灰色的线性渐变背景，保持简洁和专业感
 
 **章节来源**
-- [ActivityBar.vue:27-36](file://src/components/ActivityBar.vue#L27-L36)
-- [activities.js:1-57](file://src/config/activities.js#L1-L57)
+- [ActivityBar.vue:118-132](file://src/components/ActivityBar.vue#L118-L132)
+- [activities.js:14-100](file://src/config/activities.js#L14-L100)
 
 ## 架构概览
 
@@ -135,55 +145,80 @@ participant DU as dateUtils.js
 GC->>AC : 加载活动配置
 GC->>DU : 计算时间轴参数
 GC->>AB : 渲染活动条目
-AB->>AB : 计算位置样式
-AB->>AB : 应用类型样式
+AB->>AB : 解析时间字符串
+AB->>AB : 计算小时级位置
+AB->>AB : 应用定位样式
 AB->>AB : 渲染装饰元素
 AB-->>GC : 完成渲染
 Note over GC,AB : 组件间的数据流和交互
 ```
 
 **图表来源**
-- [GameCalendar.vue:12-18](file://src/components/GameCalendar.vue#L12-L18)
-- [ActivityBar.vue:38-49](file://src/components/ActivityBar.vue#L38-L49)
-- [activities.js:1-57](file://src/config/activities.js#L1-L57)
+- [GameCalendar.vue:89-105](file://src/components/GameCalendar.vue#L89-L105)
+- [ActivityBar.vue:68-102](file://src/components/ActivityBar.vue#L68-L102)
+- [activities.js:14-100](file://src/config/activities.js#L14-L100)
 
 **章节来源**
-- [GameCalendar.vue:1-148](file://src/components/GameCalendar.vue#L1-L148)
-- [ActivityBar.vue:1-255](file://src/components/ActivityBar.vue#L1-L255)
+- [GameCalendar.vue:1-279](file://src/components/GameCalendar.vue#L1-L279)
+- [ActivityBar.vue:1-288](file://src/components/ActivityBar.vue#L1-L288)
 
 ## 详细组件分析
 
-### 位置计算算法
+### 小时级位置计算算法
 
-ActivityBar 的核心功能是准确计算活动在6周时间轴上的显示位置。算法基于以下公式：
+**更新** ActivityBar 的核心功能是准确计算活动在时间轴上的精确位置。算法基于小时级精度计算：
 
 ```mermaid
 flowchart TD
-Start([开始计算]) --> CalcStart["计算起始百分比<br/>startPercent = ((startWeek - 1) / totalWeeks) * 100"]
-CalcStart --> CalcWidth["计算宽度百分比<br/>widthPercent = (((endWeek - startWeek + 1) / totalWeeks) * 100"]
-CalcWidth --> ApplyStyles["应用内联样式<br/>marginLeft + width"]
-ApplyStyles --> End([完成计算])
-CalcStart --> CheckRange{"检查周数范围"}
-CheckRange --> |无效| Error["返回错误状态"]
-CheckRange --> |有效| CalcWidth
+Start([开始计算]) --> ParseStart["解析开始时间<br/>parseTime(startTime)"]
+ParseStart --> ParseEnd["解析结束时间<br/>parseTime(endTime)"]
+ParseEnd --> CalcTotalHours["计算总小时数<br/>totalHours = totalDays * 24"]
+CalcTotalHours --> CalcOffset["计算起始偏移小时数<br/>startHoursOffset = (actStart - calStart) / 3600000"]
+CalcOffset --> CalcDuration["计算持续小时数<br/>durationHours = (actEnd - actStart) / 3600000"]
+CalcDuration --> CalcPercent["计算百分比位置<br/>marginLeft = (startHoursOffset / totalHours) * 100%<br/>width = (durationHours / totalHours) * 100%"]
+CalcPercent --> CheckAbsolute{"检查绝对定位"}
+CheckAbsolute --> |true| ApplyAbsolute["应用绝对定位样式<br/>left + width"]
+CheckAbsolute --> |false| ApplyRelative["应用相对定位样式<br/>marginLeft + width"]
+ApplyAbsolute --> End([完成计算])
+ApplyRelative --> End
 ```
 
 **图表来源**
-- [ActivityBar.vue:38-49](file://src/components/ActivityBar.vue#L38-L49)
+- [ActivityBar.vue:75-102](file://src/components/ActivityBar.vue#L75-L102)
 
 #### 算法细节
 
-1. **起始位置计算**：`(startWeek - 1) / totalWeeks * 100%`
-   - 减去1是因为周数从1开始计数
-   - 除以总周数得到相对位置比例
+1. **时间解析**：`parseTime()`函数解析"YYYY-MM-DD HH"格式的时间字符串
+2. **边界处理**：日历起始时间设置为00:00:00，结束时间设置为23:59:59.999
+3. **小时级计算**：使用毫秒差值除以3600000得到小时数
+4. **百分比计算**：将小时偏移和持续时间转换为相对于总小时数的百分比
+5. **定位模式**：根据`absolute`属性决定使用绝对定位还是相对定位
 
-2. **宽度计算**：`((endWeek - startWeek + 1) / totalWeeks) * 100%`
-   - 包含起始和结束周本身
-   - 确保活动持续时间的准确性
+### 红活动行系统
 
-3. **边界处理**：
-   - 确保计算结果在0-100%范围内
-   - 处理重叠活动的显示问题
+**更新** 组件支持特殊的红活动行系统，用于显示红色类型的活动：
+
+```mermaid
+flowchart TD
+RedGroup[红色活动分组] --> TimeContinuity["时间连续性处理"]
+TimeContinuity --> CheckOverlap{"检查时间重叠"}
+CheckOverlap --> |重叠| AdjustTime["调整时间<br/>startTime = previous.endTime"]
+CheckOverlap --> |不重叠| NextActivity["下一个活动"]
+AdjustTime --> NextActivity
+NextActivity --> CheckOverlap
+CheckOverlap --> |完成| AbsolutePosition["绝对定位显示"]
+AbsolutePosition --> RenderRow["在同一行渲染"]
+```
+
+**图表来源**
+- [GameCalendar.vue:89-101](file://src/components/GameCalendar.vue#L89-L101)
+
+#### 系统特性
+
+1. **时间接续处理**：自动检测活动间的重叠并进行时间调整
+2. **绝对定位**：红色活动使用绝对定位在同一行显示
+3. **行高管理**：统一的行高和间距管理
+4. **视觉分组**：通过CSS类名实现视觉上的活动分组
 
 ### 增强的视觉呈现系统
 
@@ -193,15 +228,18 @@ CheckRange --> |有效| CalcWidth
 classDiagram
 class ActivityBar {
 +Object activity
-+Number totalWeeks
++String calendarStartDate
++String calendarEndDate
++Number totalDays
++Boolean absolute
 +computed barStyle
++parseTime()
 +render() VueTemplate
 }
 class ActivityItem {
-+Number id
 +String name
-+Number startWeek
-+Number endWeek
++String startTime
++String endTime
 +String type
 +Number icons
 +Boolean hasDollarSign
@@ -218,14 +256,15 @@ class EnhancedStyleSystem {
 +String right-icons
 +String repeating-linear-gradient
 +String background-texture
++String absolute-positioning
 }
 ActivityBar --> ActivityItem : "接收"
 ActivityBar --> EnhancedStyleSystem : "应用"
 ```
 
 **图表来源**
-- [ActivityBar.vue:27-36](file://src/components/ActivityBar.vue#L27-L36)
-- [ActivityBar.vue:52-255](file://src/components/ActivityBar.vue#L52-L255)
+- [ActivityBar.vue:45-66](file://src/components/ActivityBar.vue#L45-L66)
+- [ActivityBar.vue:105-287](file://src/components/ActivityBar.vue#L105-L287)
 
 #### 增强的样式层次结构
 
@@ -249,8 +288,8 @@ ActivityBar --> EnhancedStyleSystem : "应用"
 | gray | type-gray | `#666 → #888` | `rgba(100, 100, 100, 0.3)` | `#fff` |
 
 **章节来源**
-- [ActivityBar.vue:83-97](file://src/components/ActivityBar.vue#L83-L97)
-- [ActivityBar.vue:129-132](file://src/components/ActivityBar.vue#L129-L132)
+- [ActivityBar.vue:118-132](file://src/components/ActivityBar.vue#L118-L132)
+- [ActivityBar.vue:230-240](file://src/components/ActivityBar.vue#L230-L240)
 
 ### 增强的图标显示逻辑
 
@@ -270,7 +309,7 @@ RenderIcons --> End([渲染完成])
 ```
 
 **图表来源**
-- [ActivityBar.vue:4-20](file://src/components/ActivityBar.vue#L4-L20)
+- [ActivityBar.vue:4-39](file://src/components/ActivityBar.vue#L4-L39)
 
 #### 增强的图标系统特性
 
@@ -280,7 +319,7 @@ RenderIcons --> End([渲染完成])
 4. **箭头按钮**：圆形按钮，提供导航和交互功能
 
 **章节来源**
-- [ActivityBar.vue:80-255](file://src/components/ActivityBar.vue#L80-L255)
+- [ActivityBar.vue:162-287](file://src/components/ActivityBar.vue#L162-L287)
 
 ### 响应式设计
 
@@ -307,8 +346,8 @@ Responsive --> Touch
 ```
 
 **章节来源**
-- [GameCalendar.vue:67-84](file://src/components/GameCalendar.vue#L67-L84)
-- [ActivityBar.vue:52-63](file://src/components/ActivityBar.vue#L52-L63)
+- [GameCalendar.vue:20-63](file://src/components/GameCalendar.vue#L20-L63)
+- [ActivityBar.vue:105-116](file://src/components/ActivityBar.vue#L105-L116)
 
 ## 依赖关系分析
 
@@ -342,8 +381,8 @@ ActivityBar --> Browser
 ```
 
 **图表来源**
-- [GameCalendar.vue:25-33](file://src/components/GameCalendar.vue#L25-L33)
-- [ActivityBar.vue:25-26](file://src/components/ActivityBar.vue#L25-L26)
+- [GameCalendar.vue:69-76](file://src/components/GameCalendar.vue#L69-L76)
+- [ActivityBar.vue:42-43](file://src/components/ActivityBar.vue#L42-L43)
 
 ### 数据流向
 
@@ -355,8 +394,8 @@ ActivityBar --> Browser
 4. **样式数据**：由 ActivityBar 内部计算生成
 
 **章节来源**
-- [GameCalendar.vue:35-38](file://src/components/GameCalendar.vue#L35-L38)
-- [ActivityBar.vue:38-49](file://src/components/ActivityBar.vue#L38-L49)
+- [GameCalendar.vue:82-110](file://src/components/GameCalendar.vue#L82-L110)
+- [ActivityBar.vue:75-102](file://src/components/ActivityBar.vue#L75-L102)
 
 ## 性能考虑
 
@@ -368,6 +407,7 @@ ActivityBar --> Browser
 2. **条件渲染**：仅渲染必要的装饰元素
 3. **样式复用**：通过类名系统减少内联样式的使用
 4. **CSS渐变优化**：使用硬件加速的CSS渐变效果
+5. **绝对定位优化**：红色活动使用绝对定位减少布局重排
 
 ### 内存管理
 
@@ -395,14 +435,16 @@ ActivityBar --> Browser
 **症状**：活动条目显示在错误的位置
 
 **可能原因**：
-- startWeek 或 endWeek 参数超出范围
-- totalWeeks 参数设置不正确
-- 周数计算逻辑错误
+- startTime 或 endTime 参数格式不正确
+- 时间字符串格式不符合"YYYY-MM-DD HH"要求
+- totalDays 参数设置不正确
+- 时间计算逻辑错误
 
 **解决方法**：
-1. 验证活动配置中的周数范围
-2. 确认 totalWeeks 参数与实际周数一致
-3. 检查 startWeek <= endWeek 的约束条件
+1. 验证活动配置中的时间格式
+2. 确认时间字符串符合"YYYY-MM-DD HH"格式
+3. 检查 totalDays 参数与实际天数一致
+4. 验证 startTime <= endTime 的约束条件
 
 #### 问题2：样式显示不正确
 
@@ -436,42 +478,63 @@ ActivityBar --> Browser
 3. 排查 CSS 样式冲突问题
 4. 验证字符图标URL的有效性和可访问性
 
-#### 问题4：纹理效果不显示
+#### 问题4：红活动行显示异常
 
-**更新** 症状：重复线性渐变纹理效果缺失
+**更新** 症状：红色活动没有在同一行显示
 
 **可能原因**：
-- CSS3渐变属性不被支持
-- mask-image属性兼容性问题
-- 浏览器版本过低
+- absolute 属性未正确设置
+- 红色活动分组逻辑错误
+- 时间接续处理失败
+- CSS 绝对定位样式冲突
 
 **解决方法**：
-1. 检查浏览器对CSS3渐变的支持情况
-2. 验证mask-image属性的兼容性
-3. 提供降级方案或回退样式
+1. 确保红色活动渲染时传入 `absolute="true"`
+2. 检查红色活动分组逻辑
+3. 验证时间接续处理算法
+4. 检查 `.red-row .activity-bar` 样式是否正确
+
+#### 问题5：小时级精度计算错误
+
+**更新** 症状：活动位置计算不准确
+
+**可能原因**：
+- parseTime 函数解析错误
+- 时间边界处理不当
+- 总小时数计算错误
+- 百分比计算精度问题
+
+**解决方法**：
+1. 验证时间字符串格式
+2. 检查 parseTime 函数的日期解析逻辑
+3. 确认日历起始和结束时间的边界设置
+4. 验证总小时数计算的准确性
 
 **章节来源**
-- [ActivityBar.vue:38-49](file://src/components/ActivityBar.vue#L38-L49)
-- [activities.js:1-57](file://src/config/activities.js#L1-L57)
+- [ActivityBar.vue:68-102](file://src/components/ActivityBar.vue#L68-L102)
+- [activities.js:14-100](file://src/config/activities.js#L14-L100)
 
 ## 结论
 
-**更新** ActivityBar 活动条目组件是一个设计精良、功能完整的视觉渲染组件。经过大幅增强的样式系统，它现在提供了更加丰富和专业的视觉效果，为用户带来了卓越的用户体验。
+**更新** ActivityBar 活动条目组件是一个设计精良、功能完整的视觉渲染组件。经过大幅增强的小时级精度定位系统，它现在提供了更加精确和专业的活动展示体验，为用户带来了卓越的用户体验。
 
 组件的主要优势包括：
 
-1. **精确的算法实现**：基于数学公式的准确位置计算
+1. **精确的小时级算法**：基于数学公式的准确位置计算
 2. **增强的样式系统**：支持复杂的CSS渐变背景、重复线性渐变纹理效果
 3. **丰富的视觉效果**：字符图标显示系统、美元符号装饰等高级视觉效果
 4. **优秀的响应式设计**：适应各种设备和屏幕尺寸
-5. **良好的性能表现**：优化的渲染和内存管理
-6. **完善的错误处理**：健壮的边界条件处理
+5. **完善的红活动行系统**：支持红色活动在同一行显示
+6. **灵活的定位模式**：支持绝对定位和相对定位
+7. **良好的性能表现**：优化的渲染和内存管理
+8. **完善的错误处理**：健壮的边界条件处理
 
-**更新** 特别值得一提的是，组件现在支持复杂的CSS渐变背景系统，包括：
-- 线性渐变背景（`repeating-linear-gradient`）
-- 多角度纹理效果（45°和135°）
-- 半透明遮罩效果
-- GPU加速的渲染性能
+**更新** 特别值得一提的是，组件现在支持复杂的小时级精度定位系统，包括：
+- 基于毫秒差值的精确时间计算
+- 支持"YYYY-MM-DD HH"格式的时间字符串
+- 绝对定位和相对定位的灵活切换
+- 红活动行的时间接续处理机制
+- GPU加速的CSS渐变渲染性能
 
 该组件为游戏日历应用奠定了坚实的视觉基础，为用户提供了直观、美观且功能丰富的活动展示体验。
 
@@ -485,7 +548,40 @@ ActivityBar --> Browser
 <template>
   <ActivityBar
     :activity="activityData"
-    :totalWeeks="6"
+    :calendarStartDate="currentConfig.startDate"
+    :calendarEndDate="currentConfig.endDate"
+    :totalDays="timelineInfo.totalDays"
+  />
+</template>
+```
+
+#### 红活动行使用
+
+**更新** 红色活动的特殊使用方式：
+
+```vue
+<template>
+  <!-- 红色活动行 -->
+  <div class="activity-row red-row">
+    <ActivityBar
+      v-for="(activity, index) in redActivities"
+      :key="index"
+      :activity="activity"
+      :calendarStartDate="currentConfig.startDate"
+      :calendarEndDate="currentConfig.endDate"
+      :totalDays="timelineInfo.totalDays"
+      :absolute="true"
+    />
+  </div>
+  
+  <!-- 其他类型活动 -->
+  <ActivityBar
+    v-for="(activity, index) in otherActivities"
+    :key="index"
+    :activity="activity"
+    :calendarStartDate="currentConfig.startDate"
+    :calendarEndDate="currentConfig.endDate"
+    :totalDays="timelineInfo.totalDays"
   />
 </template>
 ```
@@ -498,8 +594,8 @@ ActivityBar --> Browser
 const enhancedActivity = {
   id: 1,
   name: "增强活动",
-  startWeek: 2,
-  endWeek: 4,
+  startTime: "2026-05-07 10",
+  endTime: "2026-05-07 14",
   type: "red",
   icons: 3,
   hasDollarSign: true,
@@ -552,3 +648,13 @@ const enhancedActivity = {
     );
 }
 ```
+
+#### 实现小时级精度定位
+
+**更新** 小时级精度定位的实现要点：
+
+1. 使用毫秒差值进行精确时间计算
+2. 设置正确的日历边界时间（00:00:00到23:59:59.999）
+3. 计算总小时数：`totalDays * 24`
+4. 应用百分比计算：`(小时偏移 / 总小时数) * 100`
+5. 根据绝对定位需求选择合适的CSS属性
