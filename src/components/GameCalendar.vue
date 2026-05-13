@@ -11,7 +11,7 @@
             ? { backgroundImage: `url(${gameType.bgImage})` }
             : {}
         "
-        @click="currentGameType = gameType.key"
+        @click="switchGameType(gameType.key)"
       >
         {{ gameType.name }}
       </button>
@@ -75,8 +75,17 @@ import {
 } from "../utils/dateUtils.js";
 import { gameTypes, gameData } from "../config/activities.js";
 
-// 当前选中的游戏类型
-const currentGameType = ref("zzz");
+// 当前选中的游戏类型（优先读取localStorage记录）
+const savedGameType = localStorage.getItem("currentGameType");
+const currentGameType = ref(
+  savedGameType && gameData[savedGameType] ? savedGameType : "zzz",
+);
+
+// 切换游戏类型并保存到localStorage
+function switchGameType(key) {
+  currentGameType.value = key;
+  localStorage.setItem("currentGameType", key);
+}
 
 // 当前游戏类型的配置和活动
 const currentConfig = computed(
