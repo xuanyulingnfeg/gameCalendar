@@ -47,22 +47,57 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  totalWeeks: {
+  calendarStartDate: {
+    type: String,
+    required: true,
+  },
+  calendarEndDate: {
+    type: String,
+    required: true,
+  },
+  totalDays: {
     type: Number,
-    default: 6,
+    required: true,
+  },
+  absolute: {
+    type: Boolean,
+    default: false,
   },
 });
 
+function parseTime(timeStr) {
+  // timeStr 格式: "2026-05-07 10"
+  const [datePart, hour] = timeStr.split(" ");
+  const [year, month, day] = datePart.split("-");
+  return new Date(year, month - 1, day, parseInt(hour), 0, 0, 0);
+}
+
 const barStyle = computed(() => {
-  const startPercent =
-    ((props.activity.startWeek - 1) / props.totalWeeks) * 100;
-  const widthPercent =
-    ((props.activity.endWeek - props.activity.startWeek + 1) /
-      props.totalWeeks) *
-    100;
+  const calStart = new Date(props.calendarStartDate);
+  calStart.setHours(0, 0, 0, 0);
+  const calEnd = new Date(props.calendarEndDate);
+  calEnd.setHours(23, 59, 59, 999);
+
+  const totalHours = props.totalDays * 24;
+
+  const actStart = parseTime(props.activity.startTime);
+  const actEnd = parseTime(props.activity.endTime);
+
+  const startHoursOffset = (actStart - calStart) / (1000 * 60 * 60);
+  const durationHours = (actEnd - actStart) / (1000 * 60 * 60);
+
+  const marginLeft = (startHoursOffset / totalHours) * 100;
+  const width = (durationHours / totalHours) * 100;
+
+  if (props.absolute) {
+    return {
+      left: marginLeft + "%",
+      width: width + "%",
+    };
+  }
   return {
-    marginLeft: startPercent + "%",
-    width: widthPercent + "%",
+    marginLeft: marginLeft + "%",
+    width: width + "%",
   };
 });
 </script>

@@ -1,75 +1,141 @@
 <template>
-  <div class="week-header">
-    <div class="week-cell" v-for="(week, index) in weeks" :key="index">
-      <div class="week-label">{{ week.label }}</div>
-      <div class="week-range">{{ week.range }}</div>
-      <div class="week-ticks">
-        <span
-          class="tick"
-          v-for="d in 6"
-          :key="d"
-          :style="{ left: (d / 7) * 100 + '%' }"
-        ></span>
-      </div>
+  <div class="timeline-header">
+    <div class="timeline-container">
+      <!-- 周末背景 -->
+      <span
+        class="weekend-bg"
+        v-for="day in weekendDays"
+        :key="'w' + day.index"
+        :style="{
+          left: (day.index / totalDays) * 100 + '%',
+          width: (1 / totalDays) * 100 + '%',
+        }"
+      ></span>
+      <!-- 刻度线 -->
+      <span
+        class="tick"
+        v-for="i in totalDays - 1"
+        :key="i"
+        :style="{ left: (i / totalDays) * 100 + '%' }"
+      ></span>
+      <!-- 日期标注 -->
+      <span
+        class="date-label"
+        v-for="label in dateLabels"
+        :key="label.day"
+        :style="{ left: label.position + '%' }"
+        >{{ label.text }}</span
+      >
     </div>
   </div>
 </template>
 
 <script setup>
-defineProps({
-  weeks: {
-    type: Array,
+import { computed } from "vue";
+
+const props = defineProps({
+  startDate: {
+    type: String,
     required: true,
   },
+  endDate: {
+    type: String,
+    required: true,
+  },
+  totalDays: {
+    type: Number,
+    required: true,
+  },
+});
+
+// 每隔7天生成一个日期标注，首尾也标注
+const dateLabels = computed(() => {
+  const labels = [];
+  const start = new Date(props.startDate);
+  start.setHours(0, 0, 0, 0);
+
+  for (let i = 0; i < props.totalDays; i += 7) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    labels.push({
+      day: i,
+      position: (i / props.totalDays) * 100,
+      text: `${month}/${day}`,
+    });
+  }
+
+  // 标注最后一天（endDate），如果不在7的倍数上
+  const lastDayIndex = props.totalDays - 1;
+  if (lastDayIndex % 7 !== 0) {
+    const end = new Date(props.endDate);
+    end.setHours(0, 0, 0, 0);
+    const month = String(end.getMonth() + 1).padStart(2, "0");
+    const day = String(end.getDate()).padStart(2, "0");
+    labels.push({
+      day: lastDayIndex,
+      position: (lastDayIndex / props.totalDays) * 100,
+      text: `${month}/${day}`,
+    });
+  }
+
+  return labels;
+});
+
+// 计算周末天（周六和周日）
+const weekendDays = computed(() => {
+  const days = [];
+  const start = new Date(props.startDate);
+  start.setHours(0, 0, 0, 0);
+  for (let i = 0; i < props.totalDays; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    const dayOfWeek = d.getDay(); // 0=Sunday, 6=Saturday
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      days.push({ index: i });
+    }
+  }
+  return days;
 });
 </script>
 
 <style scoped>
-.week-header {
-  display: flex;
+.timeline-header {
   background: #f0f0f0;
   border-radius: 6px;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid #ccc;
-}
-
-.week-cell {
-  flex: 1;
-  padding: 8px 10px;
-  text-align: left;
-  border-right: 1px solid #ccc;
   position: relative;
 }
 
-.week-cell:last-child {
-  border-right: none;
-}
-
-.week-label {
-  font-size: 13px;
-  font-weight: bold;
-  color: #333;
-}
-
-.week-range {
-  font-size: 12px;
-  color: #666;
-  margin-top: 2px;
-}
-
-.week-ticks {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 6px;
+.timeline-container {
+  position: relative;
+  height: 50px;
+  width: 100%;
 }
 
 .tick {
   position: absolute;
   top: 0;
   width: 1px;
-  height: 100%;
+  height: 10px;
   background: #999;
+}
+
+.date-label {
+  position: absolute;
+  top: 12px;
+  font-size: 12px;
+  color: #666;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.weekend-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: #f11;
 }
 </style>

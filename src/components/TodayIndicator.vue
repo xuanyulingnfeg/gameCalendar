@@ -1,5 +1,8 @@
 <template>
-  <div class="today-indicator" :style="{ left: position * 100 + '%' }">
+  <div
+    class="today-indicator"
+    :style="{ left: `calc(10px + ${position * 100}% * (1 - 20px / 100%))` }"
+  >
     <div class="today-label">{{ label }}</div>
     <div class="today-line" :style="{ height: height - 10 + 'px' }"></div>
   </div>

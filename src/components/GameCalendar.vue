@@ -9,16 +9,36 @@
           :label="todayLabel"
         />
 
-        <!-- 周次表头 -->
-        <WeekHeader :weeks="weeks" />
+        <!-- 时间轴表头 -->
+        <WeekHeader
+          :startDate="calendarConfig.startDate"
+          :endDate="calendarConfig.endDate"
+          :totalDays="timelineInfo.totalDays"
+        />
 
         <!-- 活动区域 -->
         <div class="activities-area">
+          <!-- Red 活动条：同一行 -->
+          <div class="activity-row red-row">
+            <ActivityBar
+              v-for="activity in redActivities"
+              :key="activity.id"
+              :activity="activity"
+              :calendarStartDate="calendarConfig.startDate"
+              :calendarEndDate="calendarConfig.endDate"
+              :totalDays="timelineInfo.totalDays"
+              :absolute="true"
+            />
+          </div>
+
+          <!-- 其他活动条：各自一行 -->
           <ActivityBar
-            v-for="activity in activities"
+            v-for="activity in otherActivities"
             :key="activity.id"
             :activity="activity"
-            :totalWeeks="6"
+            :calendarStartDate="calendarConfig.startDate"
+            :calendarEndDate="calendarConfig.endDate"
+            :totalDays="timelineInfo.totalDays"
           />
         </div>
       </div>
@@ -32,15 +52,42 @@ import WeekHeader from "./WeekHeader.vue";
 import ActivityBar from "./ActivityBar.vue";
 import TodayIndicator from "./TodayIndicator.vue";
 import {
-  getWeeks,
+  getTimelineInfo,
   getPreciseTodayPosition,
   getTodayLabel,
 } from "../utils/dateUtils.js";
-import { activities } from "../config/activities.js";
+import { activities, calendarConfig } from "../config/activities.js";
+
+// 将活动分为两组：red类型（同行）和其他类型（各自一行）
+const redActivities = computed(() => {
+  const reds = activities
+    .filter((a) => a.type === "red")
+    .map((a) => ({ ...a }));
+  // 时间接续处理
+  for (let i = 1; i < reds.length; i++) {
+    if (reds[i].startTime > reds[i - 1].endTime) {
+      reds[i].startTime = reds[i - 1].endTime;
+    }
+  }
+  return reds;
+});
+
+const otherActivities = computed(() => {
+  return activities.filter((a) => a.type !== "red");
+});
 
 const today = new Date();
-const weeks = ref(getWeeks(today));
-const todayPosition = ref(getPreciseTodayPosition(new Date()));
+const timelineInfo = getTimelineInfo(
+  calendarConfig.startDate,
+  calendarConfig.endDate,
+);
+const todayPosition = ref(
+  getPreciseTodayPosition(
+    calendarConfig.startDate,
+    calendarConfig.endDate,
+    new Date(),
+  ),
+);
 const todayLabel = ref(getTodayLabel(today));
 const calendarContainerEl = ref(null);
 
@@ -53,7 +100,11 @@ let timer = null;
 
 onMounted(() => {
   timer = setInterval(() => {
-    todayPosition.value = getPreciseTodayPosition(new Date());
+    todayPosition.value = getPreciseTodayPosition(
+      calendarConfig.startDate,
+      calendarConfig.endDate,
+      new Date(),
+    );
   }, 60000); // 每分钟更新一次
 });
 
@@ -79,7 +130,8 @@ onUnmounted(() => {
 
 .calendar-container {
   width: 100%;
-  max-width: 1100px;
+  min-width: 1400px;
+  max-width: 1600px;
   /* background: #2a2a2a; */
   border-radius: 40px;
   /* padding: 10px; */
@@ -127,7 +179,7 @@ onUnmounted(() => {
   content: "";
   position: absolute;
   height: 20px;
-  top: 74px;
+  top: 72px;
   width: 100%;
   pointer-events: none;
   background: linear-gradient(to right, #acacac, #6f6f6f);
@@ -143,5 +195,18 @@ onUnmounted(() => {
 .activities-area {
   margin-top: 30px;
   padding: 10px 0;
+  overflow: hidden;
+}
+
+.activity-row.red-row {
+  position: relative;
+  height: 54px;
+  margin-bottom: 14px;
+}
+
+.red-row .activity-bar {
+  position: absolute;
+  top: 0;
+  margin-bottom: 0;
 }
 </style>
