@@ -102,11 +102,11 @@ const weekendDays = computed(() => {
 
 <style scoped>
 .timeline-header {
-  background: #f0f0f0;
   border-radius: 6px;
   overflow: visible;
-  border: 1px solid #ccc;
+  border: 1px solid #acacac;
   position: relative;
+  background: #acacac;
 }
 
 .timeline-container {
@@ -127,7 +127,7 @@ const weekendDays = computed(() => {
   position: absolute;
   top: 12px;
   font-size: 12px;
-  color: #666;
+  color: black;
   font-weight: bold;
   white-space: nowrap;
 }

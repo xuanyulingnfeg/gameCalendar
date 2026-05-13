@@ -38,8 +38,8 @@
           <!-- Red 活动条：同一行 -->
           <div class="activity-row red-row">
             <ActivityBar
-              v-for="activity in redActivities"
-              :key="activity.id"
+              v-for="(activity, index) in redActivities"
+              :key="index"
               :activity="activity"
               :calendarStartDate="currentConfig.startDate"
               :calendarEndDate="currentConfig.endDate"
@@ -50,8 +50,8 @@
 
           <!-- 其他活动条：各自一行 -->
           <ActivityBar
-            v-for="activity in otherActivities"
-            :key="activity.id"
+            v-for="(activity, index) in otherActivities"
+            :key="index"
             :activity="activity"
             :calendarStartDate="currentConfig.startDate"
             :calendarEndDate="currentConfig.endDate"

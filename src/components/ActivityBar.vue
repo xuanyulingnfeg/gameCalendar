@@ -212,9 +212,8 @@ const barStyle = computed(() => {
   right: 0;
   bottom: 0;
   clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%);
-  background-color: #444;
   background-size: cover;
-  background-position: center;
+  background-position: -17px center;
 }
 
 .char-right {
@@ -224,9 +223,8 @@ const barStyle = computed(() => {
   right: 0;
   bottom: 0;
   clip-path: polygon(60% 0, 100% 0, 100% 100%, 40% 100%);
-  background-color: #555;
   background-size: cover;
-  background-position: center;
+  background-position: 23px center;
 }
 
 .activity-name {
