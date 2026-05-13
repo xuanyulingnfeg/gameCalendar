@@ -1,7 +1,7 @@
 // 游戏类型列表
 export const gameTypes = [
-  { key: "zzz", name: "绝区零", bgImage: "/zzz/bg.png" },
-  { key: "mc", name: "鸣潮", bgImage: "/mc/bg.jpeg" },
+  { key: "zzz", name: "绝区零", bgImage: "./zzz/bg.png" },
+  { key: "mc", name: "鸣潮", bgImage: "./mc/bg.jpeg" },
 ];
 
 // 各游戏类型的配置和活动
@@ -20,7 +20,7 @@ export const gameData = {
         icons: [],
         hasDollarSign: true,
         hasCharIcon: true,
-        charIcons: ["/zzz/puluomiya.png", "/zzz/luxiya.png"],
+        charIcons: ["./zzz/puluomiya.png", "./zzz/luxiya.png"],
       },
       {
         name: "星徽·比利/奥菲丝&「鬼火」- 限时频段",
@@ -30,7 +30,7 @@ export const gameData = {
         icons: [],
         hasDollarSign: true,
         hasCharIcon: true,
-        charIcons: ["/zzz/xinghuibili.png", "/zzz/aofeisi.png"],
+        charIcons: ["./zzz/xinghuibili.png", "./zzz/aofeisi.png"],
       },
       {
         name: "游乐岛拯救计划",
@@ -118,7 +118,7 @@ export const gameData = {
         icons: [],
         hasDollarSign: false,
         hasCharIcon: true,
-        charIcons: ["/mc/feixue.png", "/mc/moning.png", "/mc/younuo.png"],
+        charIcons: ["./mc/feixue.png", "./mc/moning.png", "./mc/younuo.png"],
       },
       {
         name: "达妮娅/千咲/弗洛洛 - 限时换取",
@@ -128,7 +128,11 @@ export const gameData = {
         icons: [],
         hasDollarSign: false,
         hasCharIcon: true,
-        charIcons: ["/mc/daniya.png", "/mc/qianxiao.png", "/mc/fuluoluo.png"],
+        charIcons: [
+          "./mc/daniya.png",
+          "./mc/qianxiao.png",
+          "./mc/fuluoluo.png",
+        ],
       },
       {
         name: "海潮赠礼",
