@@ -1,5 +1,22 @@
 <template>
   <div class="game-calendar">
+    <!-- 游戏类型切换按钮 -->
+    <div class="game-type-switcher">
+      <button
+        v-for="gameType in gameTypes"
+        :key="gameType.key"
+        :class="['game-type-btn', { active: currentGameType === gameType.key }]"
+        :style="
+          gameType.bgImage
+            ? { backgroundImage: `url(${gameType.bgImage})` }
+            : {}
+        "
+        @click="currentGameType = gameType.key"
+      >
+        {{ gameType.name }}
+      </button>
+    </div>
+
     <div class="calendar-container" ref="calendarContainerEl">
       <div class="calendar-content">
         <!-- 今日指示器 -->
@@ -11,8 +28,8 @@
 
         <!-- 时间轴表头 -->
         <WeekHeader
-          :startDate="calendarConfig.startDate"
-          :endDate="calendarConfig.endDate"
+          :startDate="currentConfig.startDate"
+          :endDate="currentConfig.endDate"
           :totalDays="timelineInfo.totalDays"
         />
 
@@ -24,8 +41,8 @@
               v-for="activity in redActivities"
               :key="activity.id"
               :activity="activity"
-              :calendarStartDate="calendarConfig.startDate"
-              :calendarEndDate="calendarConfig.endDate"
+              :calendarStartDate="currentConfig.startDate"
+              :calendarEndDate="currentConfig.endDate"
               :totalDays="timelineInfo.totalDays"
               :absolute="true"
             />
@@ -36,8 +53,8 @@
             v-for="activity in otherActivities"
             :key="activity.id"
             :activity="activity"
-            :calendarStartDate="calendarConfig.startDate"
-            :calendarEndDate="calendarConfig.endDate"
+            :calendarStartDate="currentConfig.startDate"
+            :calendarEndDate="currentConfig.endDate"
             :totalDays="timelineInfo.totalDays"
           />
         </div>
@@ -56,11 +73,22 @@ import {
   getPreciseTodayPosition,
   getTodayLabel,
 } from "../utils/dateUtils.js";
-import { activities, calendarConfig } from "../config/activities.js";
+import { gameTypes, gameData } from "../config/activities.js";
+
+// 当前选中的游戏类型
+const currentGameType = ref("zzz");
+
+// 当前游戏类型的配置和活动
+const currentConfig = computed(
+  () => gameData[currentGameType.value].calendarConfig,
+);
+const currentActivities = computed(
+  () => gameData[currentGameType.value].activities,
+);
 
 // 将活动分为两组：red类型（同行）和其他类型（各自一行）
 const redActivities = computed(() => {
-  const reds = activities
+  const reds = currentActivities.value
     .filter((a) => a.type === "red")
     .map((a) => ({ ...a }));
   // 时间接续处理
@@ -73,19 +101,21 @@ const redActivities = computed(() => {
 });
 
 const otherActivities = computed(() => {
-  return activities.filter((a) => a.type !== "red");
+  return currentActivities.value.filter((a) => a.type !== "red");
 });
 
 const today = new Date();
-const timelineInfo = getTimelineInfo(
-  calendarConfig.startDate,
-  calendarConfig.endDate,
+const timelineInfo = computed(() =>
+  getTimelineInfo(currentConfig.value.startDate, currentConfig.value.endDate),
 );
-const todayPosition = ref(
+
+// 用于触发 todayPosition 定时更新的响应式时间戳
+const now = ref(new Date());
+const todayPosition = computed(() =>
   getPreciseTodayPosition(
-    calendarConfig.startDate,
-    calendarConfig.endDate,
-    new Date(),
+    currentConfig.value.startDate,
+    currentConfig.value.endDate,
+    now.value,
   ),
 );
 const todayLabel = ref(getTodayLabel(today));
@@ -100,11 +130,7 @@ let timer = null;
 
 onMounted(() => {
   timer = setInterval(() => {
-    todayPosition.value = getPreciseTodayPosition(
-      calendarConfig.startDate,
-      calendarConfig.endDate,
-      new Date(),
-    );
+    now.value = new Date();
   }, 60000); // 每分钟更新一次
 });
 
@@ -121,6 +147,7 @@ onUnmounted(() => {
   min-height: 100vh;
   background: url("../assets/background.jpg") no-repeat center center fixed;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
@@ -196,6 +223,7 @@ onUnmounted(() => {
   margin-top: 30px;
   padding: 10px 0;
   overflow: hidden;
+  min-height: 400px;
 }
 
 .activity-row.red-row {
@@ -208,5 +236,43 @@ onUnmounted(() => {
   position: absolute;
   top: 0;
   margin-bottom: 0;
+}
+
+.game-type-switcher {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 32px;
+  align-self: flex-start;
+}
+
+.game-type-btn {
+  width: 160px;
+  height: 80px;
+  border: 3px solid #555;
+  border-radius: 12px;
+  background: #333;
+  background-size: cover;
+  background-position: center;
+  color: #ccc;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.game-type-btn:hover {
+  border-color: #888;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.game-type-btn.active {
+  border-color: #e63946;
+  box-shadow: 0 0 10px rgba(230, 57, 70, 0.5);
+  color: #fff;
 }
 </style>
