@@ -8,6 +8,8 @@ export const activities = [
     icons: 2,
     hasDollarSign: true,
     hasCharIcon: true,
+    charIconLeft: "", // 左侧角色图片URL
+    charIconRight: "", // 右侧角色图片URL
   },
   {
     id: 2,
@@ -18,6 +20,8 @@ export const activities = [
     icons: 2,
     hasDollarSign: true,
     hasCharIcon: true,
+    charIconLeft: "", // 左侧角色图片URL
+    charIconRight: "", // 右侧角色图片URL
   },
   {
     id: 3,

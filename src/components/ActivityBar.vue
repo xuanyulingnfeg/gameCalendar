@@ -5,19 +5,34 @@
 
     <!-- 左侧角色图标 -->
     <div class="char-icon" v-if="activity.hasCharIcon">
-      <div class="char-icon-inner"></div>
+      <div
+        class="char-left"
+        :style="{
+          backgroundImage: activity.charIconLeft
+            ? `url(${activity.charIconLeft})`
+            : '',
+        }"
+      ></div>
+      <div
+        class="char-right"
+        :style="{
+          backgroundImage: activity.charIconRight
+            ? `url(${activity.charIconRight})`
+            : '',
+        }"
+      ></div>
     </div>
 
     <!-- 活动名称 -->
     <div class="activity-name">{{ activity.name }}</div>
 
     <!-- 右侧图标区域 -->
-    <div class="right-icons">
+    <!-- <div class="right-icons">
       <div class="icon-box" v-for="n in activity.icons" :key="n"></div>
       <div class="arrow-btn">
         <span>›</span>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -95,24 +110,39 @@ const barStyle = computed(() => {
 }
 
 .char-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  width: 85px;
+  height: 42px;
+  border-radius: 21px;
+  border: 3px solid #8b0000;
   flex-shrink: 0;
   margin-right: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
   overflow: hidden;
+  background: #222;
 }
 
-.char-icon-inner {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #555, #999);
+.char-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%);
+  background-color: #444;
+  background-size: cover;
+  background-position: center;
+}
+
+.char-right {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  clip-path: polygon(60% 0, 100% 0, 100% 100%, 40% 100%);
+  background-color: #555;
+  background-size: cover;
+  background-position: center;
 }
 
 .activity-name {
@@ -151,13 +181,24 @@ const barStyle = computed(() => {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  background-color: black;
+  border: 4px solid #313131;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 18px;
+  font-size: 34px;
   font-weight: bold;
+
+  span {
+    /* 文字颜色从上到下渐变 */
+    background: linear-gradient(180deg, #fff, #333);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    position: relative;
+    top: -4.5px;
+    left: 1px;
+  }
 }
 </style>
