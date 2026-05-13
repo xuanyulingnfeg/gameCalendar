@@ -1,9 +1,13 @@
 <template>
   <div class="game-calendar">
-    <div class="calendar-container">
+    <div class="calendar-container" ref="calendarContainerEl">
       <div class="calendar-content">
         <!-- 今日指示器 -->
-        <TodayIndicator :position="todayPosition" :label="todayLabel" />
+        <TodayIndicator
+          :position="todayPosition"
+          :height="todayHeight"
+          :label="todayLabel"
+        />
 
         <!-- 周次表头 -->
         <WeekHeader :weeks="weeks" />
@@ -23,7 +27,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import WeekHeader from "./WeekHeader.vue";
 import ActivityBar from "./ActivityBar.vue";
 import TodayIndicator from "./TodayIndicator.vue";
@@ -38,6 +42,12 @@ const today = new Date();
 const weeks = ref(getWeeks(today));
 const todayPosition = ref(getPreciseTodayPosition(new Date()));
 const todayLabel = ref(getTodayLabel(today));
+const calendarContainerEl = ref(null);
+
+// 动态计算今日指示器高度，覆盖整个活动区域
+const todayHeight = computed(() => {
+  return calendarContainerEl?.value?.offsetHeight || 0;
+});
 
 let timer = null;
 
@@ -70,13 +80,12 @@ onUnmounted(() => {
 .calendar-container {
   width: 100%;
   max-width: 1100px;
-  background: #2a2a2a;
+  /* background: #2a2a2a; */
   border-radius: 40px;
-  padding: 50px 24px 30px;
+  /* padding: 10px; */
   position: relative;
   /* 金属质感边框 - 使用多层实现 */
   border: 20px solid transparent;
-  border-color: #b8b8b8;
   box-shadow:
     /* 最外层暗色轮廓 */
     0 0 0 2px #1a1a1a,
@@ -93,11 +102,11 @@ onUnmounted(() => {
 .calendar-container::before {
   content: "";
   position: absolute;
-  top: -6px;
-  left: -6px;
-  right: -6px;
-  bottom: -6px;
-  border-radius: 18px;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  border-radius: 40px;
   background: linear-gradient(
     135deg,
     #9a9a9a 0%,
@@ -114,24 +123,25 @@ onUnmounted(() => {
     inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-/* .calendar-container::after {
+.calendar-container::after {
   content: "";
   position: absolute;
-  top: -1px;
-  left: -1px;
-  right: -1px;
-  bottom: -1px;
-  border-radius: 11px;
-  border: 1px solid rgba(0, 0, 0, 0.5);
+  height: 20px;
+  top: 74px;
+  width: 100%;
   pointer-events: none;
-} */
+  background: linear-gradient(to right, #acacac, #6f6f6f);
+}
 
 .calendar-content {
+  padding: 10px;
   position: relative;
+  background: #2a2a2a;
+  border-radius: 20px;
 }
 
 .activities-area {
-  margin-top: 20px;
+  margin-top: 30px;
   padding: 10px 0;
 }
 </style>

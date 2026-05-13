@@ -1,13 +1,17 @@
 <template>
   <div class="today-indicator" :style="{ left: position * 100 + '%' }">
     <div class="today-label">{{ label }}</div>
-    <div class="today-line"></div>
+    <div class="today-line" :style="{ height: height - 10 + 'px' }"></div>
   </div>
 </template>
 
 <script setup>
 defineProps({
   position: {
+    type: Number,
+    required: true,
+  },
+  height: {
     type: Number,
     required: true,
   },
@@ -21,7 +25,7 @@ defineProps({
 <style scoped>
 .today-indicator {
   position: absolute;
-  top: -28px;
+  top: -50px;
   z-index: 10;
   transform: translateX(-50%);
   display: flex;
@@ -42,11 +46,10 @@ defineProps({
 }
 
 .today-line {
-  width: 2px;
+  width: 3px;
   background: #e63946;
   position: absolute;
-  top: 26px;
+  top: 20px;
   bottom: 0;
-  height: 600px;
 }
 </style>
