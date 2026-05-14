@@ -153,8 +153,9 @@ onUnmounted(() => {
 
 <style scoped>
 .game-calendar {
-  min-height: 100vh;
+  height: 100%;
   background: url("../assets/background.jpg") no-repeat center center fixed;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -165,12 +166,12 @@ onUnmounted(() => {
 }
 
 .calendar-container {
+  flex: 1;
+  opacity: 0.9;
   width: 100%;
   min-width: 1400px;
   max-width: 1600px;
-  /* background: #2a2a2a; */
   border-radius: 40px;
-  /* padding: 10px; */
   position: relative;
   /* 金属质感边框 - 使用多层实现 */
   border: 20px solid transparent;
@@ -222,6 +223,7 @@ onUnmounted(() => {
 }
 
 .calendar-content {
+  height: 100%;
   padding: 10px;
   position: relative;
   background: #2a2a2a;
@@ -233,7 +235,9 @@ onUnmounted(() => {
   padding: 10px 0;
   overflow: hidden;
   min-height: 400px;
-  max-height: 600px;
+  max-height: calc(
+    100vh - 40px - 100px - 20px - 10px - 50px - 30px - 10px - 20px - 40px - 5px
+  );
   overflow-y: auto;
 }
 
@@ -269,7 +273,7 @@ onUnmounted(() => {
   width: 100%;
   min-width: 1400px;
   max-width: 1600px;
-  margin: 0 auto 32px;
+  margin: 0 auto 20px;
 }
 
 .game-type-btn {

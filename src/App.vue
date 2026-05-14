@@ -25,4 +25,10 @@ body {
 #app {
   width: 100%;
 }
+
+html,
+body,
+#app {
+  height: 100%;
+}
 </style>
