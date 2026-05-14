@@ -17,7 +17,11 @@
       </button>
     </div>
 
-    <div class="calendar-container" ref="calendarContainerEl">
+    <div
+      class="calendar-container"
+      ref="calendarContainerEl"
+      v-if="!loading && currentConfig.startDate"
+    >
       <div class="calendar-content">
         <!-- 今日指示器 -->
         <TodayIndicator
@@ -73,13 +77,29 @@ import {
   getPreciseTodayPosition,
   getTodayLabel,
 } from "../utils/dateUtils.js";
-import { gameTypes, gameData } from "../config/activities.js";
+
+// 响应式数据
+const gameTypes = ref([]);
+const gameData = ref({});
+const loading = ref(true);
+
+// 加载配置
+async function loadConfig() {
+  try {
+    const res = await fetch("./config/activities.json");
+    const data = await res.json();
+    gameTypes.value = data.gameTypes;
+    gameData.value = data.gameData;
+    loading.value = false;
+  } catch (e) {
+    console.error("Failed to load activities config:", e);
+    loading.value = false;
+  }
+}
 
 // 当前选中的游戏类型（优先读取localStorage记录）
 const savedGameType = localStorage.getItem("currentGameType");
-const currentGameType = ref(
-  savedGameType && gameData[savedGameType] ? savedGameType : "zzz",
-);
+const currentGameType = ref(savedGameType || "zzz");
 
 // 切换游戏类型并保存到localStorage
 function switchGameType(key) {
@@ -88,12 +108,14 @@ function switchGameType(key) {
 }
 
 // 当前游戏类型的配置和活动
-const currentConfig = computed(
-  () => gameData[currentGameType.value].calendarConfig,
-);
-const currentActivities = computed(
-  () => gameData[currentGameType.value].activities,
-);
+const currentConfig = computed(() => {
+  const data = gameData.value[currentGameType.value];
+  return data ? data.calendarConfig : { startDate: "", endDate: "" };
+});
+const currentActivities = computed(() => {
+  const data = gameData.value[currentGameType.value];
+  return data ? data.activities : [];
+});
 
 // 将活动分为两组：red类型（同行）和其他类型（各自一行）
 const redActivities = computed(() => {
@@ -138,6 +160,7 @@ const todayHeight = computed(() => {
 let timer = null;
 
 onMounted(() => {
+  loadConfig();
   timer = setInterval(() => {
     now.value = new Date();
   }, 60000); // 每分钟更新一次
