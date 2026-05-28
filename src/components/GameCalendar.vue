@@ -112,9 +112,30 @@ const currentConfig = computed(() => {
   const data = gameData.value[currentGameType.value];
   return data ? data.calendarConfig : { startDate: "", endDate: "" };
 });
+
+// 解析活动时间字符串
+function parseActivityTime(timeStr, isEnd = false) {
+  const parts = timeStr.split(" ");
+  const [year, month, day] = parts[0].split("-");
+  let hour = isEnd ? 24 : 0;
+  if (parts.length > 1) {
+    hour = parseInt(parts[1]);
+  }
+  return new Date(year, month - 1, day, hour, 0, 0, 0);
+}
+
+// 用于触发定时更新的响应式时间戳
+const now = ref(new Date());
+
 const currentActivities = computed(() => {
   const data = gameData.value[currentGameType.value];
-  return data ? data.activities : [];
+  if (!data) return [];
+  // 过滤掉结束时间小于当前时间的活动（red类型固定显示）
+  return data.activities.filter((a) => {
+    if (a.type === "red") return true;
+    const endTime = parseActivityTime(a.endTime, true);
+    return endTime > now.value;
+  });
 });
 
 // 将活动分为两组：red类型（同行）和其他类型（各自一行）
@@ -140,8 +161,6 @@ const timelineInfo = computed(() =>
   getTimelineInfo(currentConfig.value.startDate, currentConfig.value.endDate),
 );
 
-// 用于触发 todayPosition 定时更新的响应式时间戳
-const now = ref(new Date());
 const todayPosition = computed(() =>
   getPreciseTodayPosition(
     currentConfig.value.startDate,
