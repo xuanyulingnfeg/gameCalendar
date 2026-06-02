@@ -4,7 +4,7 @@
 **本文档引用的文件**
 - [GameCalendar.vue](file://src/components/GameCalendar.vue)
 - [dateUtils.js](file://src/utils/dateUtils.js)
-- [activities.js](file://src/config/activities.js)
+- [activities.json](file://public/config/activities.json)
 - [ActivityBar.vue](file://src/components/ActivityBar.vue)
 - [WeekHeader.vue](file://src/components/WeekHeader.vue)
 - [TodayIndicator.vue](file://src/components/TodayIndicator.vue)
@@ -14,11 +14,11 @@
 
 ## 更新摘要
 **变更内容**
-- 完全重构的日历系统：从周系统迁移到精确的天系统
-- 新增游戏类型切换机制：支持多游戏类型配置和动态切换
-- 精确的时间轴计算：支持小时级精度的位置计算
-- 改进的活动条样式：支持绝对定位和相对定位模式
-- 动态配置系统：基于游戏类型的数据驱动架构
+- 新增自动活动过期过滤系统：实时过滤已结束的活动，仅保留有效的活动条目
+- 实现完整的本地存储持久化：用户选择的游戏类型自动保存到localStorage并支持恢复
+- 增强定时器更新机制：每分钟自动更新当前时间，确保时间指示器准确
+- 改进样式系统：新增游戏类型特定的视觉效果和交互反馈
+- 优化活动分组逻辑：红色活动的智能接续处理和差异化显示
 
 ## 目录
 1. [简介](#简介)
@@ -35,7 +35,7 @@
 
 GameCalendar 是一个专为游戏维护日历设计的 Vue 3 组件，采用 Composition API 和 `<script setup>` 语法。该组件作为整个日历应用的核心容器，负责协调其他子组件的布局和数据流，为用户提供直观的游戏维护时间线视图。
 
-**重大更新**：系统已完全重构，从传统的周系统迁移到精确的天系统，支持小时级精度的时间计算。新增了游戏类型切换机制，允许用户在不同游戏之间切换，每个游戏都有独立的配置和活动数据。
+**重大更新**：系统已完全重构，从传统的周系统迁移到精确的天系统，支持小时级精度的时间计算。新增了游戏类型切换机制，允许用户在不同游戏之间切换，每个游戏都有独立的配置和活动数据。最新版本增强了用户体验，包括localStorage持久化存储、异步配置加载、自动活动过期过滤和改进的响应式布局。
 
 该组件支持多游戏类型配置，包括绝区零和鸣潮等游戏，每个游戏都有独立的时间轴范围和活动配置。通过集成精确的日期计算工具和动态配置系统，用户可以清晰地看到各种限时活动的持续时间和状态。
 
@@ -56,28 +56,35 @@ ActivityBar[ActivityBar.vue]
 TodayIndicator[TodayIndicator.vue]
 end
 subgraph "配置系统"
+Activities[activities.json]
 GameTypes[gameTypes配置]
 GameData[gameData配置]
 end
 subgraph "工具与配置"
 DateUtils[dateUtils.js]
-Activities[activities.js]
+LocalStorage[localStorage持久化]
+AsyncLoader[异步配置加载]
+Timer[定时器系统]
+AutoFilter[自动过滤系统]
 end
 App --> GameCalendar
 GameCalendar --> WeekHeader
 GameCalendar --> TodayIndicator
 GameCalendar --> ActivityBar
 GameCalendar --> DateUtils
-GameCalendar --> GameTypes
-GameCalendar --> GameData
+GameCalendar --> Activities
+GameCalendar --> LocalStorage
+GameCalendar --> AsyncLoader
+GameCalendar --> Timer
+GameCalendar --> AutoFilter
 ```
 
 **图表来源**
-- [App.vue:1-29](file://src/App.vue#L1-L29)
-- [GameCalendar.vue:1-279](file://src/components/GameCalendar.vue#L1-L279)
+- [App.vue:1-35](file://src/App.vue#L1-L35)
+- [GameCalendar.vue:1-352](file://src/components/GameCalendar.vue#L1-L352)
 
 **章节来源**
-- [App.vue:1-29](file://src/App.vue#L1-L29)
+- [App.vue:1-35](file://src/App.vue#L1-L35)
 - [main.js:1-5](file://src/main.js#L1-L5)
 
 ## 核心组件
@@ -88,10 +95,14 @@ GameCalendar 作为核心容器组件，承担着以下关键职责：
 
 - **多游戏类型管理**：支持绝区零和鸣潮等游戏类型的动态切换
 - **精确时间轴计算**：基于天数的精确时间轴计算和位置更新
-- **动态配置系统**：根据当前游戏类型动态加载相应的配置和活动数据
+- **动态配置系统**：通过异步加载机制动态加载配置和活动数据
 - **布局管理**：组织游戏类型切换器、周表头、今日指示器和活动条的排列
 - **状态管理**：使用响应式引用管理当前游戏类型、时间轴信息和实时更新
 - **组件通信**：通过 props 向子组件传递必要的数据和配置
+- **本地存储持久化**：使用localStorage保存用户偏好设置
+- **异步加载**：支持配置文件的异步加载和错误处理
+- **自动活动过滤**：实时过滤已过期的活动，确保界面显示的准确性
+- **定时器管理**：每分钟自动更新当前时间，确保时间指示器准确
 
 #### 模板结构
 
@@ -101,7 +112,8 @@ GameCalendar 作为核心容器组件，承担着以下关键职责：
 flowchart TD
 GameCalendar[GameCalendar.vue] --> GameTypeSwitcher[game-type-switcher<br/>游戏类型切换器]
 GameTypeSwitcher --> GameTypeButtons[game-type-btn<br/>游戏类型按钮 x N]
-GameCalendar --> CalendarContainer[calendar-container<br/>主容器]
+GameCalendar --> LoadingState[loading状态控制]
+LoadingState --> CalendarContainer[calendar-container<br/>主容器]
 CalendarContainer --> CalendarContent[calendar-content<br/>内容容器]
 CalendarContent --> TodayIndicator[TodayIndicator<br/>今日指示器]
 CalendarContent --> WeekHeader[WeekHeader<br/>时间轴表头]
@@ -112,7 +124,7 @@ ActivitiesArea --> OtherActivityBars[ActivityBar<br/>其他活动条 x N]
 ```
 
 **图表来源**
-- [GameCalendar.vue:1-64](file://src/components/GameCalendar.vue#L1-L64)
+- [GameCalendar.vue:1-68](file://src/components/GameCalendar.vue#L1-L68)
 
 #### 脚本逻辑
 
@@ -120,10 +132,14 @@ ActivitiesArea --> OtherActivityBars[ActivityBar<br/>其他活动条 x N]
 
 - **导入声明**：统一导入所有依赖的子组件和工具函数
 - **响应式数据**：使用 `ref` 和 `computed` 创建响应式状态
-- **游戏类型管理**：通过 `currentGameType` 管理当前选中的游戏类型
+- **游戏类型管理**：通过 `currentGameType` 管理当前选中的游戏类型，并从localStorage读取保存的状态
+- **异步配置加载**：使用 `loadConfig` 函数通过fetch API异步加载配置文件
 - **动态配置**：使用 `computed` 属性动态计算当前配置和活动数据
 - **实时更新**：每分钟自动更新今日位置，确保时间指示器准确
 - **时间轴计算**：使用 `getTimelineInfo` 计算精确的时间轴信息
+- **错误处理**：配置加载失败时提供错误提示和降级处理
+- **活动过滤**：自动过滤已过期的活动，仅显示有效的活动条目
+- **定时器管理**：管理定时器的创建和清理，确保内存安全
 
 #### 样式设计
 
@@ -132,15 +148,18 @@ ActivitiesArea --> OtherActivityBars[ActivityBar<br/>其他活动条 x N]
 - **游戏类型背景**：每个游戏类型支持独立的背景图片配置
 - **金属质感边框**：使用多层边框和阴影实现立体效果
 - **渐变背景**：内部容器使用渐变背景增强视觉层次
-- **响应式布局**：支持不同屏幕尺寸的适配
+- **响应式布局**：支持不同屏幕尺寸的适配，包含最小宽度1400px和最大宽度1600px限制
 - **活动类型样式**：红色、橙色、灰色活动条的差异化视觉设计
+- **滚动行为优化**：活动区域支持垂直滚动，滚动条样式经过专门优化
+- **交互反馈**：按钮悬停效果和激活状态的视觉反馈
+- **游戏类型特定样式**：支持每个游戏类型的独立样式配置
 
 **章节来源**
-- [GameCalendar.vue:66-143](file://src/components/GameCalendar.vue#L66-L143)
+- [GameCalendar.vue:70-194](file://src/components/GameCalendar.vue#L70-L194)
 
 ## 架构概览
 
-GameCalendar 采用了清晰的分层架构模式，包含多游戏类型支持和实时更新机制：
+GameCalendar 采用了清晰的分层架构模式，包含多游戏类型支持、异步加载机制、实时更新机制和自动过滤系统：
 
 ```mermaid
 graph TB
@@ -153,9 +172,12 @@ GameTypeSwitcher[游戏类型切换器]
 end
 subgraph "业务逻辑层"
 DateUtils[dateUtils.js]
-GameTypes[gameTypes配置]
-GameData[gameData配置]
-ActivitiesConfig[activities.js]
+LocalStorage[localStorage持久化]
+AsyncLoader[异步配置加载]
+ActivitiesConfig[activities.json]
+AutoFilter[自动活动过滤]
+Timer[定时器系统]
+ParseTime[时间解析系统]
 end
 subgraph "数据层"
 TimelineInfo[时间轴信息]
@@ -164,163 +186,145 @@ TodayLabel[今日标签]
 Timer[定时器]
 Config[配置数据]
 Activities[活动数据]
+LoadingState[加载状态]
+CurrentGameType[当前游戏类型]
+NowTimestamp[当前时间戳]
+FilteredActivities[过滤后的活动]
+RedActivities[红色活动组]
+OtherActivities[其他活动组]
 end
 GameCalendar --> WeekHeader
 GameCalendar --> TodayIndicator
 GameCalendar --> ActivityBar
 GameCalendar --> GameTypeSwitcher
 GameCalendar --> DateUtils
-GameCalendar --> GameTypes
-GameCalendar --> GameData
+GameCalendar --> LocalStorage
+GameCalendar --> AsyncLoader
 GameCalendar --> ActivitiesConfig
+GameCalendar --> AutoFilter
+GameCalendar --> Timer
+GameCalendar --> ParseTime
 DateUtils --> TimelineInfo
 DateUtils --> TodayPosition
 DateUtils --> TodayLabel
-GameTypes --> Config
-GameData --> Activities
-Timer --> GameCalendar
+LocalStorage --> CurrentGameType
+AsyncLoader --> LoadingState
+AsyncLoader --> Config
+AsyncLoader --> Activities
+AutoFilter --> FilteredActivities
+AutoFilter --> RedActivities
+AutoFilter --> OtherActivities
+Timer --> NowTimestamp
+ParseTime --> Activities
 GameCalendar --> Timer
+GameCalendar --> NowTimestamp
 ```
 
 **图表来源**
-- [GameCalendar.vue:66-143](file://src/components/GameCalendar.vue#L66-L143)
+- [GameCalendar.vue:70-194](file://src/components/GameCalendar.vue#L70-L194)
 - [dateUtils.js:1-81](file://src/utils/dateUtils.js#L1-L81)
-- [activities.js:1-110](file://src/config/activities.js#L1-L110)
+- [activities.json:1-246](file://public/config/activities.json#L1-L246)
 
 ## 详细组件分析
 
-### 多游戏类型切换机制
+### 自动活动过期过滤系统
 
-#### 游戏类型配置系统
+#### 活动过滤机制
 
-GameCalendar 新增了完整的多游戏类型支持系统：
+GameCalendar 实现了智能的活动过期过滤系统：
 
 ```mermaid
 sequenceDiagram
 participant GC as GameCalendar
-participant GT as gameTypes
-participant GD as gameData
-participant AC as ActivityBar
-GC->>GT : 读取游戏类型列表
-GT->>GC : 返回 {key, name, bgImage}
-GC->>GD : 根据当前类型获取配置
-GD->>GC : 返回 calendarConfig + activities
-GC->>AC : 传递活动数据和配置
-AC->>AC : 渲染对应类型活动
+participant CA as currentActivities
+participant AF as AutoFilter
+participant RA as redActivities
+participant OA as otherActivities
+GC->>AF : 计算 currentActivities
+AF->>AF : 过滤已过期活动
+AF->>RA : 红色活动不过滤
+AF->>OA : 其他类型活动过滤
+RA->>GC : 返回红色活动组
+OA->>GC : 返回其他活动组
+GC->>GC : 触发重新渲染
 ```
 
 **图表来源**
-- [GameCalendar.vue:78-105](file://src/components/GameCalendar.vue#L78-L105)
-- [activities.js:2-5](file://src/config/activities.js#L2-L5)
-- [activities.js:8-109](file://src/config/activities.js#L8-L109)
+- [GameCalendar.vue:130-157](file://src/components/GameCalendar.vue#L130-L157)
 
-##### 游戏类型定义
+##### 过滤逻辑实现
 
-支持的游戏类型包括：
-- **绝区零** (`zzz`)：具有完整的活动配置和背景图片
-- **鸣潮** (`mc`)：当前为空配置，可扩展添加活动
+- **红色活动保留**：红色活动类型（"red"）始终显示，不受过期影响
+- **时间比较**：其他活动类型通过结束时间与当前时间比较
+- **时间解析**：使用 `parseActivityTime` 函数解析活动时间字符串
+- **实时更新**：每分钟通过定时器更新当前时间，触发重新过滤
 
-##### 动态配置加载
+##### 时间解析系统
 
-- **配置选择**：根据 `currentGameType` 动态选择对应的配置
-- **活动过滤**：将活动分为红色活动（同行）和其他类型（各自一行）
-- **时间接续处理**：对红色活动进行时间连续性处理
+- **格式支持**：支持 "YYYY-MM-DD HH" 和 "YYYY-MM-DD" 两种时间格式
+- **默认值处理**：无小时部分时，开始时间默认00:00，结束时间默认24:00
+- **小时解析**：小时部分解析为整数，支持24小时制
+- **Date对象创建**：精确创建Date对象用于时间比较
 
 **章节来源**
-- [GameCalendar.vue:78-105](file://src/components/GameCalendar.vue#L78-L105)
-- [activities.js:2-5](file://src/config/activities.js#L2-L5)
-- [activities.js:8-109](file://src/config/activities.js#L8-L109)
+- [GameCalendar.vue:117-139](file://src/components/GameCalendar.vue#L117-L139)
+- [GameCalendar.vue:142-157](file://src/components/GameCalendar.vue#L142-L157)
 
-### 精确的天系统
+### 本地存储持久化系统
 
-#### 时间轴计算系统
+#### 持久化机制
 
-GameCalendar 从传统的周系统完全迁移到精确的天系统：
+GameCalendar 实现了完整的本地存储持久化系统：
 
 ```mermaid
-flowchart TD
-Start([开始计算]) --> GetTimelineInfo[getTimelineInfo]
-GetTimelineInfo --> CalculateTotalDays[计算总天数]
-CalculateTotalDays --> GetPreciseTodayPosition[getPreciseTodayPosition]
-GetPreciseTodayPosition --> CalculateFullDays[计算完整天数]
-CalculateFullDays --> CalculateDayFraction[计算当天时间比例]
-CalculateDayFraction --> CalculatePreciseDays[计算精确天数]
-CalculatePreciseDays --> ReturnPosition[返回位置值 0-1]
+sequenceDiagram
+participant GC as GameCalendar
+participant LS as localStorage
+participant GT as GameTypeSwitcher
+GC->>LS : 读取 "currentGameType"
+LS->>GC : 返回保存的游戏类型
+GC->>GT : 初始化游戏类型
+GT->>LS : 切换游戏类型
+LS->>GT : 保存新游戏类型
+GT->>GC : 触发配置更新
+GC->>GC : 重新加载配置
 ```
 
 **图表来源**
-- [dateUtils.js:11-54](file://src/utils/dateUtils.js#L11-L54)
+- [GameCalendar.vue:100-108](file://src/components/GameCalendar.vue#L100-L108)
 
-##### 精确位置计算
+##### 状态管理
 
-新增的 `getPreciseTodayPosition` 函数提供小时级精度：
+- **初始化读取**：组件挂载时从localStorage读取保存的游戏类型
+- **默认值处理**：如果localStorage为空，默认使用"zzz"游戏类型
+- **实时保存**：每次游戏类型切换时立即保存到localStorage
+- **键值管理**：使用 "currentGameType" 作为localStorage的键
 
-- **总毫秒计算**：计算起始日期到结束日期的总毫秒数
-- **完整天数**：计算到当前日期的完整天数
-- **时间比例**：计算当天已过时间占全天的比例
-- **边界保护**：确保位置值在 0-1 范围内
+##### 用户体验优化
 
-##### 时间轴信息计算
-
-`getTimelineInfo` 函数提供完整的时间轴信息：
-- **总天数**：计算起始日期到结束日期的总天数（包含首尾两天）
-- **日期范围**：返回原始的起始和结束日期字符串
-- **精确计算**：使用 `setHours(0,0,0,0)` 确保日期计算的准确性
+- **无缝切换**：用户刷新页面后自动回到上次选择的游戏类型
+- **记忆持久**：跨会话保持用户偏好设置
+- **容错处理**：localStorage不可用时优雅降级
 
 **章节来源**
-- [dateUtils.js:11-54](file://src/utils/dateUtils.js#L11-L54)
+- [GameCalendar.vue:100-108](file://src/components/GameCalendar.vue#L100-L108)
 
-### 改进的活动条系统
+### 增强的定时器更新机制
 
-#### 活动类型分组机制
+#### 实时更新系统
 
-GameCalendar 实现了智能的活动类型分组系统：
-
-```mermaid
-flowchart TD
-Activities[活动数组] --> FilterRed[过滤红色活动]
-FilterRed --> ProcessRed[处理红色活动接续]
-ProcessRed --> RedRow[红色活动行]
-Activities --> FilterOther[过滤其他类型活动]
-FilterOther --> OtherRows[各自一行]
-RedRow --> Render[渲染红色活动]
-OtherRows --> Render
-```
-
-**图表来源**
-- [GameCalendar.vue:89-105](file://src/components/GameCalendar.vue#L89-L105)
-
-##### 红色活动处理
-
-红色活动具有特殊处理逻辑：
-- **时间接续**：当相邻红色活动之间存在间隔时，自动调整起始时间
-- **绝对定位**：使用绝对定位在同一行显示多个活动
-- **样式统一**：共享相同的视觉样式和布局
-
-##### 其他活动处理
-
-其他类型的活动（橙色、灰色）：
-- **独立行显示**：每个活动占据独立的一行
-- **相对定位**：使用 `marginLeft` 进行定位
-- **差异化样式**：根据类型应用不同的视觉样式
-
-**章节来源**
-- [GameCalendar.vue:89-105](file://src/components/GameCalendar.vue#L89-L105)
-
-### 实时更新机制
-
-#### 定时器管理系统
-
-GameCalendar 保持了原有的实时更新机制，但进行了优化：
+GameCalendar 实现了精确的定时器更新机制：
 
 ```mermaid
 sequenceDiagram
 participant GC as GameCalendar
 participant Timer as 定时器
 participant DU as dateUtils
+participant Now as now.ref
 GC->>GC : onMounted()
 GC->>Timer : setInterval(60000ms)
-Timer->>GC : 更新 now.value
+Timer->>Now : 更新时间戳
+Now->>GC : 触发响应式更新
 GC->>DU : getPreciseTodayPosition()
 DU->>DU : 计算精确位置
 DU->>GC : 返回位置值
@@ -329,30 +333,69 @@ GC->>GC : onUnmounted() 清理定时器
 ```
 
 **图表来源**
-- [GameCalendar.vue:129-142](file://src/components/GameCalendar.vue#L129-L142)
+- [GameCalendar.vue:179-193](file://src/components/GameCalendar.vue#L179-L193)
 - [dateUtils.js:32-54](file://src/utils/dateUtils.js#L32-L54)
 
-##### 精确位置计算优化
+##### 定时器管理
 
-- **分钟级更新**：每分钟更新一次，确保时间指示器的准确性
-- **响应式时间戳**：使用 `now` 响应式引用触发重新计算
-- **内存安全**：在组件卸载时正确清理定时器
+- **生命周期绑定**：定时器在组件挂载时创建，在卸载时清理
+- **内存安全**：防止定时器泄漏和内存占用
+- **更新频率**：每分钟更新一次，平衡性能和准确性
+- **响应式触发**：通过 `now` 响应式引用触发重新计算
 
-##### 生命周期管理
+##### 精确时间计算
 
-- **定时器创建**：在组件挂载时启动定时器
-- **内存清理**：在组件卸载时清除定时器
-- **防抖处理**：避免重复定时器创建
+- **位置计算**：使用 `getPreciseTodayPosition` 计算小时级精度的位置
+- **边界保护**：确保位置值在 0-1 范围内
+- **时间同步**：与系统时间保持同步，避免漂移
 
 **章节来源**
-- [GameCalendar.vue:129-142](file://src/components/GameCalendar.vue#L129-L142)
+- [GameCalendar.vue:179-193](file://src/components/GameCalendar.vue#L179-L193)
 - [dateUtils.js:32-54](file://src/utils/dateUtils.js#L32-L54)
+
+### 改进的活动分组系统
+
+#### 智能分组机制
+
+GameCalendar 实现了智能的活动分组系统：
+
+```mermaid
+flowchart TD
+Activities[活动数组] --> FilterRed[过滤红色活动]
+FilterRed --> RedProcessing[红色活动处理]
+RedProcessing --> TimeContinuity[时间接续处理]
+TimeContinuity --> RedRow[红色活动行]
+Activities --> FilterOther[过滤其他类型活动]
+FilterOther --> OtherRows[各自一行]
+RedRow --> Render[渲染红色活动]
+OtherRows --> Render
+```
+
+**图表来源**
+- [GameCalendar.vue:142-157](file://src/components/GameCalendar.vue#L142-L157)
+
+##### 红色活动处理
+
+- **时间接续**：当相邻红色活动之间存在间隔时，自动调整起始时间
+- **绝对定位**：使用绝对定位在同一行显示多个活动
+- **样式统一**：共享相同的视觉样式和布局
+- **智能合并**：处理时间重叠和间隔的情况
+
+##### 其他活动处理
+
+- **独立行显示**：每个活动占据独立的一行
+- **相对定位**：使用 `marginLeft` 进行定位
+- **差异化样式**：根据类型应用不同的视觉样式
+- **响应式布局**：适应不同屏幕尺寸的显示需求
+
+**章节来源**
+- [GameCalendar.vue:142-157](file://src/components/GameCalendar.vue#L142-L157)
 
 ### 改进的样式系统
 
 #### 游戏类型特定样式
 
-新增了基于游戏类型的样式系统：
+GameCalendar 实现了丰富的样式系统：
 
 ```mermaid
 flowchart TD
@@ -363,10 +406,14 @@ GameTypeBtn --> HoverState[hover状态]
 HoverState --> HoverStyle[悬停样式]
 GameTypeBtn --> BackgroundImage[bgImage配置]
 BackgroundImage --> CustomBackground[自定义背景图片]
+GameTypeBtn --> BorderEffects[边框效果]
+BorderEffects --> MetalBorder[金属质感边框]
+GameTypeBtn --> ShadowEffects[阴影效果]
+ShadowEffects --> ActivationShadow[激活阴影]
 ```
 
 **图表来源**
-- [GameCalendar.vue:241-278](file://src/components/GameCalendar.vue#L241-L278)
+- [GameCalendar.vue:346-350](file://src/components/GameCalendar.vue#L346-L350)
 
 ##### 游戏类型按钮样式
 
@@ -374,6 +421,7 @@ BackgroundImage --> CustomBackground[自定义背景图片]
 - **悬停效果**：鼠标悬停时按钮放大和颜色变化
 - **背景图片**：支持每个游戏类型独立的背景图片配置
 - **尺寸规格**：统一的160px×80px尺寸和圆角设计
+- **过渡动画**：0.3秒的平滑过渡效果
 
 ##### 活动条样式系统
 
@@ -381,9 +429,18 @@ BackgroundImage --> CustomBackground[自定义背景图片]
 - **橙色活动**：明亮橙色渐变，适合重要活动
 - **灰色活动**：中性灰色渐变，适合普通活动
 - **装饰效果**：支持条纹纹理和阴影效果
+- **响应式设计**：适应不同屏幕尺寸的显示需求
+
+##### 滚动条样式优化
+
+- **宽度控制**：滚动条宽度6px，提供更好的视觉体验
+- **圆角设计**：滚动条圆角3px，与整体设计风格一致
+- **透明度处理**：滚动条轨道透明，避免视觉干扰
+- **颜色搭配**：使用#acacac的灰色滚动条，与整体色调协调
 
 **章节来源**
-- [GameCalendar.vue:241-278](file://src/components/GameCalendar.vue#L241-L278)
+- [GameCalendar.vue:346-350](file://src/components/GameCalendar.vue#L346-L350)
+- [GameCalendar.vue:286-297](file://src/components/GameCalendar.vue#L286-L297)
 
 ## 依赖关系分析
 
@@ -395,27 +452,33 @@ GameCalendar[GameCalendar.vue] --> WeekHeader[WeekHeader.vue]
 GameCalendar --> TodayIndicator[TodayIndicator.vue]
 GameCalendar --> ActivityBar[ActivityBar.vue]
 GameCalendar --> DateUtils[dateUtils.js]
-GameCalendar --> GameTypes[gameTypes配置]
-GameCalendar --> GameData[gameData配置]
+GameCalendar --> LocalStorage[localStorage持久化]
+GameCalendar --> AsyncLoader[异步配置加载]
+GameCalendar --> AutoFilter[自动过滤系统]
+GameCalendar --> Timer[定时器系统]
 ActivityBar --> GameCalendar
 WeekHeader --> GameCalendar
 TodayIndicator --> GameCalendar
 DateUtils --> TimelineInfo[时间轴信息]
 DateUtils --> TodayPosition[今日位置]
-GameTypes --> GameConfig[游戏配置]
-GameData --> ActivityData[活动数据]
+LocalStorage --> CurrentGameType[当前游戏类型]
+AsyncLoader --> ActivitiesConfig[activities.json]
+AsyncLoader --> GameTypesConfig[gameTypes配置]
+AsyncLoader --> GameDataConfig[gameData配置]
+Timer --> NowTimestamp[当前时间戳]
+AutoFilter --> FilteredActivities[过滤后的活动]
 ```
 
 **图表来源**
-- [GameCalendar.vue:66-76](file://src/components/GameCalendar.vue#L66-L76)
+- [GameCalendar.vue:70-79](file://src/components/GameCalendar.vue#L70-L79)
 
 ### 数据流向
 
 ```mermaid
 flowchart LR
 subgraph "外部数据源"
-GameTypesConfig[gameTypes.js]
-GameDataConfig[gameData.js]
+ActivitiesJson[activities.json]
+LocalStorage[localStorage持久化]
 DateObject[JavaScript Date]
 Timer[定时器]
 end
@@ -427,14 +490,19 @@ TimelineInfo[timelineInfo]
 TodayPosition[todayPosition]
 TodayLabel[todayLabel]
 ContainerRef[calendarContainerEl]
+LoadingState[loading状态]
+NowTimestamp[now]
+FilteredActivities[filteredActivities]
+RedActivities[redActivities]
+OtherActivities[otherActivities]
 end
 subgraph "子组件"
 WeekHeader[WeekHeader]
 TodayIndicator[TodayIndicator]
 ActivityBar[ActivityBar]
 end
-GameTypesConfig --> GameCalendar
-GameDataConfig --> GameCalendar
+ActivitiesJson --> GameCalendar
+LocalStorage --> GameCalendar
 DateObject --> GameCalendar
 Timer --> GameCalendar
 GameCalendar --> WeekHeader
@@ -445,11 +513,11 @@ ActivityBar --> TodayIndicator
 ```
 
 **图表来源**
-- [GameCalendar.vue:78-127](file://src/components/GameCalendar.vue#L78-L127)
-- [activities.js:1-110](file://src/config/activities.js#L1-L110)
+- [GameCalendar.vue:111-177](file://src/components/GameCalendar.vue#L111-L177)
+- [activities.json:1-246](file://public/config/activities.json#L1-246)
 
 **章节来源**
-- [GameCalendar.vue:66-127](file://src/components/GameCalendar.vue#L66-L127)
+- [GameCalendar.vue:70-177](file://src/components/GameCalendar.vue#L70-L177)
 
 ## 性能考虑
 
@@ -459,6 +527,8 @@ ActivityBar --> TodayIndicator
 - **计算属性缓存**：利用 Vue 的计算属性缓存机制减少重复计算
 - **事件处理优化**：避免在模板中直接调用复杂函数
 - **定时器管理**：确保定时器正确清理，避免内存泄漏
+- **异步加载优化**：配置文件异步加载，不影响初始渲染性能
+- **活动过滤优化**：使用高效的过滤算法和缓存机制
 
 ### 渲染性能
 
@@ -466,12 +536,24 @@ ActivityBar --> TodayIndicator
 - **组件拆分**：保持组件职责单一，便于单独优化
 - **样式优化**：使用 CSS 变量和高效的选择器
 - **背景图片优化**：使用固定定位减少重绘
+- **滚动性能**：活动区域滚动使用硬件加速优化
+- **动画性能**：使用 transform 和 opacity 属性优化动画性能
 
 ### 内存管理
 
 - **垃圾回收**：及时清理不再使用的引用
 - **监听器管理**：在组件卸载时清理事件监听器
 - **定时器清理**：确保定时器正确销毁
+- **配置缓存**：避免重复加载相同配置
+- **过滤结果缓存**：缓存过滤结果减少重复计算
+
+### 错误处理优化
+
+- **配置加载失败**：提供降级处理和错误提示
+- **网络请求失败**：优雅处理网络异常情况
+- **数据解析错误**：验证配置数据格式和完整性
+- **localStorage异常**：处理浏览器存储限制和权限问题
+- **定时器异常**：处理定时器创建和清理过程中的异常
 
 ## 故障排除指南
 
@@ -489,6 +571,36 @@ ActivityBar --> TodayIndicator
 - 检查 `currentGameType` 的 `v-model` 绑定
 - 验证 `computed` 属性的依赖关系
 - 确保 `gameData` 结构与 `gameTypes` 匹配
+
+#### 异步配置加载问题
+
+**问题描述**：配置文件加载失败或显示空白
+**可能原因**：
+- 网络请求超时或失败
+- JSON格式错误
+- 路径配置不正确
+- localStorage权限问题
+
+**解决方案**：
+- 检查网络连接和文件路径
+- 验证JSON格式的正确性
+- 查看浏览器控制台错误信息
+- 确认localStorage权限设置
+
+#### 自动活动过滤问题
+
+**问题描述**：活动过期过滤不工作或过滤错误
+**可能原因**：
+- 时间解析函数错误
+- 当前时间更新异常
+- 活动时间格式不正确
+- 过滤逻辑错误
+
+**解决方案**：
+- 检查 `parseActivityTime` 函数的实现
+- 验证定时器是否正常运行
+- 确认活动时间字符串格式
+- 检查过滤条件的逻辑
 
 #### 精确位置计算错误
 
@@ -516,18 +628,31 @@ ActivityBar --> TodayIndicator
 - 检查时间解析函数的实现
 - 使用 `Math.round()` 处理浮点数
 
-#### 背景图片问题
+#### 响应式布局问题
 
-**问题描述**：游戏类型背景图片不显示
+**问题描述**：组件在不同屏幕尺寸下显示异常
 **可能原因**：
-- 资源路径错误
-- 图片格式不支持
-- CSS 样式优先级问题
+- 布局约束设置不当
+- 滚动行为配置错误
+- 样式优先级问题
 
 **解决方案**：
-- 验证图片路径是否正确
-- 检查图片格式和大小
-- 确保 CSS 优先级正确
+- 检查最小宽度和最大宽度设置
+- 验证滚动容器的样式配置
+- 确保CSS媒体查询正确应用
+
+#### 滚动行为问题
+
+**问题描述**：活动区域滚动条显示异常或滚动不顺畅
+**可能原因**：
+- 滚动条样式配置错误
+- 高度计算公式不正确
+- 滚动事件冲突
+
+**解决方案**：
+- 检查滚动条CSS样式
+- 验证max-height计算公式
+- 确认滚动容器的overflow属性
 
 #### 组件通信问题
 
@@ -542,10 +667,23 @@ ActivityBar --> TodayIndicator
 - 确保数据在组件创建前已准备就绪
 - 验证组件导入和导出
 
+#### 定时器内存泄漏问题
+
+**问题描述**：组件卸载后定时器仍在运行
+**可能原因**：
+- 定时器清理逻辑缺失
+- 多个定时器实例创建
+- 定时器引用未正确释放
+
+**解决方案**：
+- 检查 `onUnmounted` 钩子中的清理逻辑
+- 确保只创建一个定时器实例
+- 使用正确的清理方法
+
 **章节来源**
-- [GameCalendar.vue:129-142](file://src/components/GameCalendar.vue#L129-L142)
+- [GameCalendar.vue:179-193](file://src/components/GameCalendar.vue#L179-L193)
 - [dateUtils.js:32-54](file://src/utils/dateUtils.js#L32-L54)
-- [ActivityBar.vue:68-102](file://src/components/ActivityBar.vue#L68-L102)
+- [ActivityBar.vue:43-64](file://src/components/ActivityBar.vue#L43-L64)
 
 ## 结论
 
@@ -558,9 +696,12 @@ GameCalendar 主容器组件展现了现代 Vue 3 应用的最佳实践，经过
 - **多游戏类型支持**：灵活的配置系统支持不同游戏类型
 - **精确时间计算**：小时级精度的时间轴计算
 - **实时更新**：每分钟自动更新确保时间准确性
+- **智能活动过滤**：自动过滤已过期活动，提升用户体验
+- **本地存储持久化**：用户偏好设置的持久化存储
 - **丰富的视觉效果**：游戏类型特定的背景图片和样式
 - **可扩展性**：良好的抽象层便于功能扩展
 - **可维护性**：代码结构清晰，易于理解和修改
+- **用户体验**：完整的用户状态保持和流畅的交互体验
 
 ### 技术亮点
 
@@ -571,6 +712,10 @@ GameCalendar 主容器组件展现了现代 Vue 3 应用的最佳实践，经过
 - **高级视觉设计**：符合游戏应用的视觉规范
 - **组件通信模式**：清晰的父子组件通信机制
 - **内存安全**：完善的定时器管理和资源清理
+- **异步加载**：配置文件异步加载，提升应用性能
+- **错误处理**：完善的错误处理和降级机制
+- **响应式布局**：严格的布局约束和优化的滚动行为
+- **自动过滤系统**：实时维护界面数据的准确性
 
 ### 扩展建议
 
@@ -582,7 +727,11 @@ GameCalendar 主容器组件展现了现代 Vue 3 应用的最佳实践，经过
 6. **性能监控**：添加性能指标监控
 7. **错误处理**：增强错误处理和恢复机制
 8. **移动端适配**：优化移动设备的显示效果
+9. **缓存策略**：实现配置文件的缓存机制
+10. **SEO优化**：添加搜索引擎优化支持
+11. **活动搜索**：添加活动名称搜索功能
+12. **通知系统**：添加活动即将结束的通知功能
 
-**更新**：经过完全重构的 GameCalendar 组件，从传统的周系统迁移到精确的天系统，新增了多游戏类型支持和智能的活动分组机制。新的架构不仅保持了原有的优秀特性，还显著提升了功能性和用户体验，是一个值得推荐的 Vue 3 组件实现。
+**更新**：经过完全重构的 GameCalendar 组件，从传统的周系统迁移到精确的天系统，新增了多游戏类型支持、智能的活动分组机制、localStorage持久化存储、异步配置加载、自动活动过期过滤系统、增强的定时器更新机制和改进的响应式布局。新的架构不仅保持了原有的优秀特性，还显著提升了功能性和用户体验，是一个值得推荐的 Vue 3 组件实现。
 
-该组件为游戏维护日历应用提供了坚实的基础，经过本次重构后，具备了现代化的架构设计、精确的时间计算能力和灵活的配置系统，能够轻松扩展和定制以满足不同的业务需求。
+该组件为游戏维护日历应用提供了坚实的基础，经过本次重构后，具备了现代化的架构设计、精确的时间计算能力、灵活的配置系统、优秀的用户体验、强大的可扩展性和完善的错误处理机制，能够轻松扩展和定制以满足不同的业务需求。

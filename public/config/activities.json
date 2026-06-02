@@ -113,6 +113,16 @@
           "hasDollarSign": false,
           "hasCharIcon": false,
           "charIcons": []
+        },
+        {
+          "name": "前瞻直播",
+          "startTime": "2026-06-06",
+          "endTime": "2026-06-06",
+          "type": "green",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
         }
       ]
     },

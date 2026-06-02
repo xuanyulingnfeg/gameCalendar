@@ -172,6 +172,11 @@ const barStyle = computed(() => {
   box-shadow: 0 2px 8px rgba(100, 100, 100, 0.3);
 }
 
+.activity-bar.type-green {
+  background: linear-gradient(135deg, #008000, #00ff00);
+  box-shadow: 0 2px 8px rgba(100, 100, 100, 0.3);
+}
+
 .activity-bar::before {
   content: "";
   position: absolute;

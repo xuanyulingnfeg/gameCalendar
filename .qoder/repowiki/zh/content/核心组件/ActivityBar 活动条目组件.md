@@ -4,7 +4,7 @@
 **本文档引用的文件**
 - [ActivityBar.vue](file://src/components/ActivityBar.vue)
 - [GameCalendar.vue](file://src/components/GameCalendar.vue)
-- [activities.js](file://src/config/activities.js)
+- [activities.json](file://public/config/activities.json)
 - [dateUtils.js](file://src/utils/dateUtils.js)
 - [WeekHeader.vue](file://src/components/WeekHeader.vue)
 - [TodayIndicator.vue](file://src/components/TodayIndicator.vue)
@@ -14,12 +14,11 @@
 
 ## 更新摘要
 **变更内容**
-- 更新了小时级精度定位算法，支持精确到小时的时间计算
-- 新增了红活动行系统，支持红色活动在同一行显示
-- 新增了绝对定位支持，通过`absolute`属性控制定位方式
-- 新增了时间连续性处理机制，确保活动时间的正确衔接
-- 更新了活动时间格式，支持"YYYY-MM-DD HH"格式的时间字符串
-- 增强了样式系统，包括改进的渐变背景和纹理效果
+- 完全重构字符图标系统：从固定的charIconLeft/charIconRight属性迁移到动态charIcons数组系统
+- 新增斜线裁剪效果，实现复杂的视觉分割
+- 移除了固定的左右图标容器设计
+- 增强了字符图标区域的灵活性和视觉效果
+- 优化了字符图标段落的样式计算和渲染
 
 ## 目录
 1. [简介](#简介)
@@ -37,7 +36,7 @@
 
 ActivityBar 是游戏日历应用中的核心组件，负责渲染单个游戏活动条目。该组件实现了精确的小时级时间轴可视化功能，能够根据活动的开始和结束时间精确计算其在时间轴上的显示位置，并通过增强的样式系统提供丰富的视觉效果。
 
-**更新** 组件现已支持小时级精度定位，能够精确到小时的时间计算，同时新增了红活动行系统，支持红色活动在同一行显示，以及绝对定位功能，为用户提供更加精准和灵活的活动展示体验。
+**更新** 组件现已支持完全重构的动态字符图标渲染系统，能够根据活动配置自动渲染多个角色图标，并通过智能的宽度计算和斜线裁剪效果实现独特的视觉呈现。该系统完全移除了固定的左右图标容器设计，为用户提供了更加灵活和美观的活动展示体验。
 
 该组件采用现代化的Vue 3 Composition API实现，结合CSS Grid和Flexbox布局技术，提供了响应式的视觉呈现和流畅的用户体验。组件支持多种活动类型（红色、橙色、灰色），每种类型都有独特的渐变背景和视觉风格。
 
@@ -58,7 +57,7 @@ WeekHeader[WeekHeader.vue 周次表头]
 TodayIndicator[TodayIndicator.vue 今日指示器]
 end
 subgraph "配置层"
-activities[activities.js 活动配置]
+activities[activities.json 活动配置]
 end
 subgraph "工具层"
 dateUtils[dateUtils.js 日期工具]
@@ -92,8 +91,9 @@ ActivityBar 组件是整个游戏日历系统的核心视觉元素，负责将�
 - **内容展示**：动态渲染活动名称、图标和装饰元素
 - **响应式布局**：适配不同屏幕尺寸和设备类型
 - **绝对定位支持**：支持绝对定位和相对定位两种模式
+- **动态字符图标渲染**：支持多个角色图标的智能渲染和布局
 
-**更新** 组件现在支持小时级精度定位，能够精确到小时的时间计算，并新增了绝对定位功能。
+**更新** 组件现在支持完全重构的动态字符图标渲染系统，能够根据charIcons数组长度自动计算容器宽度，并通过斜线裁剪效果实现独特的视觉分割。
 
 ### Props 参数结构
 
@@ -114,11 +114,10 @@ ActivityBar 组件是整个游戏日历系统的核心视觉元素，负责将�
 | startTime | String | 是 | - | 活动开始时间（YYYY-MM-DD HH格式） |
 | endTime | String | 是 | - | 活动结束时间（YYYY-MM-DD HH格式） |
 | type | String | 是 | - | 活动类型（red/orange/gray） |
-| icons | Number | 否 | 0 | 右侧图标数量 |
+| icons | Array | 否 | [] | 右侧图标URL数组 |
 | hasDollarSign | Boolean | 否 | false | 是否显示美元符号标记 |
 | hasCharIcon | Boolean | 否 | false | 是否显示角色图标 |
-| charIconLeft | String | 否 | "" | 左侧角色图标URL |
-| charIconRight | String | 否 | "" | 右侧角色图标URL |
+| charIcons | Array | 否 | [] | 角色图标URL数组，支持多个图标 |
 
 ### 增强的样式系统
 
@@ -129,8 +128,8 @@ ActivityBar 组件是整个游戏日历系统的核心视觉元素，负责将�
 - **灰色类型**：深灰色到浅灰色的线性渐变背景，保持简洁和专业感
 
 **章节来源**
-- [ActivityBar.vue:118-132](file://src/components/ActivityBar.vue#L118-L132)
-- [activities.js:14-100](file://src/config/activities.js#L14-L100)
+- [ActivityBar.vue:159-173](file://src/components/ActivityBar.vue#L159-L173)
+- [activities.json:14-100](file://public/config/activities.json#L14-L100)
 
 ## 架构概览
 
@@ -140,7 +139,7 @@ ActivityBar 组件在整个应用架构中扮演着重要的视觉渲染角色�
 sequenceDiagram
 participant GC as GameCalendar
 participant AB as ActivityBar
-participant AC as activities.js
+participant AC as activities.json
 participant DU as dateUtils.js
 GC->>AC : 加载活动配置
 GC->>DU : 计算时间轴参数
@@ -148,19 +147,19 @@ GC->>AB : 渲染活动条目
 AB->>AB : 解析时间字符串
 AB->>AB : 计算小时级位置
 AB->>AB : 应用定位样式
-AB->>AB : 渲染装饰元素
+AB->>AB : 渲染动态字符图标
 AB-->>GC : 完成渲染
 Note over GC,AB : 组件间的数据流和交互
 ```
 
 **图表来源**
 - [GameCalendar.vue:89-105](file://src/components/GameCalendar.vue#L89-L105)
-- [ActivityBar.vue:68-102](file://src/components/ActivityBar.vue#L68-L102)
-- [activities.js:14-100](file://src/config/activities.js#L14-L100)
+- [ActivityBar.vue:66-78](file://src/components/ActivityBar.vue#L66-L78)
+- [activities.json:14-100](file://public/config/activities.json#L14-L100)
 
 **章节来源**
-- [GameCalendar.vue:1-279](file://src/components/GameCalendar.vue#L1-L279)
-- [ActivityBar.vue:1-288](file://src/components/ActivityBar.vue#L1-L288)
+- [GameCalendar.vue:1-352](file://src/components/GameCalendar.vue#L1-L352)
+- [ActivityBar.vue:1-316](file://src/components/ActivityBar.vue#L1-L316)
 
 ## 详细组件分析
 
@@ -184,7 +183,7 @@ ApplyRelative --> End
 ```
 
 **图表来源**
-- [ActivityBar.vue:75-102](file://src/components/ActivityBar.vue#L75-L102)
+- [ActivityBar.vue:116-143](file://src/components/ActivityBar.vue#L116-L143)
 
 #### 算法细节
 
@@ -194,35 +193,82 @@ ApplyRelative --> End
 4. **百分比计算**：将小时偏移和持续时间转换为相对于总小时数的百分比
 5. **定位模式**：根据`absolute`属性决定使用绝对定位还是相对定位
 
-### 红活动行系统
+### 动态字符图标渲染系统
 
-**更新** 组件支持特殊的红活动行系统，用于显示红色类型的活动：
+**更新** 组件现在支持完全重构的动态字符图标渲染系统，能够根据活动配置自动渲染多个角色图标：
 
 ```mermaid
 flowchart TD
-RedGroup[红色活动分组] --> TimeContinuity["时间连续性处理"]
-TimeContinuity --> CheckOverlap{"检查时间重叠"}
-CheckOverlap --> |重叠| AdjustTime["调整时间<br/>startTime = previous.endTime"]
-CheckOverlap --> |不重叠| NextActivity["下一个活动"]
-AdjustTime --> NextActivity
-NextActivity --> CheckOverlap
-CheckOverlap --> |完成| AbsolutePosition["绝对定位显示"]
-AbsolutePosition --> RenderRow["在同一行渲染"]
+Start([开始渲染]) --> CheckCharIcon["检查 hasCharIcon 和 charIcons"]
+CheckCharIcon --> |true| CalcWidth["计算容器宽度<br/>width = charIcons.length * 56px"]
+CalcWidth --> RenderContainer["渲染字符图标容器"]
+RenderContainer --> LoopIcons["遍历 charIcons 数组"]
+LoopIcons --> CalcSegment["计算段落样式<br/>getSegmentStyle(idx, total, icon)"]
+CalcSegment --> ApplyStyles["应用样式<br/>position + clipPath + background"]
+ApplyStyles --> NextIcon{"还有更多图标？"}
+NextIcon --> |是| LoopIcons
+NextIcon --> |否| End([渲染完成])
+CheckCharIcon --> |false| End
 ```
 
 **图表来源**
-- [GameCalendar.vue:89-101](file://src/components/GameCalendar.vue#L89-L101)
+- [ActivityBar.vue:9-25](file://src/components/ActivityBar.vue#L9-L25)
+- [ActivityBar.vue:80-114](file://src/components/ActivityBar.vue#L80-L114)
 
 #### 系统特性
 
-1. **时间接续处理**：自动检测活动间的重叠并进行时间调整
-2. **绝对定位**：红色活动使用绝对定位在同一行显示
-3. **行高管理**：统一的行高和间距管理
-4. **视觉分组**：通过CSS类名实现视觉上的活动分组
+1. **智能宽度计算**：根据charIcons数组长度自动计算容器宽度（每张图标56px）
+2. **动态段落分割**：将容器水平分割为多个段落，每个段落对应一个角色图标
+3. **斜线裁剪效果**：使用clip-path实现独特的斜线分割效果
+4. **背景图像支持**：每个段落独立设置背景图像，实现无缝拼接
+5. **响应式布局**：支持任意数量的角色图标，从2个到多个
+
+### 斜线裁剪效果实现
+
+**更新** 组件实现了复杂的斜线裁剪效果，为字符图标区域提供了独特的视觉分割：
+
+```mermaid
+classDiagram
+class SegmentStyle {
++String position
++String top
++String bottom
++String backgroundImage
++String backgroundSize
++String backgroundPosition
++String left
++String width
++String clipPath
+}
+class SkewCalculation {
++Number skew = 18
++calculateClipPath(index, total)
++generatePolygonPoints(index, total)
+}
+class DynamicWidth {
++Number baseWidth = 56
++calculateContainerWidth(length)
+}
+SegmentStyle --> SkewCalculation : "使用"
+SegmentStyle --> DynamicWidth : "使用"
+```
+
+**图表来源**
+- [ActivityBar.vue:80-114](file://src/components/ActivityBar.vue#L80-L114)
+
+#### 裁剪算法细节
+
+1. **斜度设置**：固定斜度值18度，创造独特的视觉效果
+2. **段落宽度**：每个段落宽度 = 100% / total
+3. **左边界计算**：left = index * segWidth + "%"
+4. **裁剪路径生成**：
+   - 第一个段落：`polygon(0 0, ${100 + skew}% 0, ${100 - skew}% 100%, 0 100%)`
+   - 最后一个段落：`polygon(${-skew}% 0, 100% 0, 100% 100%, ${skew}% 100%)`
+   - 中间段落：`polygon(${-skew}% 0, ${100 + skew}% 0, ${100 - skew}% 100%, ${skew}% 100%)`
 
 ### 增强的视觉呈现系统
 
-**更新** 组件采用多层次的视觉设计，每个元素都有特定的功能和样式特征。现在支持复杂的CSS渐变背景、重复线性渐变纹理效果和字符图标显示系统：
+**更新** 组件采用多层次的视觉设计，每个元素都有特定的功能和样式特征。现在支持复杂的CSS渐变背景、重复线性渐变纹理效果和动态字符图标显示系统：
 
 ```mermaid
 classDiagram
@@ -234,6 +280,7 @@ class ActivityBar {
 +Boolean absolute
 +computed barStyle
 +parseTime()
++getSegmentStyle()
 +render() VueTemplate
 }
 class ActivityItem {
@@ -241,11 +288,10 @@ class ActivityItem {
 +String startTime
 +String endTime
 +String type
-+Number icons
++Array icons
 +Boolean hasDollarSign
 +Boolean hasCharIcon
-+String charIconLeft
-+String charIconRight
++Array charIcons
 }
 class EnhancedStyleSystem {
 +String type-red
@@ -253,6 +299,7 @@ class EnhancedStyleSystem {
 +String type-gray
 +String dollar-sign
 +String char-icon
++String char-segment
 +String right-icons
 +String repeating-linear-gradient
 +String background-texture
@@ -263,8 +310,8 @@ ActivityBar --> EnhancedStyleSystem : "应用"
 ```
 
 **图表来源**
-- [ActivityBar.vue:45-66](file://src/components/ActivityBar.vue#L45-L66)
-- [ActivityBar.vue:105-287](file://src/components/ActivityBar.vue#L105-L287)
+- [ActivityBar.vue:40-64](file://src/components/ActivityBar.vue#L40-L64)
+- [ActivityBar.vue:146-316](file://src/components/ActivityBar.vue#L146-L316)
 
 #### 增强的样式层次结构
 
@@ -273,7 +320,7 @@ ActivityBar --> EnhancedStyleSystem : "应用"
 3. **纹理效果系统**：使用重复线性渐变创建微妙的纹理效果
 4. **装饰元素**：
    - 美元符号标记（可选）
-   - 角色图标（可选）
+   - 动态字符图标区域（可选）
    - 右侧图标网格
    - 导航箭头按钮
 
@@ -288,12 +335,12 @@ ActivityBar --> EnhancedStyleSystem : "应用"
 | gray | type-gray | `#666 → #888` | `rgba(100, 100, 100, 0.3)` | `#fff` |
 
 **章节来源**
-- [ActivityBar.vue:118-132](file://src/components/ActivityBar.vue#L118-L132)
-- [ActivityBar.vue:230-240](file://src/components/ActivityBar.vue#L230-L240)
+- [ActivityBar.vue:159-173](file://src/components/ActivityBar.vue#L159-L173)
+- [ActivityBar.vue:203-235](file://src/components/ActivityBar.vue#L203-L235)
 
 ### 增强的图标显示逻辑
 
-**更新** 组件支持多种图标显示模式，通过条件渲染实现灵活的内容展示。现在包括复杂的字符图标显示系统：
+**更新** 组件支持多种图标显示模式，通过条件渲染实现灵活的内容展示。现在包括完全重构的动态字符图标显示系统：
 
 ```mermaid
 flowchart TD
@@ -301,7 +348,7 @@ Start([渲染开始]) --> CheckDollar["检查 hasDollarSign"]
 CheckDollar --> |true| RenderDollar["渲染美元符号"]
 CheckDollar --> |false| CheckChar["检查 hasCharIcon"]
 RenderDollar --> CheckChar
-CheckChar --> |true| RenderChar["渲染角色图标"]
+CheckChar --> |true| RenderChar["渲染动态字符图标"]
 CheckChar --> |false| RenderContent["渲染主要内容"]
 RenderChar --> RenderContent
 RenderContent --> RenderIcons["渲染右侧图标网格"]
@@ -309,17 +356,17 @@ RenderIcons --> End([渲染完成])
 ```
 
 **图表来源**
-- [ActivityBar.vue:4-39](file://src/components/ActivityBar.vue#L4-L39)
+- [ActivityBar.vue:1-37](file://src/components/ActivityBar.vue#L1-L37)
 
 #### 增强的图标系统特性
 
 1. **美元符号**：绝对定位的装饰性标记，包含图像和文字元素
-2. **角色图标**：复杂的双面板设计，支持左右两侧的角色图标
+2. **动态字符图标**：完全重构的多段落设计，支持任意数量的角色图标
 3. **右侧图标**：可配置数量的网格图标，反映活动的重要程度
 4. **箭头按钮**：圆形按钮，提供导航和交互功能
 
 **章节来源**
-- [ActivityBar.vue:162-287](file://src/components/ActivityBar.vue#L162-L287)
+- [ActivityBar.vue:258-316](file://src/components/ActivityBar.vue#L258-L316)
 
 ### 响应式设计
 
@@ -347,7 +394,7 @@ Responsive --> Touch
 
 **章节来源**
 - [GameCalendar.vue:20-63](file://src/components/GameCalendar.vue#L20-L63)
-- [ActivityBar.vue:105-116](file://src/components/ActivityBar.vue#L105-L116)
+- [ActivityBar.vue:146-157](file://src/components/ActivityBar.vue#L146-L157)
 
 ## 依赖关系分析
 
@@ -364,7 +411,7 @@ subgraph "内部依赖"
 GameCalendar[GameCalendar.vue]
 WeekHeader[WeekHeader.vue]
 TodayIndicator[TodayIndicator.vue]
-activities[activities.js]
+activities[activities.json]
 dateUtils[dateUtils.js]
 end
 subgraph "核心组件"
@@ -382,20 +429,20 @@ ActivityBar --> Browser
 
 **图表来源**
 - [GameCalendar.vue:69-76](file://src/components/GameCalendar.vue#L69-L76)
-- [ActivityBar.vue:42-43](file://src/components/ActivityBar.vue#L42-L43)
+- [ActivityBar.vue:41-42](file://src/components/ActivityBar.vue#L41-L42)
 
 ### 数据流向
 
 组件间的数据传递遵循单向数据流原则：
 
-1. **配置数据**：从 activities.js 传递到 GameCalendar
+1. **配置数据**：从 activities.json 传递到 GameCalendar
 2. **计算数据**：从 dateUtils.js 传递到 GameCalendar
 3. **渲染数据**：从 GameCalendar 传递到 ActivityBar
 4. **样式数据**：由 ActivityBar 内部计算生成
 
 **章节来源**
 - [GameCalendar.vue:82-110](file://src/components/GameCalendar.vue#L82-L110)
-- [ActivityBar.vue:75-102](file://src/components/ActivityBar.vue#L75-L102)
+- [ActivityBar.vue:116-143](file://src/components/ActivityBar.vue#L116-L143)
 
 ## 性能考虑
 
@@ -408,6 +455,7 @@ ActivityBar --> Browser
 3. **样式复用**：通过类名系统减少内联样式的使用
 4. **CSS渐变优化**：使用硬件加速的CSS渐变效果
 5. **绝对定位优化**：红色活动使用绝对定位减少布局重排
+6. **动态样式计算**：仅在需要时计算字符图标样式
 
 ### 内存管理
 
@@ -425,6 +473,7 @@ ActivityBar --> Browser
 - **GPU 加速**：使用 transform 和 opacity 属性
 - **帧率优化**：避免触发强制同步布局的操作
 - **渐变动画**：平滑的颜色过渡效果
+- **clip-path 动画**：流畅的斜线裁剪效果
 
 ## 故障排除指南
 
@@ -462,23 +511,57 @@ ActivityBar --> Browser
 3. 测试不同浏览器的兼容性
 4. 检查CSS渐变语法的正确性
 
-#### 问题3：图标显示异常
+#### 问题3：字符图标显示异常
 
-**更新** 症状：装饰图标没有正确显示
+**更新** 症状：动态字符图标没有正确显示
 
 **可能原因**：
-- hasDollarSign 或 hasCharIcon 标志位设置错误
-- 图标数量配置不正确
+- hasCharIcon 标志位设置错误
+- charIcons 数组为空或格式不正确
 - CSS 样式冲突
 - 字符图标URL无效
+- 斜线裁剪效果不兼容
 
 **解决方法**：
-1. 验证布尔标志位的设置
-2. 检查 icons 数量的有效性
+1. 验证 hasCharIcon 标志位的设置
+2. 检查 charIcons 数组的有效性和格式
 3. 排查 CSS 样式冲突问题
 4. 验证字符图标URL的有效性和可访问性
+5. 检查浏览器对 clip-path 属性的支持情况
 
-#### 问题4：红活动行显示异常
+#### 问题4：字符图标宽度计算错误
+
+**更新** 症状：字符图标容器宽度不正确
+
+**可能原因**：
+- charIcons 数组长度计算错误
+- 宽度计算公式不正确
+- 单位转换问题
+- 样式继承问题
+
+**解决方法**：
+1. 验证 charIcons 数组的长度
+2. 检查宽度计算公式：`length * 56 + 'px'`
+3. 确认单位转换的正确性
+4. 验证容器样式的继承和覆盖
+
+#### 问题5：斜线裁剪效果异常
+
+**更新** 症状：字符图标的斜线裁剪效果不正确
+
+**可能原因**：
+- clip-path 语法错误
+- 斜度计算错误
+- 段落宽度计算错误
+- 裁剪路径生成逻辑错误
+
+**解决方法**：
+1. 验证 clip-path 语法的正确性
+2. 检查斜度值18的设置
+3. 确认段落宽度计算的准确性
+4. 验证裁剪路径生成的逻辑
+
+#### 问题6：红活动行显示异常
 
 **更新** 症状：红色活动没有在同一行显示
 
@@ -494,7 +577,7 @@ ActivityBar --> Browser
 3. 验证时间接续处理算法
 4. 检查 `.red-row .activity-bar` 样式是否正确
 
-#### 问题5：小时级精度计算错误
+#### 问题7：小时级精度计算错误
 
 **更新** 症状：活动位置计算不准确
 
@@ -511,30 +594,32 @@ ActivityBar --> Browser
 4. 验证总小时数计算的准确性
 
 **章节来源**
-- [ActivityBar.vue:68-102](file://src/components/ActivityBar.vue#L68-L102)
-- [activities.js:14-100](file://src/config/activities.js#L14-L100)
+- [ActivityBar.vue:116-143](file://src/components/ActivityBar.vue#L116-L143)
+- [activities.json:14-100](file://public/config/activities.json#L14-L100)
 
 ## 结论
 
-**更新** ActivityBar 活动条目组件是一个设计精良、功能完整的视觉渲染组件。经过大幅增强的小时级精度定位系统，它现在提供了更加精确和专业的活动展示体验，为用户带来了卓越的用户体验。
+**更新** ActivityBar 活动条目组件是一个设计精良、功能完整的视觉渲染组件。经过完全重构的动态字符图标渲染系统，它现在提供了更加精确和专业的活动展示体验，为用户带来了卓越的用户体验。
 
 组件的主要优势包括：
 
 1. **精确的小时级算法**：基于数学公式的准确位置计算
 2. **增强的样式系统**：支持复杂的CSS渐变背景、重复线性渐变纹理效果
-3. **丰富的视觉效果**：字符图标显示系统、美元符号装饰等高级视觉效果
+3. **丰富的视觉效果**：动态字符图标显示系统、美元符号装饰等高级视觉效果
 4. **优秀的响应式设计**：适应各种设备和屏幕尺寸
 5. **完善的红活动行系统**：支持红色活动在同一行显示
 6. **灵活的定位模式**：支持绝对定位和相对定位
-7. **良好的性能表现**：优化的渲染和内存管理
-8. **完善的错误处理**：健壮的边界条件处理
+7. **完全重构的字符图标系统**：支持多个角色图标并自动计算宽度
+8. **创新的斜线裁剪效果**：实现独特的视觉分割
+9. **良好的性能表现**：优化的渲染和内存管理
+10. **完善的错误处理**：健壮的边界条件处理
 
-**更新** 特别值得一提的是，组件现在支持复杂的小时级精度定位系统，包括：
-- 基于毫秒差值的精确时间计算
-- 支持"YYYY-MM-DD HH"格式的时间字符串
-- 绝对定位和相对定位的灵活切换
-- 红活动行的时间接续处理机制
-- GPU加速的CSS渐变渲染性能
+**更新** 特别值得一提的是，组件现在支持完全重构的动态字符图标渲染系统，包括：
+- 基于数组长度的智能宽度计算
+- 复杂的斜线裁剪效果实现
+- 独特的多段落背景图像拼接
+- 灵活的字符图标布局系统
+- GPU加速的clip-path动画效果
 
 该组件为游戏日历应用奠定了坚实的视觉基础，为用户提供了直观、美观且功能丰富的活动展示体验。
 
@@ -548,6 +633,48 @@ ActivityBar --> Browser
 <template>
   <ActivityBar
     :activity="activityData"
+    :calendarStartDate="currentConfig.startDate"
+    :calendarEndDate="currentConfig.endDate"
+    :totalDays="timelineInfo.totalDays"
+  />
+</template>
+```
+
+#### 动态字符图标使用
+
+**更新** 支持多个角色图标的使用方式：
+
+```vue
+<template>
+  <!-- 单个角色图标 -->
+  <ActivityBar
+    :activity="{
+      name: '活动名称',
+      startTime: '2026-05-07 10',
+      endTime: '2026-05-07 14',
+      type: 'red',
+      hasCharIcon: true,
+      charIcons: ['./path/to/icon1.png']
+    }"
+    :calendarStartDate="currentConfig.startDate"
+    :calendarEndDate="currentConfig.endDate"
+    :totalDays="timelineInfo.totalDays"
+  />
+  
+  <!-- 多个角色图标 -->
+  <ActivityBar
+    :activity="{
+      name: '活动名称',
+      startTime: '2026-05-07 10',
+      endTime: '2026-05-07 14',
+      type: 'red',
+      hasCharIcon: true,
+      charIcons: [
+        './path/to/icon1.png',
+        './path/to/icon2.png',
+        './path/to/icon3.png'
+      ]
+    }"
     :calendarStartDate="currentConfig.startDate"
     :calendarEndDate="currentConfig.endDate"
     :totalDays="timelineInfo.totalDays"
@@ -597,11 +724,13 @@ const enhancedActivity = {
   startTime: "2026-05-07 10",
   endTime: "2026-05-07 14",
   type: "red",
-  icons: 3,
+  icons: [],
   hasDollarSign: true,
   hasCharIcon: true,
-  charIconLeft: "path/to/left-icon.png",
-  charIconRight: "path/to/right-icon.png"
+  charIcons: [
+    "./path/to/left-icon.png",
+    "./path/to/right-icon.png"
+  ]
 }
 ```
 
@@ -621,33 +750,47 @@ const enhancedActivity = {
 **更新** 增强的修改选项：
 
 1. 调整颜色编码方案，包括渐变色彩
-2. 修改图标设计，支持更复杂的字符图标
+2. 修改字符图标设计，支持更复杂的多段落布局
 3. 优化动画效果，包括纹理动画
 4. 调整纹理效果，包括渐变角度和密度
 
-#### 自定义纹理效果
+#### 自定义字符图标系统
 
-**更新** 纹理效果自定义：
+**更新** 字符图标系统的自定义：
 
 ```css
-.activity-bar::before {
-  background:
-    repeating-linear-gradient(
-      45deg,
-      rgba(255, 255, 255, 0.1) 0px,
-      rgba(255, 255, 255, 0.1) 1px,
-      transparent 1px,
-      transparent 5px
-    ),
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.1) 0px,
-      rgba(255, 255, 255, 0.1) 1px,
-      transparent 1px,
-      transparent 5px
-    );
+.char-icon {
+  width: calc(var(--icon-count) * 56px);
+  height: 45px;
+  border-radius: 21px;
+  border: 3px solid black;
+  flex-shrink: 0;
+  margin-right: 10px;
+  position: relative;
+  overflow: hidden;
+  background: #222;
+}
+
+.char-segment {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
 ```
+
+#### 实现动态字符图标渲染
+
+**更新** 动态字符图标渲染的实现要点：
+
+1. 使用 `charIcons.length` 计算容器宽度
+2. 通过 `getSegmentStyle()` 函数计算每个段落的样式
+3. 应用 `clip-path` 实现斜线裁剪效果
+4. 设置 `background-image` 实现背景图像
+5. 使用百分比定位实现精确的布局控制
 
 #### 实现小时级精度定位
 
