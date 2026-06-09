@@ -39,10 +39,14 @@
 
         <!-- 活动区域 -->
         <div class="activities-area">
-          <!-- Red 活动条：同一行 -->
-          <div class="activity-row red-row">
+          <!-- Red 活动条：按行分组，重叠的分行显示 -->
+          <div
+            class="activity-row red-row"
+            v-for="(row, rowIndex) in redActivityRows"
+            :key="'red-row-' + rowIndex"
+          >
             <ActivityBar
-              v-for="(activity, index) in redActivities"
+              v-for="(activity, index) in row"
               :key="index"
               :activity="activity"
               :calendarStartDate="currentConfig.startDate"
@@ -138,8 +142,8 @@ const currentActivities = computed(() => {
   });
 });
 
-// 将活动分为两组：red类型（同行）和其他类型（各自一行）
-const redActivities = computed(() => {
+// 将red活动按时间重叠分行
+const redActivityRows = computed(() => {
   const reds = currentActivities.value
     .filter((a) => a.type === "red")
     .map((a) => ({ ...a }));
@@ -149,7 +153,29 @@ const redActivities = computed(() => {
       reds[i].startTime = reds[i - 1].endTime;
     }
   }
-  return reds;
+  // 贪心分行：时间重叠的放不同行
+  const rows = [];
+  for (const act of reds) {
+    const actStart = parseActivityTime(act.startTime, false);
+    const actEnd = parseActivityTime(act.endTime, true);
+    let placed = false;
+    for (const row of rows) {
+      const hasOverlap = row.some((existing) => {
+        const exStart = parseActivityTime(existing.startTime, false);
+        const exEnd = parseActivityTime(existing.endTime, true);
+        return actStart < exEnd && actEnd > exStart;
+      });
+      if (!hasOverlap) {
+        row.push(act);
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      rows.push([act]);
+    }
+  }
+  return rows;
 });
 
 const otherActivities = computed(() => {
@@ -275,12 +301,12 @@ onUnmounted(() => {
 .activities-area {
   margin-top: 30px;
   padding: 10px 0;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: auto;
   min-height: 400px;
   max-height: calc(
     100vh - 40px - 100px - 20px - 10px - 50px - 30px - 10px - 20px - 40px - 5px
   );
-  overflow-y: auto;
 }
 
 .activities-area::-webkit-scrollbar {

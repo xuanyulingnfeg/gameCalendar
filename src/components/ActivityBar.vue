@@ -127,19 +127,43 @@ const barStyle = computed(() => {
   const startHoursOffset = (actStart - calStart) / (1000 * 60 * 60);
   const durationHours = (actEnd - actStart) / (1000 * 60 * 60);
 
-  const marginLeft = (startHoursOffset / totalHours) * 100;
-  const width = (durationHours / totalHours) * 100;
+  let left = (startHoursOffset / totalHours) * 100;
+  let width = (durationHours / totalHours) * 100;
 
-  if (props.absolute) {
-    return {
-      left: marginLeft + "%",
-      width: width + "%",
-    };
+  // 裁剪到可视范围内
+  let clippedLeft = false;
+  let clippedRight = false;
+  if (left < 0) {
+    width += left;
+    left = 0;
+    clippedLeft = true;
   }
-  return {
-    marginLeft: marginLeft + "%",
-    width: width + "%",
-  };
+  if (left + width > 100) {
+    width = 100 - left;
+    clippedRight = true;
+  }
+
+  const style = {};
+  if (props.absolute) {
+    style.left = left + "%";
+    style.width = width + "%";
+  } else {
+    style.marginLeft = left + "%";
+    style.width = width + "%";
+  }
+
+  // 被裁剪侧去掉圆弧
+  if (clippedLeft && clippedRight) {
+    style.borderRadius = "0";
+  } else if (clippedLeft) {
+    style.borderTopLeftRadius = "0";
+    style.borderBottomLeftRadius = "0";
+  } else if (clippedRight) {
+    style.borderTopRightRadius = "0";
+    style.borderBottomRightRadius = "0";
+  }
+
+  return style;
 });
 </script>
 
