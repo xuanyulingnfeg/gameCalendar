@@ -222,7 +222,7 @@ onUnmounted(() => {
 <style scoped>
 .game-calendar {
   height: 100%;
-  background: url("../assets/background.jpg") no-repeat center center fixed;
+  background: url("/config/background.jpg") no-repeat center center fixed;
   background-size: cover;
   display: flex;
   flex-direction: column;
