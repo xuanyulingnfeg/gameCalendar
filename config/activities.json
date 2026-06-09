@@ -113,41 +113,60 @@
           "hasDollarSign": false,
           "hasCharIcon": false,
           "charIcons": []
+        },
+        {
+          "name": "前瞻直播",
+          "startTime": "2026-06-06",
+          "endTime": "2026-06-06",
+          "type": "green",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
         }
       ]
     },
     "mc": {
       "calendarConfig": {
-        "startDate": "2026/04/30",
-        "endDate": "2026/06/07"
+        "startDate": "2026/06/08",
+        "endDate": "2026/07/09"
       },
       "activities": [
         {
-          "name": "绯雪/莫宁/优诺 - 限时换取",
-          "startTime": "2026-04-30 00",
-          "endTime": "2026-05-21 10",
+          "name": "露西/丽贝卡 - 限时换取",
+          "startTime": "2026-06-08 00",
+          "endTime": "2026-07-09 10",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./mc/feixue.png",
-            "./mc/moning.png",
-            "./mc/younuo.png"
+            "./mc/luxi.png",
+            "./mc/libeika.png"
           ]
         },
         {
-          "name": "达妮娅/千咲/弗洛洛 - 限时换取",
-          "startTime": "2026-05-21 10",
-          "endTime": "2026-06-07 18",
+          "name": "洛瑟拉 - 限时换取",
+          "startTime": "2026-06-13 00",
+          "endTime": "2026-07-09 10",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./mc/daniya.png",
-            "./mc/qianxiao.png",
-            "./mc/fuluoluo.png"
+            "./mc/luosela.png"
+          ]
+        },
+        {
+          "name": "卡提希娅 - 限时换取",
+          "startTime": "2026-06-18 00",
+          "endTime": "2026-07-09 10",
+          "type": "red",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": true,
+          "charIcons": [
+            "./mc/katixiya.png"
           ]
         },
         {
@@ -160,85 +179,64 @@
           "hasCharIcon": false
         },
         {
-          "name": "第二索拉联名季、黯原寻迹、群星赠礼、异界联速",
-          "startTime": "2026-04-30",
-          "endTime": "2026-06-07",
+          "name": "夜漫都市、刹灿的电光、逐梦赠礼、深坠异想奇境",
+          "startTime": "2026-06-08",
+          "endTime": "2026-07-09",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
-          "hasCharIcon": false
+          "hasCharIcon": false,
+          "charIcons": []
         },
         {
-          "name": "星弹奇游",
-          "startTime": "2026-05-02",
-          "endTime": "2026-06-07",
-          "type": "orange",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false
-        },
-        {
-          "name": "小团快跑",
-          "startTime": "2026-05-09",
-          "endTime": "2026-05-25",
+          "name": "矩阵重组",
+          "startTime": "2026-06-25",
+          "endTime": "2026-07-09",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
-          "hasCharIcon": false
+          "hasCharIcon": false,
+          "charIcons": []
         },
         {
-          "name": "呜呜急送 - 使命必达",
-          "startTime": "2026-05-07",
-          "endTime": "2026-06-07",
+          "name": "星炬竞速赛，再开！",
+          "startTime": "2026-06-11",
+          "endTime": "2026-06-25",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
-          "hasCharIcon": false
-        },
-        {
-          "name": "冲击！战斗学位考试！",
-          "startTime": "2026-05-07",
-          "endTime": "2026-05-21",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false
+          "hasCharIcon": false,
+          "charIcons": []
         },
         {
           "name": "回音盈域",
-          "startTime": "2026-05-14",
-          "endTime": "2026-05-21",
+          "startTime": "2026-06-15",
+          "endTime": "2026-06-22",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
-          "hasCharIcon": false
+          "hasCharIcon": false,
+          "charIcons": []
         },
         {
-          "name": "踏潮探 · 罗伊冰原",
-          "startTime": "2026-05-25",
-          "endTime": "2026-06-07",
+          "name": "青空之梦",
+          "startTime": "2026-06-18",
+          "endTime": "2026-07-09",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
-          "hasCharIcon": false
-        },
-        {
-          "name": "深坠异想奇境 - 异构绮梦",
-          "startTime": "2026-05-21",
-          "endTime": "2026-06-07",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false
+          "hasCharIcon": false,
+          "charIcons": []
         },
         {
           "name": "声弦涤荡",
-          "startTime": "2026-05-31",
-          "endTime": "2026-06-07",
+          "startTime": "2026-07-02",
+          "endTime": "2026-07-09",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
-          "hasCharIcon": false
+          "hasCharIcon": false,
+          "charIcons": []
         }
       ]
     }
