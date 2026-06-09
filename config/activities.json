@@ -189,6 +189,16 @@
           "charIcons": []
         },
         {
+          "name": "矩阵重组",
+          "startTime": "2026-06-25",
+          "endTime": "2026-07-09",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
           "name": "星炬竞速赛，再开！",
           "startTime": "2026-06-11",
           "endTime": "2026-06-25",
@@ -211,16 +221,6 @@
         {
           "name": "青空之梦",
           "startTime": "2026-06-18",
-          "endTime": "2026-07-09",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "矩阵重组",
-          "startTime": "2026-06-25",
           "endTime": "2026-07-09",
           "type": "gray",
           "icons": [],
