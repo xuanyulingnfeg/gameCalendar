@@ -14,11 +14,11 @@
 
 ## 更新摘要
 **变更内容**
-- 新增自动活动过期过滤系统：实时过滤已结束的活动，仅保留有效的活动条目
-- 实现完整的本地存储持久化：用户选择的游戏类型自动保存到localStorage并支持恢复
-- 增强定时器更新机制：每分钟自动更新当前时间，确保时间指示器准确
-- 改进样式系统：新增游戏类型特定的视觉效果和交互反馈
-- 优化活动分组逻辑：红色活动的智能接续处理和差异化显示
+- 新增鼠标指示器系统，显示垂直线标记和时间戳标签
+- 实现智能红活动分组算法，使用贪心策略将重叠的红色活动分布在多行中
+- 改进背景图片处理，使用静态路径引用
+- 优化活动区域滚动行为和样式系统
+- 增强组件间通信和响应式数据管理
 
 ## 目录
 1. [简介](#简介)
@@ -38,6 +38,8 @@ GameCalendar 是一个专为游戏维护日历设计的 Vue 3 组件，采用 Co
 **重大更新**：系统已完全重构，从传统的周系统迁移到精确的天系统，支持小时级精度的时间计算。新增了游戏类型切换机制，允许用户在不同游戏之间切换，每个游戏都有独立的配置和活动数据。最新版本增强了用户体验，包括localStorage持久化存储、异步配置加载、自动活动过期过滤和改进的响应式布局。
 
 该组件支持多游戏类型配置，包括绝区零和鸣潮等游戏，每个游戏都有独立的时间轴范围和活动配置。通过集成精确的日期计算工具和动态配置系统，用户可以清晰地看到各种限时活动的持续时间和状态。
+
+**更新**：新增鼠标指示器系统，提供精确的时间轴定位功能；实现智能红活动分组算法，使用贪心策略优化重叠活动的显示；改进背景图片处理，使用静态路径引用提升加载性能。
 
 ## 项目结构
 
@@ -66,6 +68,8 @@ LocalStorage[localStorage持久化]
 AsyncLoader[异步配置加载]
 Timer[定时器系统]
 AutoFilter[自动过滤系统]
+MouseIndicator[鼠标指示器系统]
+SmartRedGroup[智能红活动分组]
 end
 App --> GameCalendar
 GameCalendar --> WeekHeader
@@ -77,11 +81,13 @@ GameCalendar --> LocalStorage
 GameCalendar --> AsyncLoader
 GameCalendar --> Timer
 GameCalendar --> AutoFilter
+GameCalendar --> MouseIndicator
+GameCalendar --> SmartRedGroup
 ```
 
 **图表来源**
 - [App.vue:1-35](file://src/App.vue#L1-L35)
-- [GameCalendar.vue:1-352](file://src/components/GameCalendar.vue#L1-L352)
+- [GameCalendar.vue:1-452](file://src/components/GameCalendar.vue#L1-L452)
 
 **章节来源**
 - [App.vue:1-35](file://src/App.vue#L1-L35)
@@ -103,10 +109,12 @@ GameCalendar 作为核心容器组件，承担着以下关键职责：
 - **异步加载**：支持配置文件的异步加载和错误处理
 - **自动活动过滤**：实时过滤已过期的活动，确保界面显示的准确性
 - **定时器管理**：每分钟自动更新当前时间，确保时间指示器准确
+- **鼠标指示器系统**：提供精确的时间轴定位和时间戳显示
+- **智能红活动分组**：使用贪心算法优化重叠活动的显示布局
 
 #### 模板结构
 
-组件采用完整的容器结构，包含游戏类型切换器和背景图片支持：
+组件采用完整的容器结构，包含游戏类型切换器、鼠标指示器和背景图片支持：
 
 ```mermaid
 flowchart TD
@@ -116,15 +124,18 @@ GameCalendar --> LoadingState[loading状态控制]
 LoadingState --> CalendarContainer[calendar-container<br/>主容器]
 CalendarContainer --> CalendarContent[calendar-content<br/>内容容器]
 CalendarContent --> TodayIndicator[TodayIndicator<br/>今日指示器]
+CalendarContent --> MouseIndicator[mouse-indicator<br/>鼠标指示器]
+MouseIndicator --> MouseIndicatorLabel[mouse-indicator-label<br/>时间戳标签]
+MouseIndicator --> MouseIndicatorLine[mouse-indicator-line<br/>垂直线标记]
 CalendarContent --> WeekHeader[WeekHeader<br/>时间轴表头]
 CalendarContent --> ActivitiesArea[activities-area<br/>活动区域]
-ActivitiesArea --> RedRow[red-row<br/>红色活动行]
-RedRow --> RedActivityBars[ActivityBar<br/>红色活动条 x N]
-ActivitiesArea --> OtherActivityBars[ActivityBar<br/>其他活动条 x N]
+ActivitiesArea --> RedRows[red-row<br/>红色活动行 x N]
+RedRows --> RedActivityBars[ActivityBar<br/>红色活动条 x M]
+ActivitiesArea --> OtherActivityBars[ActivityBar<br/>其他活动条 x K]
 ```
 
 **图表来源**
-- [GameCalendar.vue:1-68](file://src/components/GameCalendar.vue#L1-L68)
+- [GameCalendar.vue:1-87](file://src/components/GameCalendar.vue#L1-L87)
 
 #### 脚本逻辑
 
@@ -140,6 +151,8 @@ ActivitiesArea --> OtherActivityBars[ActivityBar<br/>其他活动条 x N]
 - **错误处理**：配置加载失败时提供错误提示和降级处理
 - **活动过滤**：自动过滤已过期的活动，仅显示有效的活动条目
 - **定时器管理**：管理定时器的创建和清理，确保内存安全
+- **鼠标指示器**：实现精确的鼠标位置计算和时间戳显示
+- **智能分组**：使用贪心算法优化红色活动的显示布局
 
 #### 样式设计
 
@@ -153,13 +166,14 @@ ActivitiesArea --> OtherActivityBars[ActivityBar<br/>其他活动条 x N]
 - **滚动行为优化**：活动区域支持垂直滚动，滚动条样式经过专门优化
 - **交互反馈**：按钮悬停效果和激活状态的视觉反馈
 - **游戏类型特定样式**：支持每个游戏类型的独立样式配置
+- **鼠标指示器样式**：红色垂直线和时间戳标签的醒目设计
 
 **章节来源**
-- [GameCalendar.vue:70-194](file://src/components/GameCalendar.vue#L70-L194)
+- [GameCalendar.vue:266-451](file://src/components/GameCalendar.vue#L266-L451)
 
 ## 架构概览
 
-GameCalendar 采用了清晰的分层架构模式，包含多游戏类型支持、异步加载机制、实时更新机制和自动过滤系统：
+GameCalendar 采用了清晰的分层架构模式，包含多游戏类型支持、异步加载机制、实时更新机制、自动过滤系统和新增的鼠标指示器系统：
 
 ```mermaid
 graph TB
@@ -169,6 +183,7 @@ WeekHeader[WeekHeader.vue]
 TodayIndicator[TodayIndicator.vue]
 ActivityBar[ActivityBar.vue]
 GameTypeSwitcher[游戏类型切换器]
+MouseIndicator[鼠标指示器]
 end
 subgraph "业务逻辑层"
 DateUtils[dateUtils.js]
@@ -178,6 +193,9 @@ ActivitiesConfig[activities.json]
 AutoFilter[自动活动过滤]
 Timer[定时器系统]
 ParseTime[时间解析系统]
+SmartRedGroup[智能红活动分组]
+MousePositionCalc[鼠标位置计算]
+TimeFormat[时间格式化]
 end
 subgraph "数据层"
 TimelineInfo[时间轴信息]
@@ -190,13 +208,17 @@ LoadingState[加载状态]
 CurrentGameType[当前游戏类型]
 NowTimestamp[当前时间戳]
 FilteredActivities[过滤后的活动]
-RedActivities[红色活动组]
+RedActivityRows[智能分组的红色活动]
 OtherActivities[其他活动组]
+MouseIndicatorState[鼠标指示器状态]
+MouseIndicatorLabel[鼠标指示器标签]
+MouseIndicatorPosition[鼠标指示器位置]
 end
 GameCalendar --> WeekHeader
 GameCalendar --> TodayIndicator
 GameCalendar --> ActivityBar
 GameCalendar --> GameTypeSwitcher
+GameCalendar --> MouseIndicator
 GameCalendar --> DateUtils
 GameCalendar --> LocalStorage
 GameCalendar --> AsyncLoader
@@ -204,6 +226,9 @@ GameCalendar --> ActivitiesConfig
 GameCalendar --> AutoFilter
 GameCalendar --> Timer
 GameCalendar --> ParseTime
+GameCalendar --> SmartRedGroup
+GameCalendar --> MousePositionCalc
+GameCalendar --> TimeFormat
 DateUtils --> TimelineInfo
 DateUtils --> TodayPosition
 DateUtils --> TodayLabel
@@ -212,20 +237,107 @@ AsyncLoader --> LoadingState
 AsyncLoader --> Config
 AsyncLoader --> Activities
 AutoFilter --> FilteredActivities
-AutoFilter --> RedActivities
-AutoFilter --> OtherActivities
+SmartRedGroup --> RedActivityRows
+SmartRedGroup --> OtherActivities
+MousePositionCalc --> MouseIndicatorState
+MousePositionCalc --> MouseIndicatorLabel
+MousePositionCalc --> MouseIndicatorPosition
 Timer --> NowTimestamp
 ParseTime --> Activities
+TimeFormat --> MouseIndicatorLabel
 GameCalendar --> Timer
 GameCalendar --> NowTimestamp
 ```
 
 **图表来源**
-- [GameCalendar.vue:70-194](file://src/components/GameCalendar.vue#L70-L194)
+- [GameCalendar.vue:90-264](file://src/components/GameCalendar.vue#L90-L264)
 - [dateUtils.js:1-81](file://src/utils/dateUtils.js#L1-L81)
-- [activities.json:1-246](file://public/config/activities.json#L1-L246)
+- [activities.json:1-244](file://public/config/activities.json#L1-L244)
 
 ## 详细组件分析
+
+### 鼠标指示器系统
+
+#### 精确位置计算
+
+GameCalendar 实现了先进的鼠标指示器系统：
+
+```mermaid
+sequenceDiagram
+participant GC as GameCalendar
+participant MA as activitiesAreaEl
+participant MI as mouseIndicator
+participant DU as dateUtils
+GC->>MA : 绑定 mousemove 事件
+MA->>GC : onActivitiesMouseMove(e)
+GC->>GC : 计算鼠标相对位置
+GC->>MI : 设置 mouseIndicatorX
+GC->>MI : 显示鼠标指示器
+GC->>GC : 计算对应日历时间
+GC->>MI : 更新 mouseIndicatorLabel
+GC->>MI : 隐藏鼠标指示器
+MA->>GC : onActivitiesMouseLeave()
+```
+
+**图表来源**
+- [GameCalendar.vue:226-247](file://src/components/GameCalendar.vue#L226-L247)
+
+##### 鼠标位置计算
+
+- **相对定位**：计算鼠标相对于活动区域的精确位置
+- **偏移修正**：考虑 calendar-content 的 padding(10px) 偏移
+- **边界保护**：确保指示器位置在有效范围内
+- **实时更新**：鼠标移动时实时更新位置和标签
+
+##### 时间戳格式化
+
+- **日期格式**：显示 "月/日" 格式的日期
+- **时间格式**：显示 "HH:00" 格式的时间
+- **精度控制**：小时级精度的时间显示
+- **动态更新**：鼠标位置变化时实时更新时间戳
+
+**章节来源**
+- [GameCalendar.vue:226-247](file://src/components/GameCalendar.vue#L226-L247)
+
+### 智能红活动分组算法
+
+#### 贪心策略实现
+
+GameCalendar 实现了智能的红色活动分组系统：
+
+```mermaid
+flowchart TD
+Activities[活动数组] --> FilterRed[过滤红色活动]
+FilterRed --> TimeContinuity[时间接续处理]
+TimeContinuity --> GreedyAlgorithm[贪心分组算法]
+GreedyAlgorithm --> CheckOverlap[检查重叠]
+CheckOverlap --> HasOverlap{有重叠?}
+HasOverlap --> |是| CreateNewRow[创建新行]
+HasOverlap --> |否| PlaceInExistingRow[放置现有行]
+CreateNewRow --> CheckOverlap
+PlaceInExistingRow --> CheckOverlap
+CheckOverlap --> |完成| ReturnRows[返回分组结果]
+ReturnRows --> Render[渲染分组活动]
+```
+
+**图表来源**
+- [GameCalendar.vue:161-194](file://src/components/GameCalendar.vue#L161-L194)
+
+##### 时间接续处理
+
+- **连续性优化**：当相邻红色活动之间存在间隔时，自动调整起始时间
+- **时间对齐**：确保活动之间的无缝连接
+- **边界处理**：处理活动开始和结束时间的精确对齐
+
+##### 贪心分组策略
+
+- **重叠检测**：使用时间区间重叠算法检测活动冲突
+- **行分配**：为每个重叠的活动分配到不同的行
+- **最优性保证**：使用贪心策略确保最少行数的分配
+- **时间复杂度**：O(n²) 的时间复杂度，适用于合理规模的活动数据
+
+**章节来源**
+- [GameCalendar.vue:161-194](file://src/components/GameCalendar.vue#L161-L194)
 
 ### 自动活动过期过滤系统
 
@@ -238,19 +350,19 @@ sequenceDiagram
 participant GC as GameCalendar
 participant CA as currentActivities
 participant AF as AutoFilter
-participant RA as redActivities
+participant RA as redActivityRows
 participant OA as otherActivities
 GC->>AF : 计算 currentActivities
 AF->>AF : 过滤已过期活动
 AF->>RA : 红色活动不过滤
 AF->>OA : 其他类型活动过滤
-RA->>GC : 返回红色活动组
+RA->>GC : 返回智能分组的红色活动
 OA->>GC : 返回其他活动组
 GC->>GC : 触发重新渲染
 ```
 
 **图表来源**
-- [GameCalendar.vue:130-157](file://src/components/GameCalendar.vue#L130-L157)
+- [GameCalendar.vue:149-198](file://src/components/GameCalendar.vue#L149-L198)
 
 ##### 过滤逻辑实现
 
@@ -267,8 +379,7 @@ GC->>GC : 触发重新渲染
 - **Date对象创建**：精确创建Date对象用于时间比较
 
 **章节来源**
-- [GameCalendar.vue:117-139](file://src/components/GameCalendar.vue#L117-L139)
-- [GameCalendar.vue:142-157](file://src/components/GameCalendar.vue#L142-L157)
+- [GameCalendar.vue:135-158](file://src/components/GameCalendar.vue#L135-L158)
 
 ### 本地存储持久化系统
 
@@ -291,7 +402,7 @@ GC->>GC : 重新加载配置
 ```
 
 **图表来源**
-- [GameCalendar.vue:100-108](file://src/components/GameCalendar.vue#L100-L108)
+- [GameCalendar.vue:119-127](file://src/components/GameCalendar.vue#L119-L127)
 
 ##### 状态管理
 
@@ -307,7 +418,7 @@ GC->>GC : 重新加载配置
 - **容错处理**：localStorage不可用时优雅降级
 
 **章节来源**
-- [GameCalendar.vue:100-108](file://src/components/GameCalendar.vue#L100-L108)
+- [GameCalendar.vue:119-127](file://src/components/GameCalendar.vue#L119-L127)
 
 ### 增强的定时器更新机制
 
@@ -333,7 +444,7 @@ GC->>GC : onUnmounted() 清理定时器
 ```
 
 **图表来源**
-- [GameCalendar.vue:179-193](file://src/components/GameCalendar.vue#L179-L193)
+- [GameCalendar.vue:249-263](file://src/components/GameCalendar.vue#L249-L263)
 - [dateUtils.js:32-54](file://src/utils/dateUtils.js#L32-L54)
 
 ##### 定时器管理
@@ -350,46 +461,8 @@ GC->>GC : onUnmounted() 清理定时器
 - **时间同步**：与系统时间保持同步，避免漂移
 
 **章节来源**
-- [GameCalendar.vue:179-193](file://src/components/GameCalendar.vue#L179-L193)
+- [GameCalendar.vue:249-263](file://src/components/GameCalendar.vue#L249-L263)
 - [dateUtils.js:32-54](file://src/utils/dateUtils.js#L32-L54)
-
-### 改进的活动分组系统
-
-#### 智能分组机制
-
-GameCalendar 实现了智能的活动分组系统：
-
-```mermaid
-flowchart TD
-Activities[活动数组] --> FilterRed[过滤红色活动]
-FilterRed --> RedProcessing[红色活动处理]
-RedProcessing --> TimeContinuity[时间接续处理]
-TimeContinuity --> RedRow[红色活动行]
-Activities --> FilterOther[过滤其他类型活动]
-FilterOther --> OtherRows[各自一行]
-RedRow --> Render[渲染红色活动]
-OtherRows --> Render
-```
-
-**图表来源**
-- [GameCalendar.vue:142-157](file://src/components/GameCalendar.vue#L142-L157)
-
-##### 红色活动处理
-
-- **时间接续**：当相邻红色活动之间存在间隔时，自动调整起始时间
-- **绝对定位**：使用绝对定位在同一行显示多个活动
-- **样式统一**：共享相同的视觉样式和布局
-- **智能合并**：处理时间重叠和间隔的情况
-
-##### 其他活动处理
-
-- **独立行显示**：每个活动占据独立的一行
-- **相对定位**：使用 `marginLeft` 进行定位
-- **差异化样式**：根据类型应用不同的视觉样式
-- **响应式布局**：适应不同屏幕尺寸的显示需求
-
-**章节来源**
-- [GameCalendar.vue:142-157](file://src/components/GameCalendar.vue#L142-L157)
 
 ### 改进的样式系统
 
@@ -405,21 +478,27 @@ ActiveState --> ActiveStyle[激活样式]
 GameTypeBtn --> HoverState[hover状态]
 HoverState --> HoverStyle[悬停样式]
 GameTypeBtn --> BackgroundImage[bgImage配置]
-BackgroundImage --> CustomBackground[自定义背景图片]
+BackgroundImage --> StaticPath[静态路径引用]
+StaticPath --> OptimizedLoad[优化加载]
 GameTypeBtn --> BorderEffects[边框效果]
 BorderEffects --> MetalBorder[金属质感边框]
 GameTypeBtn --> ShadowEffects[阴影效果]
 ShadowEffects --> ActivationShadow[激活阴影]
+MouseIndicator[鼠标指示器] --> IndicatorStyle[指示器样式]
+IndicatorStyle --> RedColorScheme[红色配色方案]
+IndicatorStyle --> VerticalLine[垂直线设计]
+IndicatorStyle --> TimestampLabel[时间戳标签]
 ```
 
 **图表来源**
-- [GameCalendar.vue:346-350](file://src/components/GameCalendar.vue#L346-L350)
+- [GameCalendar.vue:423-450](file://src/components/GameCalendar.vue#L423-L450)
 
 ##### 游戏类型按钮样式
 
 - **激活状态**：当前选中游戏类型显示红色边框和阴影
 - **悬停效果**：鼠标悬停时按钮放大和颜色变化
 - **背景图片**：支持每个游戏类型独立的背景图片配置
+- **静态路径优化**：使用静态路径引用提升加载性能
 - **尺寸规格**：统一的160px×80px尺寸和圆角设计
 - **过渡动画**：0.3秒的平滑过渡效果
 
@@ -438,8 +517,16 @@ ShadowEffects --> ActivationShadow[激活阴影]
 - **透明度处理**：滚动条轨道透明，避免视觉干扰
 - **颜色搭配**：使用#acacac的灰色滚动条，与整体色调协调
 
+##### 鼠标指示器样式
+
+- **红色配色**：使用 #e63946 的醒目红色配色
+- **垂直线设计**：3px 宽度的垂直线标记
+- **时间戳标签**：12px 字体大小的圆形标签设计
+- **透明度控制**：60% 透明度的半透明效果
+- **层级管理**：z-index: 10 的层级确保可见性
+
 **章节来源**
-- [GameCalendar.vue:346-350](file://src/components/GameCalendar.vue#L346-L350)
+- [GameCalendar.vue:423-450](file://src/components/GameCalendar.vue#L423-L450)
 - [GameCalendar.vue:286-297](file://src/components/GameCalendar.vue#L286-L297)
 
 ## 依赖关系分析
@@ -456,9 +543,13 @@ GameCalendar --> LocalStorage[localStorage持久化]
 GameCalendar --> AsyncLoader[异步配置加载]
 GameCalendar --> AutoFilter[自动过滤系统]
 GameCalendar --> Timer[定时器系统]
+GameCalendar --> MouseIndicator[鼠标指示器系统]
+GameCalendar --> SmartRedGroup[智能红活动分组]
 ActivityBar --> GameCalendar
 WeekHeader --> GameCalendar
 TodayIndicator --> GameCalendar
+MouseIndicator --> GameCalendar
+SmartRedGroup --> GameCalendar
 DateUtils --> TimelineInfo[时间轴信息]
 DateUtils --> TodayPosition[今日位置]
 LocalStorage --> CurrentGameType[当前游戏类型]
@@ -467,10 +558,15 @@ AsyncLoader --> GameTypesConfig[gameTypes配置]
 AsyncLoader --> GameDataConfig[gameData配置]
 Timer --> NowTimestamp[当前时间戳]
 AutoFilter --> FilteredActivities[过滤后的活动]
+MouseIndicator --> MouseIndicatorState[鼠标指示器状态]
+MouseIndicator --> MouseIndicatorLabel[鼠标指示器标签]
+MouseIndicator --> MouseIndicatorPosition[鼠标指示器位置]
+SmartRedGroup --> RedActivityRows[智能分组的红色活动]
+SmartRedGroup --> OtherActivities[其他活动组]
 ```
 
 **图表来源**
-- [GameCalendar.vue:70-79](file://src/components/GameCalendar.vue#L70-L79)
+- [GameCalendar.vue:90-98](file://src/components/GameCalendar.vue#L90-L98)
 
 ### 数据流向
 
@@ -481,6 +577,7 @@ ActivitiesJson[activities.json]
 LocalStorage[localStorage持久化]
 DateObject[JavaScript Date]
 Timer[定时器]
+MouseEvents[鼠标事件]
 end
 subgraph "GameCalendar"
 CurrentGameType[currentGameType]
@@ -493,8 +590,12 @@ ContainerRef[calendarContainerEl]
 LoadingState[loading状态]
 NowTimestamp[now]
 FilteredActivities[filteredActivities]
-RedActivities[redActivities]
+RedActivityRows[redActivityRows]
 OtherActivities[otherActivities]
+MouseIndicatorState[showMouseIndicator]
+MouseIndicatorPosition[mouseIndicatorX]
+MouseIndicatorLabel[mouseIndicatorLabel]
+ActivitiesAreaEl[activitiesAreaEl]
 end
 subgraph "子组件"
 WeekHeader[WeekHeader]
@@ -505,6 +606,7 @@ ActivitiesJson --> GameCalendar
 LocalStorage --> GameCalendar
 DateObject --> GameCalendar
 Timer --> GameCalendar
+MouseEvents --> GameCalendar
 GameCalendar --> WeekHeader
 GameCalendar --> TodayIndicator
 GameCalendar --> ActivityBar
@@ -513,11 +615,11 @@ ActivityBar --> TodayIndicator
 ```
 
 **图表来源**
-- [GameCalendar.vue:111-177](file://src/components/GameCalendar.vue#L111-L177)
-- [activities.json:1-246](file://public/config/activities.json#L1-246)
+- [GameCalendar.vue:129-264](file://src/components/GameCalendar.vue#L129-L264)
+- [activities.json:1-244](file://public/config/activities.json#L1-244)
 
 **章节来源**
-- [GameCalendar.vue:70-177](file://src/components/GameCalendar.vue#L70-L177)
+- [GameCalendar.vue:90-264](file://src/components/GameCalendar.vue#L90-L264)
 
 ## 性能考虑
 
@@ -529,6 +631,8 @@ ActivityBar --> TodayIndicator
 - **定时器管理**：确保定时器正确清理，避免内存泄漏
 - **异步加载优化**：配置文件异步加载，不影响初始渲染性能
 - **活动过滤优化**：使用高效的过滤算法和缓存机制
+- **鼠标事件节流**：鼠标移动事件的性能优化
+- **智能分组缓存**：红色活动分组结果的缓存机制
 
 ### 渲染性能
 
@@ -538,6 +642,7 @@ ActivityBar --> TodayIndicator
 - **背景图片优化**：使用固定定位减少重绘
 - **滚动性能**：活动区域滚动使用硬件加速优化
 - **动画性能**：使用 transform 和 opacity 属性优化动画性能
+- **鼠标指示器优化**：指示器的最小化重绘开销
 
 ### 内存管理
 
@@ -546,6 +651,7 @@ ActivityBar --> TodayIndicator
 - **定时器清理**：确保定时器正确销毁
 - **配置缓存**：避免重复加载相同配置
 - **过滤结果缓存**：缓存过滤结果减少重复计算
+- **鼠标事件清理**：确保鼠标事件监听器正确清理
 
 ### 错误处理优化
 
@@ -554,6 +660,8 @@ ActivityBar --> TodayIndicator
 - **数据解析错误**：验证配置数据格式和完整性
 - **localStorage异常**：处理浏览器存储限制和权限问题
 - **定时器异常**：处理定时器创建和清理过程中的异常
+- **鼠标事件异常**：处理鼠标事件计算过程中的异常
+- **分组算法异常**：处理智能分组过程中的边界情况
 
 ## 故障排除指南
 
@@ -680,10 +788,49 @@ ActivityBar --> TodayIndicator
 - 确保只创建一个定时器实例
 - 使用正确的清理方法
 
+#### 鼠标指示器问题
+
+**问题描述**：鼠标指示器不显示或显示异常
+**可能原因**：
+- 鼠标事件绑定失败
+- 位置计算错误
+- 样式配置问题
+
+**解决方案**：
+- 检查 mousemove 和 mouseleave 事件绑定
+- 验证 getBoundingClientRect() 调用
+- 确认样式类名和CSS规则
+
+#### 智能红活动分组问题
+
+**问题描述**：红色活动分组不正确或显示异常
+**可能原因**：
+- 分组算法错误
+- 时间重叠检测失败
+- 行分配逻辑问题
+
+**解决方案**：
+- 检查贪心分组算法实现
+- 验证时间重叠检测逻辑
+- 确认活动排序和分配过程
+
+#### 背景图片加载问题
+
+**问题描述**：游戏类型背景图片加载失败
+**可能原因**：
+- 静态路径引用错误
+- 图片文件不存在
+- 路径解析问题
+
+**解决方案**：
+- 检查 bgImage 路径配置
+- 验证图片文件存在性
+- 确认静态资源打包配置
+
 **章节来源**
-- [GameCalendar.vue:179-193](file://src/components/GameCalendar.vue#L179-L193)
+- [GameCalendar.vue:249-263](file://src/components/GameCalendar.vue#L249-L263)
 - [dateUtils.js:32-54](file://src/utils/dateUtils.js#L32-L54)
-- [ActivityBar.vue:43-64](file://src/components/ActivityBar.vue#L43-L64)
+- [ActivityBar.vue:88-100](file://src/components/ActivityBar.vue#L88-L100)
 
 ## 结论
 
@@ -699,6 +846,8 @@ GameCalendar 主容器组件展现了现代 Vue 3 应用的最佳实践，经过
 - **智能活动过滤**：自动过滤已过期活动，提升用户体验
 - **本地存储持久化**：用户偏好设置的持久化存储
 - **丰富的视觉效果**：游戏类型特定的背景图片和样式
+- **鼠标交互增强**：精确的鼠标指示器系统
+- **智能布局优化**：贪心算法优化的活动分组显示
 - **可扩展性**：良好的抽象层便于功能扩展
 - **可维护性**：代码结构清晰，易于理解和修改
 - **用户体验**：完整的用户状态保持和流畅的交互体验
@@ -716,6 +865,8 @@ GameCalendar 主容器组件展现了现代 Vue 3 应用的最佳实践，经过
 - **错误处理**：完善的错误处理和降级机制
 - **响应式布局**：严格的布局约束和优化的滚动行为
 - **自动过滤系统**：实时维护界面数据的准确性
+- **鼠标交互系统**：精确的时间轴定位和时间戳显示
+- **智能分组算法**：贪心策略优化的活动布局
 
 ### 扩展建议
 
@@ -731,7 +882,10 @@ GameCalendar 主容器组件展现了现代 Vue 3 应用的最佳实践，经过
 10. **SEO优化**：添加搜索引擎优化支持
 11. **活动搜索**：添加活动名称搜索功能
 12. **通知系统**：添加活动即将结束的通知功能
+13. **手势支持**：添加触摸手势支持
+14. **导出功能**：添加活动数据导出功能
+15. **自定义配置**：允许用户自定义显示选项
 
-**更新**：经过完全重构的 GameCalendar 组件，从传统的周系统迁移到精确的天系统，新增了多游戏类型支持、智能的活动分组机制、localStorage持久化存储、异步配置加载、自动活动过期过滤系统、增强的定时器更新机制和改进的响应式布局。新的架构不仅保持了原有的优秀特性，还显著提升了功能性和用户体验，是一个值得推荐的 Vue 3 组件实现。
+**更新**：经过完全重构的 GameCalendar 组件，从传统的周系统迁移到精确的天系统，新增了多游戏类型支持、智能的活动分组机制、localStorage持久化存储、异步配置加载、自动活动过期过滤系统、增强的定时器更新机制、改进的响应式布局、鼠标指示器系统和智能红活动分组算法。新的架构不仅保持了原有的优秀特性，还显著提升了功能性和用户体验，是一个值得推荐的 Vue 3 组件实现。
 
 该组件为游戏维护日历应用提供了坚实的基础，经过本次重构后，具备了现代化的架构设计、精确的时间计算能力、灵活的配置系统、优秀的用户体验、强大的可扩展性和完善的错误处理机制，能够轻松扩展和定制以满足不同的业务需求。

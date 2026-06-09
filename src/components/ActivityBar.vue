@@ -93,9 +93,13 @@ function onBarMouseMove(e) {
   tooltipFixedX.value = e.clientX;
   tooltipFixedY.value = barRect.bottom + 4;
 
-  // 检查提示是否会超出右侧（估算提示宽度约180px）
+  // 检查提示是否会超出活动区域右侧
+  const activitiesArea = bar.closest(".activities-area");
+  const areaRight = activitiesArea
+    ? activitiesArea.getBoundingClientRect().right
+    : window.innerWidth;
   const tooltipWidth = 180;
-  const rightSpace = window.innerWidth - e.clientX;
+  const rightSpace = areaRight - e.clientX;
   tooltipFlipped.value = rightSpace < tooltipWidth;
 }
 
