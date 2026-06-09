@@ -30,6 +30,16 @@
           :label="todayLabel"
         />
 
+        <!-- 鼠标悬浮指示器 -->
+        <div
+          class="mouse-indicator"
+          v-if="showMouseIndicator"
+          :style="{ left: mouseIndicatorX + 'px' }"
+        >
+          <div class="mouse-indicator-label">{{ mouseIndicatorLabel }}</div>
+          <div class="mouse-indicator-line"></div>
+        </div>
+
         <!-- 时间轴表头 -->
         <WeekHeader
           :startDate="currentConfig.startDate"
@@ -44,15 +54,6 @@
           @mouseleave="onActivitiesMouseLeave"
           ref="activitiesAreaEl"
         >
-          <!-- 鼠标指示器 -->
-          <div
-            class="mouse-indicator"
-            v-if="showMouseIndicator"
-            :style="{ left: mouseIndicatorX + 'px' }"
-          >
-            <div class="mouse-indicator-label">{{ mouseIndicatorLabel }}</div>
-            <div class="mouse-indicator-line"></div>
-          </div>
           <!-- Red 活动条：按行分组，重叠的分行显示 -->
           <div
             class="activity-row red-row"
@@ -225,7 +226,8 @@ const mouseIndicatorLabel = ref("");
 function onActivitiesMouseMove(e) {
   const rect = activitiesAreaEl.value.getBoundingClientRect();
   const x = e.clientX - rect.left;
-  mouseIndicatorX.value = x;
+  // 指示器现在在 calendar-content 层级，需加上 calendar-content 的 padding(10px)
+  mouseIndicatorX.value = x + 10;
   showMouseIndicator.value = true;
 
   // 计算鼠标位置对应的日历时间

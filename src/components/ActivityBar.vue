@@ -12,7 +12,7 @@
       class="activity-tooltip"
       :class="{ 'tooltip-left': tooltipFlipped }"
       v-if="showTooltip"
-      :style="{ left: tooltipX + 'px' }"
+      :style="{ left: tooltipFixedX + 'px', top: tooltipFixedY + 'px' }"
     >
       {{ tooltipText }}
     </div>
@@ -81,18 +81,21 @@ const props = defineProps({
 });
 
 const showTooltip = ref(false);
-const tooltipX = ref(0);
+const tooltipFixedX = ref(0);
+const tooltipFixedY = ref(0);
 const tooltipFlipped = ref(false);
 
 function onBarMouseMove(e) {
   const bar = e.currentTarget;
   const barRect = bar.getBoundingClientRect();
-  const x = e.clientX - barRect.left;
-  tooltipX.value = x;
 
-  // 检查提示是否会超出活动区域右侧（估算提示宽度约180px）
+  // 使用视口坐标定位（fixed）
+  tooltipFixedX.value = e.clientX;
+  tooltipFixedY.value = barRect.bottom + 4;
+
+  // 检查提示是否会超出右侧（估算提示宽度约180px）
   const tooltipWidth = 180;
-  const rightSpace = barRect.right - e.clientX;
+  const rightSpace = window.innerWidth - e.clientX;
   tooltipFlipped.value = rightSpace < tooltipWidth;
 }
 
@@ -101,15 +104,28 @@ const tooltipText = computed(() => {
   const actStart = parseTime(props.activity.startTime, false);
   const actEnd = parseTime(props.activity.endTime, true);
 
+  // 活动已结束
+  if (now >= actEnd) {
+    return `当前活动已结束`;
+  }
+
   // 计算自然日之差（只算日期部分）
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   if (now < actStart) {
-    const startDay = new Date(actStart.getFullYear(), actStart.getMonth(), actStart.getDate());
+    const startDay = new Date(
+      actStart.getFullYear(),
+      actStart.getMonth(),
+      actStart.getDate(),
+    );
     const diffDays = Math.ceil((startDay - todayStart) / (1000 * 60 * 60 * 24));
     return `距离活动开始还有：${diffDays}天`;
   } else {
-    const endDay = new Date(actEnd.getFullYear(), actEnd.getMonth(), actEnd.getDate());
+    const endDay = new Date(
+      actEnd.getFullYear(),
+      actEnd.getMonth(),
+      actEnd.getDate(),
+    );
     const diffDays = Math.ceil((endDay - todayStart) / (1000 * 60 * 60 * 24));
     return `距离活动结束还有：${diffDays}天`;
   }
@@ -233,9 +249,8 @@ const barStyle = computed(() => {
 }
 
 .activity-tooltip {
-  position: absolute;
-  top: 100%;
-  margin-top: 4px;
+  position: fixed;
+  margin-top: 0;
   background: rgba(0, 0, 0, 0.85);
   color: #fff;
   font-size: 12px;
@@ -243,7 +258,7 @@ const barStyle = computed(() => {
   padding: 4px 10px;
   border-radius: 4px;
   white-space: nowrap;
-  z-index: 20;
+  z-index: 100;
   pointer-events: none;
 }
 
