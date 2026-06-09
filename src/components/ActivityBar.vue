@@ -1,5 +1,22 @@
 <template>
-  <div class="activity-bar" :class="'type-' + activity.type" :style="barStyle">
+  <div
+    class="activity-bar"
+    :class="'type-' + activity.type"
+    :style="barStyle"
+    @mouseenter="showTooltip = true"
+    @mousemove="onBarMouseMove"
+    @mouseleave="showTooltip = false"
+  >
+    <!-- 悬浮提示 -->
+    <div
+      class="activity-tooltip"
+      :class="{ 'tooltip-left': tooltipFlipped }"
+      v-if="showTooltip"
+      :style="{ left: tooltipX + 'px' }"
+    >
+      {{ tooltipText }}
+    </div>
+
     <!-- $ 标记 -->
     <div class="dollar-sign" v-if="activity.hasDollarSign">
       <img src="../assets/starIcon.png" />
@@ -38,7 +55,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 const props = defineProps({
   activity: {
@@ -61,6 +78,41 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+});
+
+const showTooltip = ref(false);
+const tooltipX = ref(0);
+const tooltipFlipped = ref(false);
+
+function onBarMouseMove(e) {
+  const bar = e.currentTarget;
+  const barRect = bar.getBoundingClientRect();
+  const x = e.clientX - barRect.left;
+  tooltipX.value = x;
+
+  // 检查提示是否会超出活动区域右侧（估算提示宽度约180px）
+  const tooltipWidth = 180;
+  const rightSpace = barRect.right - e.clientX;
+  tooltipFlipped.value = rightSpace < tooltipWidth;
+}
+
+const tooltipText = computed(() => {
+  const now = new Date();
+  const actStart = parseTime(props.activity.startTime, false);
+  const actEnd = parseTime(props.activity.endTime, true);
+
+  // 计算自然日之差（只算日期部分）
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  if (now < actStart) {
+    const startDay = new Date(actStart.getFullYear(), actStart.getMonth(), actStart.getDate());
+    const diffDays = Math.ceil((startDay - todayStart) / (1000 * 60 * 60 * 24));
+    return `距离活动开始还有：${diffDays}天`;
+  } else {
+    const endDay = new Date(actEnd.getFullYear(), actEnd.getMonth(), actEnd.getDate());
+    const diffDays = Math.ceil((endDay - todayStart) / (1000 * 60 * 60 * 24));
+    return `距离活动结束还有：${diffDays}天`;
+  }
 });
 
 function parseTime(timeStr, isEnd = false) {
@@ -178,6 +230,25 @@ const barStyle = computed(() => {
   margin-bottom: 14px;
   box-sizing: border-box;
   /* overflow: hidden; */
+}
+
+.activity-tooltip {
+  position: absolute;
+  top: 100%;
+  margin-top: 4px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.activity-tooltip.tooltip-left {
+  transform: translateX(-100%);
 }
 
 .activity-bar.type-red {

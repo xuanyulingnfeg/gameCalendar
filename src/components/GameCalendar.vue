@@ -38,7 +38,21 @@
         />
 
         <!-- 活动区域 -->
-        <div class="activities-area">
+        <div
+          class="activities-area"
+          @mousemove="onActivitiesMouseMove"
+          @mouseleave="onActivitiesMouseLeave"
+          ref="activitiesAreaEl"
+        >
+          <!-- 鼠标指示器 -->
+          <div
+            class="mouse-indicator"
+            v-if="showMouseIndicator"
+            :style="{ left: mouseIndicatorX + 'px' }"
+          >
+            <div class="mouse-indicator-label">{{ mouseIndicatorLabel }}</div>
+            <div class="mouse-indicator-line"></div>
+          </div>
           <!-- Red 活动条：按行分组，重叠的分行显示 -->
           <div
             class="activity-row red-row"
@@ -202,6 +216,34 @@ const todayHeight = computed(() => {
   return calendarContainerEl?.value?.offsetHeight || 0;
 });
 
+// 鼠标指示器
+const activitiesAreaEl = ref(null);
+const showMouseIndicator = ref(false);
+const mouseIndicatorX = ref(0);
+const mouseIndicatorLabel = ref("");
+
+function onActivitiesMouseMove(e) {
+  const rect = activitiesAreaEl.value.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  mouseIndicatorX.value = x;
+  showMouseIndicator.value = true;
+
+  // 计算鼠标位置对应的日历时间
+  const ratio = x / rect.width;
+  const calStart = new Date(currentConfig.value.startDate);
+  calStart.setHours(0, 0, 0, 0);
+  const totalMs = timelineInfo.value.totalDays * 24 * 60 * 60 * 1000;
+  const targetDate = new Date(calStart.getTime() + ratio * totalMs);
+  const month = targetDate.getMonth() + 1;
+  const day = targetDate.getDate();
+  const hour = targetDate.getHours();
+  mouseIndicatorLabel.value = `${month}月${day}日 ${hour.toString().padStart(2, "0")}:00`;
+}
+
+function onActivitiesMouseLeave() {
+  showMouseIndicator.value = false;
+}
+
 let timer = null;
 
 onMounted(() => {
@@ -299,6 +341,7 @@ onUnmounted(() => {
 }
 
 .activities-area {
+  position: relative;
   margin-top: 30px;
   padding: 10px 0;
   overflow-x: clip;
@@ -373,5 +416,34 @@ onUnmounted(() => {
   border-color: #e63946;
   box-shadow: 0 0 10px rgba(230, 57, 70, 0.5);
   color: #fff;
+}
+
+.mouse-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.mouse-indicator-label {
+  background: #e63946;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.mouse-indicator-line {
+  width: 2px;
+  flex: 1;
+  background: #e63946;
+  opacity: 0.6;
 }
 </style>
