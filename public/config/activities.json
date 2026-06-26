@@ -14,40 +14,40 @@
   "gameData": {
     "zzz": {
       "calendarConfig": {
-        "startDate": "2026/05/07",
-        "endDate": "2026/06/17"
+        "startDate": "2026/06/18",
+        "endDate": "2026/07/29"
       },
       "activities": [
         {
-          "name": "普罗米娅/卢西娅 - 限时频段",
-          "startTime": "2026-05-07 10",
-          "endTime": "2026-05-28 04",
+          "name": "维琳娜/叶瞬光 - 限时频段",
+          "startTime": "2026-06-18 12",
+          "endTime": "2026-07-08 04",
           "type": "red",
           "icons": [],
           "hasDollarSign": true,
           "hasCharIcon": true,
           "charIcons": [
-            "./zzz/puluomiya.png",
-            "./zzz/luxiya.png"
+            "./zzz/weilinna.png",
+            "./zzz/yeshunguang.png"
           ]
         },
         {
-          "name": "星徽·比利/奥菲丝&「鬼火」- 限时频段",
-          "startTime": "2026-05-28 04",
-          "endTime": "2026-06-16 18",
+          "name": "诺姆/千夏 - 限时频段",
+          "startTime": "2026-07-08 04",
+          "endTime": "2026-07-28 18",
           "type": "red",
           "icons": [],
           "hasDollarSign": true,
           "hasCharIcon": true,
           "charIcons": [
-            "./zzz/xinghuibili.png",
-            "./zzz/aofeisi.png"
+            "./zzz/nuomu.png",
+            "./zzz/qianxia.png"
           ]
         },
         {
-          "name": "游乐岛拯救计划",
-          "startTime": "2026-05-07 10",
-          "endTime": "2026-06-15 04",
+          "name": "纪念臻礼、邦邦！天才与奇迹芯片、天枢情报图册",
+          "startTime": "2026-06-18 12",
+          "endTime": "2026-07-29 06",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -55,9 +55,9 @@
           "charIcons": []
         },
         {
-          "name": "极限裁决试炼",
-          "startTime": "2026-05-13 10",
-          "endTime": "2026-06-01 04",
+          "name": "锋芒契影协战",
+          "startTime": "2026-06-19 10",
+          "endTime": "2026-07-13 04",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -65,9 +65,9 @@
           "charIcons": []
         },
         {
-          "name": "先遣赏金",
-          "startTime": "2026-05-20 04",
-          "endTime": "2026-05-25 04",
+          "name": "集结！模考逆袭计划",
+          "startTime": "2026-06-26 10",
+          "endTime": "2026-07-27 04",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -75,9 +75,9 @@
           "charIcons": []
         },
         {
-          "name": "「灵魂」画手侧写簿",
-          "startTime": "2026-05-27 10",
-          "endTime": "2026-06-15 04",
+          "name": "先遣赏金-区域巡防",
+          "startTime": "2026-07-02 04",
+          "endTime": "2026-07-07 04",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
@@ -85,19 +85,9 @@
           "charIcons": []
         },
         {
-          "name": "走近丽都异闻",
-          "startTime": "2026-06-01 10",
-          "endTime": "2026-06-15 04",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "数据悬赏",
-          "startTime": "2026-06-10 04",
-          "endTime": "2026-06-15 04",
+          "name": "跛脚乌鸦奇闻录",
+          "startTime": "2026-07-03 10",
+          "endTime": "2026-07-20 04",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -105,9 +95,19 @@
           "charIcons": []
         },
         {
-          "name": "早安，罗斯凯利法",
-          "startTime": "2026-06-06 10",
-          "endTime": "2026-06-17 06",
+          "name": "艺术就是邦布！",
+          "startTime": "2026-07-08 10",
+          "endTime": "2026-07-27 04",
+          "type": "orange",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "数据悬赏-实战模拟",
+          "startTime": "2026-07-22 04",
+          "endTime": "2026-07-27 04",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
@@ -116,8 +116,8 @@
         },
         {
           "name": "前瞻直播",
-          "startTime": "2026-06-06",
-          "endTime": "2026-06-06",
+          "startTime": "2026-07-17",
+          "endTime": "2026-07-17",
           "type": "green",
           "icons": [],
           "hasDollarSign": false,
