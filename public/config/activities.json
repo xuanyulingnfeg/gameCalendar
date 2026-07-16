@@ -128,60 +128,41 @@
     },
     "mc": {
       "calendarConfig": {
-        "startDate": "2026/06/08",
-        "endDate": "2026/07/09"
+        "startDate": "2026/07/10",
+        "endDate": "2026/08/20"
       },
       "activities": [
         {
-          "name": "露西/丽贝卡 - 限时换取",
-          "startTime": "2026-06-08 00",
-          "endTime": "2026-07-09 10",
+          "name": "秧秧·玄翎/陆赫斯/琳奈 - 限时换取",
+          "startTime": "2026-07-10 10",
+          "endTime": "2026-07-30 10",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./mc/luxi.png",
-            "./mc/libeika.png"
+            "./mc/yangyangxuanling.png",
+            "./mc/luhesi.png",
+            "./mc/linnai.png"
           ]
         },
         {
-          "name": "洛瑟拉 - 限时换取",
-          "startTime": "2026-06-13 00",
-          "endTime": "2026-07-09 10",
+          "name": "穗穗/爱弥斯 - 限时换取",
+          "startTime": "2026-07-30 10",
+          "endTime": "2026-08-19 12",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./mc/luosela.png"
+            "./mc/suisui.png",
+            "./mc/aimisi.png"
           ]
         },
         {
-          "name": "卡提希娅 - 限时换取",
-          "startTime": "2026-06-18 00",
-          "endTime": "2026-07-09 10",
-          "type": "red",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": true,
-          "charIcons": [
-            "./mc/katixiya.png"
-          ]
-        },
-        {
-          "name": "海潮赠礼",
-          "startTime": "2026-04-30",
-          "endTime": "2026-06-15",
-          "type": "orange",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false
-        },
-        {
-          "name": "夜漫都市、刹灿的电光、逐梦赠礼、深坠异想奇境",
-          "startTime": "2026-06-08",
-          "endTime": "2026-07-09",
+          "name": "此隙玄方 - 区域探索",
+          "startTime": "2026-07-10 10",
+          "endTime": "2026-08-19 04",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -189,9 +170,19 @@
           "charIcons": []
         },
         {
-          "name": "星炬竞速赛，再开！",
-          "startTime": "2026-06-11",
-          "endTime": "2026-06-25",
+          "name": "悲鸣行动：无音危机 - 战斗",
+          "startTime": "2026-07-11 10",
+          "endTime": "2026-08-19 12",
+          "type": "orange",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "再续・光影瞬息 - 战斗拍照",
+          "startTime": "2026-07-16 10",
+          "endTime": "2026-08-06 04",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
@@ -200,8 +191,8 @@
         },
         {
           "name": "回音盈域",
-          "startTime": "2026-06-15",
-          "endTime": "2026-06-22",
+          "startTime": "2026-07-23 04",
+          "endTime": "2026-07-30 04",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
@@ -209,9 +200,9 @@
           "charIcons": []
         },
         {
-          "name": "青空之梦",
-          "startTime": "2026-06-18",
-          "endTime": "2026-07-09",
+          "name": "虚域危局・象限延展 - 危机挑战",
+          "startTime": "2026-07-30 10",
+          "endTime": "2026-08-19 04",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
@@ -219,9 +210,9 @@
           "charIcons": []
         },
         {
-          "name": "矩阵重组",
-          "startTime": "2026-06-25",
-          "endTime": "2026-07-09",
+          "name": "呜呜企划・新旅 - 限时委托",
+          "startTime": "2026-08-06 04",
+          "endTime": "2026-08-19 04",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
@@ -230,8 +221,8 @@
         },
         {
           "name": "声弦涤荡",
-          "startTime": "2026-07-02",
-          "endTime": "2026-07-09",
+          "startTime": "2026-08-12 04",
+          "endTime": "2026-08-19 04",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
