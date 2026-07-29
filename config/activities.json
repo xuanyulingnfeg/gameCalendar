@@ -14,40 +14,50 @@
   "gameData": {
     "zzz": {
       "calendarConfig": {
-        "startDate": "2026/06/18",
-        "endDate": "2026/07/29"
+        "startDate": "2026/07/29",
+        "endDate": "2026/09/09"
       },
       "activities": [
         {
-          "name": "维琳娜/叶瞬光 - 限时频段",
-          "startTime": "2026-06-18 12",
-          "endTime": "2026-07-08 04",
+          "name": "蕾米埃尔 - 限时频段",
+          "startTime": "2026-07-29 10",
+          "endTime": "2026-09-08 15",
           "type": "red",
           "icons": [],
           "hasDollarSign": true,
           "hasCharIcon": true,
           "charIcons": [
-            "./zzz/weilinna.png",
-            "./zzz/yeshunguang.png"
+            "./zzz/leimiaier.png"
           ]
         },
         {
-          "name": "诺姆/千夏 - 限时频段",
-          "startTime": "2026-07-08 04",
-          "endTime": "2026-07-28 18",
+          "name": "爱芮 - 限时频段",
+          "startTime": "2026-07-29 10",
+          "endTime": "2026-08-19 12",
           "type": "red",
           "icons": [],
           "hasDollarSign": true,
           "hasCharIcon": true,
           "charIcons": [
-            "./zzz/nuomu.png",
-            "./zzz/qianxia.png"
+            "./zzz/airui.png"
           ]
         },
         {
-          "name": "纪念臻礼、邦邦！天才与奇迹芯片、天枢情报图册",
-          "startTime": "2026-06-18 12",
-          "endTime": "2026-07-29 06",
+          "name": "希格莉德 - 限时频段",
+          "startTime": "2026-08-19 12",
+          "endTime": "2026-09-08 18",
+          "type": "red",
+          "icons": [],
+          "hasDollarSign": true,
+          "hasCharIcon": true,
+          "charIcons": [
+            "./zzz/xigelide.png"
+          ]
+        },
+        {
+          "name": "玛瑟尔周年馈礼、法厄同年度大揭秘、潜能预演·狩猎游戏、云端礼赠",
+          "startTime": "2026-07-29 10",
+          "endTime": "2026-09-09 06",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -55,9 +65,9 @@
           "charIcons": []
         },
         {
-          "name": "锋芒契影协战",
-          "startTime": "2026-06-19 10",
-          "endTime": "2026-07-13 04",
+          "name": "恰浪花逐夏而至",
+          "startTime": "2026-07-29 10",
+          "endTime": "2026-09-07 04",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -65,9 +75,9 @@
           "charIcons": []
         },
         {
-          "name": "集结！模考逆袭计划",
-          "startTime": "2026-06-26 10",
-          "endTime": "2026-07-27 04",
+          "name": "咔嚓！焦点对决！",
+          "startTime": "2026-08-07 10",
+          "endTime": "2026-08-24 04",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -75,9 +85,9 @@
           "charIcons": []
         },
         {
-          "name": "先遣赏金-区域巡防",
-          "startTime": "2026-07-02 04",
-          "endTime": "2026-07-07 04",
+          "name": "深度巡防-三倍赏金",
+          "startTime": "2026-08-12 04",
+          "endTime": "2026-08-17 04",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
@@ -85,9 +95,9 @@
           "charIcons": []
         },
         {
-          "name": "跛脚乌鸦奇闻录",
-          "startTime": "2026-07-03 10",
-          "endTime": "2026-07-20 04",
+          "name": "「嗯呢」大派送！",
+          "startTime": "2026-08-19 10",
+          "endTime": "2026-09-08 04",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -95,9 +105,9 @@
           "charIcons": []
         },
         {
-          "name": "艺术就是邦布！",
-          "startTime": "2026-07-08 10",
-          "endTime": "2026-07-27 04",
+          "name": "咔滋酥脆出餐计划",
+          "startTime": "2026-08-19 10",
+          "endTime": "2026-09-07 04",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -105,20 +115,30 @@
           "charIcons": []
         },
         {
-          "name": "数据悬赏-实战模拟",
-          "startTime": "2026-07-22 04",
-          "endTime": "2026-07-27 04",
+          "name": "极危通缉与悠游假期",
+          "startTime": "2026-08-24 10",
+          "endTime": "2026-09-07 04",
+          "type": "orange",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "叮咚！见习邮差派件中",
+          "startTime": "2026-08-28 10",
+          "endTime": "2026-09-14 04",
+          "type": "orange",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "实战特训-三倍悬赏",
+          "startTime": "2026-09-02 04",
+          "endTime": "2026-09-07 04",
           "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "前瞻直播",
-          "startTime": "2026-07-17",
-          "endTime": "2026-07-17",
-          "type": "green",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": false,
