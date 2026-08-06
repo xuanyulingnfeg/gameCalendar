@@ -55,8 +55,8 @@
           ]
         },
         {
-          "name": "玛瑟尔周年馈礼、法厄同年度大揭秘、潜能预演·狩猎游戏、云端礼赠",
-          "startTime": "2026-07-29 10",
+          "name": "玛瑟尔周年馈礼、法厄同年度大揭秘、潜能预演·狩猎游戏",
+          "startTime": "2026-07-29 06",
           "endTime": "2026-09-09 06",
           "type": "orange",
           "icons": [],
@@ -65,8 +65,18 @@
           "charIcons": []
         },
         {
+          "name": "云端礼赠",
+          "startTime": "2026-07-29 06",
+          "endTime": "2026-09-08 04",
+          "type": "orange",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
           "name": "恰浪花逐夏而至",
-          "startTime": "2026-07-29 10",
+          "startTime": "2026-07-29 06",
           "endTime": "2026-09-07 04",
           "type": "orange",
           "icons": [],
@@ -78,7 +88,7 @@
           "name": "咔嚓！焦点对决！",
           "startTime": "2026-08-07 10",
           "endTime": "2026-08-24 04",
-          "type": "orange",
+          "type": "gray",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": false,
@@ -98,7 +108,7 @@
           "name": "「嗯呢」大派送！",
           "startTime": "2026-08-19 10",
           "endTime": "2026-09-08 04",
-          "type": "orange",
+          "type": "gray",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": false,
@@ -108,7 +118,7 @@
           "name": "咔滋酥脆出餐计划",
           "startTime": "2026-08-19 10",
           "endTime": "2026-09-07 04",
-          "type": "orange",
+          "type": "gray",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": false,
@@ -118,7 +128,7 @@
           "name": "极危通缉与悠游假期",
           "startTime": "2026-08-24 10",
           "endTime": "2026-09-07 04",
-          "type": "orange",
+          "type": "gray",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": false,
@@ -128,7 +138,7 @@
           "name": "叮咚！见习邮差派件中",
           "startTime": "2026-08-28 10",
           "endTime": "2026-09-14 04",
-          "type": "orange",
+          "type": "gray",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": false,
@@ -180,8 +190,8 @@
           ]
         },
         {
-          "name": "此隙玄方 - 区域探索",
-          "startTime": "2026-07-10 10",
+          "name": "[此隙玄方]区域探索活动",
+          "startTime": "2026-07-10 11",
           "endTime": "2026-08-19 04",
           "type": "orange",
           "icons": [],
@@ -190,7 +200,7 @@
           "charIcons": []
         },
         {
-          "name": "悲鸣行动：无音危机 - 战斗",
+          "name": "[悲鸣行动：无音危机]战斗活动",
           "startTime": "2026-07-11 10",
           "endTime": "2026-08-19 12",
           "type": "orange",
@@ -200,7 +210,7 @@
           "charIcons": []
         },
         {
-          "name": "再续・光影瞬息 - 战斗拍照",
+          "name": "[再续・光影瞬息]战斗拍照活动",
           "startTime": "2026-07-16 10",
           "endTime": "2026-08-06 04",
           "type": "gray",
@@ -210,17 +220,7 @@
           "charIcons": []
         },
         {
-          "name": "回音盈域",
-          "startTime": "2026-07-23 04",
-          "endTime": "2026-07-30 04",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "虚域危局・象限延展 - 危机挑战",
+          "name": "[虚域危局・象限延展]危机情景挑战活动",
           "startTime": "2026-07-30 10",
           "endTime": "2026-08-19 04",
           "type": "gray",
@@ -230,7 +230,7 @@
           "charIcons": []
         },
         {
-          "name": "呜呜企划・新旅 - 限时委托",
+          "name": "[呜呜企划・新旅]限时委托活动",
           "startTime": "2026-08-06 04",
           "endTime": "2026-08-19 04",
           "type": "gray",
@@ -240,9 +240,9 @@
           "charIcons": []
         },
         {
-          "name": "声弦涤荡",
-          "startTime": "2026-08-12 04",
-          "endTime": "2026-08-19 04",
+          "name": "「秘玉寻踪记」网页活动",
+          "startTime": "2026-07-30 10",
+          "endTime": "2026-08-13 10",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
