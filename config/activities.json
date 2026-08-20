@@ -163,30 +163,30 @@
       },
       "activities": [
         {
-          "name": "秧秧·玄翎/陆赫斯/琳奈 - 限时换取",
-          "startTime": "2026-07-10 10",
-          "endTime": "2026-07-30 10",
+          "name": "清宵/达妮娅 - 限时换取",
+          "startTime": "2026-08-20 10",
+          "endTime": "2026-09-10 10",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./mc/yangyangxuanling.png",
-            "./mc/luhesi.png",
-            "./mc/linnai.png"
+            "./mc/qingxiao.png",
+            "./mc/daniya.png"
           ]
         },
         {
-          "name": "穗穗/爱弥斯 - 限时换取",
-          "startTime": "2026-07-30 10",
-          "endTime": "2026-08-19 12",
+          "name": "景燃/绯雪/莫宁 - 限时换取",
+          "startTime": "2026-09-10 10",
+          "endTime": "2026-09-28 12",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./mc/suisui.png",
-            "./mc/aimisi.png"
+            "./mc/jingran.png",
+            "./mc/feixue.png",
+            "./mc/moning.png"
           ]
         },
         {
