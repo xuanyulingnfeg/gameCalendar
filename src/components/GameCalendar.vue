@@ -191,6 +191,14 @@ function parseActivityTime(timeStr, isEnd = false) {
   return new Date(year, month - 1, day, hour, 0, 0, 0);
 }
 
+function formatActivityTime(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hour = String(date.getHours()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hour}`;
+}
+
 // 用于触发定时更新的响应式时间戳
 const now = ref(new Date());
 
@@ -210,9 +218,16 @@ const redActivityRows = computed(() => {
   const reds = currentActivities.value
     .filter((a) => a.type === "red")
     .map((a) => ({ ...a }));
-  // 时间接续处理
+
+  // 两个角色换取活动无缝衔接时，将前一个活动提前 4 小时结束。
   for (let i = 1; i < reds.length; i++) {
-    if (reds[i].startTime > reds[i - 1].endTime) {
+    const previousEnd = parseActivityTime(reds[i - 1].endTime, true);
+    const currentStart = parseActivityTime(reds[i].startTime, false);
+
+    if (currentStart.getTime() === previousEnd.getTime()) {
+      previousEnd.setHours(previousEnd.getHours() - 4);
+      reds[i - 1].endTime = formatActivityTime(previousEnd);
+    } else if (currentStart > previousEnd) {
       reds[i].startTime = reds[i - 1].endTime;
     }
   }
