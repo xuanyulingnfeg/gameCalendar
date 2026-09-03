@@ -73,7 +73,11 @@
           ref="calendarScrollEl"
           @scroll="onTimelineScroll"
         >
-          <div class="calendar-content" :style="timelineCanvasStyle">
+          <div
+            class="calendar-content"
+            :style="timelineCanvasStyle"
+            ref="calendarContentEl"
+          >
             <!-- 今日指示器 -->
             <TodayIndicator
               :position="todayPosition"
@@ -430,6 +434,7 @@ const todayPosition = computed(() =>
 const todayLabel = ref(getTodayLabel(today));
 const calendarContainerEl = ref(null);
 const calendarScrollEl = ref(null);
+const calendarContentEl = ref(null);
 
 // 动态计算今日指示器高度，覆盖整个活动区域
 const todayHeight = computed(() => {
@@ -445,8 +450,10 @@ const mouseIndicatorLabel = ref("");
 function onActivitiesMouseMove(e) {
   const rect = activitiesAreaEl.value.getBoundingClientRect();
   const x = e.clientX - rect.left;
-  // 指示器现在在 calendar-content 层级，需加上 calendar-content 的 padding(10px)
-  mouseIndicatorX.value = x + 10;
+  const contentPadding = calendarContentEl.value
+    ? parseFloat(getComputedStyle(calendarContentEl.value).paddingLeft)
+    : 0;
+  mouseIndicatorX.value = x + contentPadding;
   showMouseIndicator.value = true;
 
   // 计算鼠标位置对应的日历时间
@@ -469,7 +476,9 @@ function scrollTimelineToToday() {
   const scrollEl = calendarScrollEl.value;
   if (!scrollEl || scrollEl.scrollWidth <= scrollEl.clientWidth) return;
 
-  const timelinePadding = 24;
+  const timelinePadding = calendarContentEl.value
+    ? parseFloat(getComputedStyle(calendarContentEl.value).paddingLeft)
+    : 0;
   const timelineWidth = scrollEl.scrollWidth - timelinePadding * 2;
   const todayX = timelinePadding + timelineWidth * todayPosition.value;
   const maxScrollLeft = scrollEl.scrollWidth - scrollEl.clientWidth;
@@ -535,7 +544,8 @@ onUnmounted(() => {
 
 <style scoped>
 .game-calendar {
-  height: 100%;
+  height: 100dvh;
+  min-height: 100dvh;
   background-color: #08111f;
   background-repeat: no-repeat;
   background-position: center center;
@@ -816,12 +826,13 @@ onUnmounted(() => {
 }
 
 .calendar-content {
+  --timeline-content-padding: 24px;
   position: relative;
   width: 100%;
   height: 100%;
   min-width: 0;
   min-height: 0;
-  padding: 20px 24px 24px;
+  padding: 20px var(--timeline-content-padding) 24px;
   display: grid;
   grid-template-rows: auto minmax(200px, 1fr);
   gap: 14px;
@@ -1018,43 +1029,138 @@ onUnmounted(() => {
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 640px) and (orientation: portrait) {
   .game-calendar {
-    padding: 18px 14px;
+    padding:
+      max(12px, env(safe-area-inset-top))
+      max(12px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left));
+    background-attachment: scroll;
   }
+
   .page-shell {
-    gap: 16px;
+    gap: 12px;
   }
+
+  .page-header {
+    gap: 12px;
+  }
+
+  .eyebrow,
   .title-group p {
     display: none;
   }
+
+  .title-group h1 {
+    margin-top: 0;
+    font-size: clamp(24px, 7.5vw, 28px);
+    letter-spacing: -0.035em;
+  }
+
   .game-type-switcher {
     width: 100%;
+    gap: 8px;
+    padding: 4px;
+    overflow-x: auto;
+    border-radius: 14px;
+    scrollbar-width: none;
   }
+
+  .game-type-switcher::-webkit-scrollbar {
+    display: none;
+  }
+
   .game-type-btn {
-    flex: 1;
+    flex: 1 0 120px;
     width: auto;
+    height: 48px;
+    border-radius: 10px;
   }
+
+  .game-name {
+    left: 12px;
+    bottom: 9px;
+    font-size: 13px;
+  }
+
+  .selected-dot {
+    top: 9px;
+    right: 10px;
+  }
+
   .calendar-container {
-    border-radius: 18px;
+    border-radius: 16px;
   }
+
   .calendar-toolbar {
-    padding: 18px;
-    gap: 16px;
+    min-height: 0;
+    padding: 12px 14px;
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
+
+  .toolbar-kicker {
+    display: none;
+  }
+
+  .date-range {
+    margin-top: 0;
+    font-size: 16px;
+  }
+
   .calendar-summary {
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
   }
+
   .summary-item {
     display: block;
+    min-width: 0;
   }
+
+  .summary-item strong {
+    font-size: 20px;
+  }
+
   .summary-item span {
     display: block;
-    margin-top: 4px;
+    margin-top: 3px;
+    white-space: nowrap;
+    font-size: 11px;
   }
+
+  .summary-divider {
+    display: none;
+  }
+
   .legend {
-    gap: 12px;
+    grid-column: auto;
+    justify-content: flex-start;
+    gap: 10px;
     overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .legend::-webkit-scrollbar {
+    display: none;
+  }
+
+  .legend span {
+    font-size: 11px;
+  }
+
+  .calendar-content {
+    --timeline-content-padding: 14px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    gap: 10px;
+  }
+
+  .completed-section-toggle {
+    width: calc(var(--timeline-viewport-width, 100vw) - 24px);
+    margin-left: calc(12px - var(--timeline-content-padding));
   }
 }
 </style>

@@ -1,7 +1,9 @@
 <template>
   <div
     class="today-indicator"
-    :style="{ left: `calc(10px + ${position * 100}% * (1 - 20px / 100%))` }"
+    :style="{
+      left: `calc(var(--timeline-content-padding, 24px) + (100% - var(--timeline-content-padding, 24px) * 2) * ${position})`,
+    }"
   >
     <div class="today-label">{{ label }}</div>
     <div class="today-line" :style="{ height: height - 10 + 'px' }"></div>
