@@ -322,6 +322,7 @@ const barStyle = computed(() => {
   margin-bottom: 10px;
   box-sizing: border-box;
   border: 1px solid rgba(255, 255, 255, 0.12);
+  container-type: inline-size;
   transition: filter 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
@@ -526,6 +527,26 @@ const barStyle = computed(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+}
+
+@container (max-width: 230px) {
+  .activity-name {
+    font-size: 12px;
+    letter-spacing: -0.01em;
+  }
+}
+
+@container (max-width: 180px) {
+  .activity-name {
+    font-size: 10px;
+    letter-spacing: -0.02em;
+  }
+}
+
+@container (max-width: 130px) {
+  .activity-name {
+    font-size: 9px;
+  }
 }
 
 .completion-toggle {

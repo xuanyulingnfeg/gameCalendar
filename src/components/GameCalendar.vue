@@ -68,8 +68,12 @@
           </div>
         </div>
 
-        <div class="calendar-scroll">
-          <div class="calendar-content">
+        <div
+          class="calendar-scroll"
+          ref="calendarScrollEl"
+          @scroll="onTimelineScroll"
+        >
+          <div class="calendar-content" :style="timelineCanvasStyle">
             <!-- 今日指示器 -->
             <TodayIndicator
               :position="todayPosition"
@@ -181,7 +185,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import {
+  ref,
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  watch,
+} from "vue";
 import WeekHeader from "./WeekHeader.vue";
 import ActivityBar from "./ActivityBar.vue";
 import TodayIndicator from "./TodayIndicator.vue";
@@ -405,6 +416,10 @@ const timelineInfo = computed(() =>
   getTimelineInfo(currentConfig.value.startDate, currentConfig.value.endDate),
 );
 
+const timelineCanvasStyle = computed(() => ({
+  "--timeline-days": timelineInfo.value.totalDays,
+}));
+
 const todayPosition = computed(() =>
   getPreciseTodayPosition(
     currentConfig.value.startDate,
@@ -414,6 +429,7 @@ const todayPosition = computed(() =>
 );
 const todayLabel = ref(getTodayLabel(today));
 const calendarContainerEl = ref(null);
+const calendarScrollEl = ref(null);
 
 // 动态计算今日指示器高度，覆盖整个活动区域
 const todayHeight = computed(() => {
@@ -449,16 +465,67 @@ function onActivitiesMouseLeave() {
   showMouseIndicator.value = false;
 }
 
+function scrollTimelineToToday() {
+  const scrollEl = calendarScrollEl.value;
+  if (!scrollEl || scrollEl.scrollWidth <= scrollEl.clientWidth) return;
+
+  const timelinePadding = 24;
+  const timelineWidth = scrollEl.scrollWidth - timelinePadding * 2;
+  const todayX = timelinePadding + timelineWidth * todayPosition.value;
+  const maxScrollLeft = scrollEl.scrollWidth - scrollEl.clientWidth;
+  const targetScrollLeft = Math.min(
+    Math.max(todayX - scrollEl.clientWidth / 2, 0),
+    maxScrollLeft,
+  );
+
+  scrollEl.scrollTo({ left: targetScrollLeft, behavior: "auto" });
+  syncTimelineScrollMetrics();
+}
+
+function syncTimelineScrollMetrics() {
+  const scrollEl = calendarScrollEl.value;
+  if (!scrollEl) return;
+
+  scrollEl.style.setProperty(
+    "--timeline-scroll-left",
+    `${scrollEl.scrollLeft}px`,
+  );
+  scrollEl.style.setProperty(
+    "--timeline-viewport-width",
+    `${scrollEl.clientWidth}px`,
+  );
+}
+
+function onTimelineScroll() {
+  syncTimelineScrollMetrics();
+}
+
+function onTimelineResize() {
+  syncTimelineScrollMetrics();
+  scrollTimelineToToday();
+}
+
+watch(
+  [currentGameType, () => timelineInfo.value.totalDays],
+  async () => {
+    await nextTick();
+    scrollTimelineToToday();
+  },
+  { flush: "post" },
+);
+
 let timer = null;
 
 onMounted(() => {
   loadConfig();
+  window.addEventListener("resize", onTimelineResize);
   timer = setInterval(() => {
     now.value = new Date();
   }, 60000); // 每分钟更新一次
 });
 
 onUnmounted(() => {
+  window.removeEventListener("resize", onTimelineResize);
   if (timer) {
     clearInterval(timer);
     timer = null;
@@ -726,7 +793,26 @@ onUnmounted(() => {
   flex: 1 1 auto;
   height: auto;
   min-height: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-color: rgba(145, 163, 184, 0.58) rgba(255, 255, 255, 0.04);
+  scrollbar-width: thin;
+}
+
+.calendar-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.calendar-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.calendar-scroll::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(145, 163, 184, 0.58);
+  background-clip: padding-box;
 }
 
 .calendar-content {
@@ -919,6 +1005,16 @@ onUnmounted(() => {
   .legend {
     grid-column: 1 / -1;
     justify-content: flex-start;
+  }
+
+  .calendar-content {
+    min-width: max(100%, calc(var(--timeline-days) * 22px + 48px));
+  }
+
+  .completed-section-toggle {
+    width: calc(var(--timeline-viewport-width, 100vw) - 32px);
+    margin-left: -8px;
+    transform: translateX(var(--timeline-scroll-left, 0px));
   }
 }
 
