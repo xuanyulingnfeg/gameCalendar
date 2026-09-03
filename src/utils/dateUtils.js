@@ -48,8 +48,6 @@ export function getPreciseTodayPosition(startDate, endDate, now = new Date()) {
   const dayFraction = (now.getHours() * 60 + now.getMinutes()) / (24 * 60);
 
   const preciseDays = fullDays + dayFraction;
-  console.log(preciseDays);
-
   return Math.min(Math.max(preciseDays / totalDays, 0), 1);
 }
 

@@ -102,33 +102,35 @@ const weekendDays = computed(() => {
 
 <style scoped>
 .timeline-header {
-  border-radius: 6px;
-  overflow: visible;
-  border: 1px solid #acacac;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
-  background: #acacac;
+  background: rgba(255, 255, 255, 0.045);
 }
 
 .timeline-container {
   position: relative;
-  height: 50px;
+  height: 52px;
   width: 100%;
 }
 
 .tick {
   position: absolute;
-  top: 0;
+  top: 34px;
   width: 1px;
-  height: 10px;
-  background: #999;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .date-label {
   position: absolute;
-  top: 12px;
-  font-size: 12px;
-  color: black;
-  font-weight: bold;
+  top: 15px;
+  padding-left: 9px;
+  font-size: 11px;
+  color: #9eb0c4;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   white-space: nowrap;
 }
 
@@ -136,6 +138,6 @@ const weekendDays = computed(() => {
   position: absolute;
   top: 0;
   bottom: 0;
-  background: #f11;
+  background: rgba(255, 255, 255, 0.035);
 }
 </style>

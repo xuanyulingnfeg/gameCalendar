@@ -19,7 +19,14 @@ body {
     Arial, "Noto Sans SC", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #1a1a1a;
+  background: #08111f;
+  color: #f8fafc;
+  overflow: hidden;
+}
+
+button,
+input {
+  font: inherit;
 }
 
 #app {

@@ -28,8 +28,8 @@ defineProps({
 <style scoped>
 .today-indicator {
   position: absolute;
-  top: -50px;
-  z-index: 10;
+  top: 3px;
+  z-index: 12;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
@@ -38,21 +38,22 @@ defineProps({
 }
 
 .today-label {
-  background: #e63946;
+  background: #ff607a;
+  box-shadow: 0 6px 18px rgba(255, 76, 107, 0.28);
   color: #fff;
-  font-size: 13px;
-  font-weight: bold;
-  padding: 3px 12px;
-  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 10px;
+  border-radius: 7px;
   white-space: nowrap;
   margin-bottom: 0;
 }
 
 .today-line {
-  width: 3px;
-  background: #e63946;
+  width: 2px;
+  background: linear-gradient(#ff607a 0%, rgba(255, 96, 122, 0.55) 70%, transparent 100%);
   position: absolute;
-  top: 20px;
+  top: 22px;
   bottom: 0;
 }
 </style>

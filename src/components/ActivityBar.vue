@@ -8,14 +8,16 @@
     @mouseleave="showTooltip = false"
   >
     <!-- 悬浮提示 -->
-    <div
-      class="activity-tooltip"
-      :class="{ 'tooltip-left': tooltipFlipped }"
-      v-if="showTooltip"
-      :style="{ left: tooltipFixedX + 'px', top: tooltipFixedY + 'px' }"
-    >
-      {{ tooltipText }}
-    </div>
+    <Teleport to="body">
+      <div
+        class="activity-tooltip"
+        :class="{ 'tooltip-left': tooltipFlipped }"
+        v-if="showTooltip"
+        :style="{ left: tooltipFixedX + 'px', top: tooltipFixedY + 'px' }"
+      >
+        {{ tooltipText }}
+      </div>
+    </Teleport>
 
     <!-- $ 标记 -->
     <div class="dollar-sign" v-if="activity.hasDollarSign">
@@ -242,25 +244,33 @@ const barStyle = computed(() => {
 <style scoped>
 .activity-bar {
   position: relative;
-  height: 54px;
-  border-radius: 27px;
+  height: 50px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  margin-bottom: 14px;
+  padding: 0 16px;
+  margin-bottom: 10px;
   box-sizing: border-box;
-  /* overflow: hidden; */
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: filter 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.activity-bar:hover {
+  z-index: 5;
+  filter: brightness(1.08);
+  transform: translateY(-1px);
 }
 
 .activity-tooltip {
   position: fixed;
   margin-top: 0;
-  background: rgba(0, 0, 0, 0.85);
-  color: #fff;
+  background: #f4f7fb;
+  box-shadow: 0 10px 28px rgba(2, 8, 20, 0.34);
+  color: #182437;
   font-size: 12px;
-  font-weight: bold;
-  padding: 4px 10px;
-  border-radius: 4px;
+  font-weight: 700;
+  padding: 7px 10px;
+  border-radius: 8px;
   white-space: nowrap;
   z-index: 100;
   pointer-events: none;
@@ -271,24 +281,24 @@ const barStyle = computed(() => {
 }
 
 .activity-bar.type-red {
-  padding: 0 4px;
-  background: linear-gradient(135deg, #ff4500, #ff8c00);
-  box-shadow: 0 2px 8px rgba(255, 69, 0, 0.3);
+  padding: 0 10px 0 5px;
+  background: linear-gradient(105deg, rgba(194, 66, 91, 0.94), rgba(231, 98, 117, 0.9));
+  box-shadow: 0 7px 20px rgba(131, 32, 54, 0.2);
 }
 
 .activity-bar.type-orange {
-  background: linear-gradient(135deg, #ffa500, #ffcc00);
-  box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
+  background: linear-gradient(105deg, rgba(178, 119, 50, 0.94), rgba(218, 166, 84, 0.9));
+  box-shadow: 0 7px 20px rgba(106, 69, 21, 0.18);
 }
 
 .activity-bar.type-gray {
-  background: linear-gradient(135deg, #666, #888);
-  box-shadow: 0 2px 8px rgba(100, 100, 100, 0.3);
+  background: linear-gradient(105deg, rgba(72, 91, 115, 0.94), rgba(91, 115, 143, 0.9));
+  box-shadow: 0 7px 20px rgba(7, 17, 31, 0.2);
 }
 
 .activity-bar.type-green {
-  background: linear-gradient(135deg, #008000, #00ff00);
-  box-shadow: 0 2px 8px rgba(100, 100, 100, 0.3);
+  background: linear-gradient(105deg, #347d70, #51a18f);
+  box-shadow: 0 7px 20px rgba(20, 78, 67, 0.2);
 }
 
 .activity-bar::before {
@@ -299,22 +309,8 @@ const barStyle = computed(() => {
   right: 0;
   bottom: 0;
   background:
-    repeating-linear-gradient(
-      45deg,
-      rgba(255, 255, 255, 0.1) 0px,
-      rgba(255, 255, 255, 0.1) 1px,
-      transparent 1px,
-      transparent 5px
-    ),
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.1) 0px,
-      rgba(255, 255, 255, 0.1) 1px,
-      transparent 1px,
-      transparent 5px
-    );
-  -webkit-mask-image: linear-gradient(to top, black 0%, transparent 50%);
-  mask-image: linear-gradient(to top, black 0%, transparent 70%);
+    linear-gradient(180deg, rgba(255,255,255,.13), transparent 45%),
+    linear-gradient(90deg, rgba(255,255,255,.07), transparent 32%);
   pointer-events: none;
   border-radius: inherit;
 }
@@ -324,7 +320,7 @@ const barStyle = computed(() => {
   top: 4px;
   left: 10px;
   /* background: #ffcc00; */
-  color: #333;
+  color: #142033;
   font-weight: bold;
   font-size: 11px;
   width: 18px;
@@ -350,19 +346,20 @@ const barStyle = computed(() => {
   left: -3px;
   font-weight: 900;
   font-style: italic;
-  color: black;
+  color: #182033;
 }
 
 .char-icon {
   width: 112px;
-  height: 45px;
-  border-radius: 21px;
-  border: 3px solid black;
+  height: 40px;
+  border-radius: 9px;
+  border: 2px solid rgba(255, 255, 255, 0.74);
   flex-shrink: 0;
   margin-right: 10px;
   position: relative;
   overflow: hidden;
-  background: #222;
+  background: #172437;
+  box-shadow: 0 3px 10px rgba(2, 8, 20, 0.26);
 }
 
 .char-segment {
@@ -376,14 +373,14 @@ const barStyle = computed(() => {
 
 .activity-name {
   flex: 1;
-  font-size: 18px;
-  font-weight: 900;
+  font-size: 14px;
+  font-weight: 750;
   line-height: 1;
-  color: black;
+  color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
 }
 
 /* .type-orange .activity-name {
