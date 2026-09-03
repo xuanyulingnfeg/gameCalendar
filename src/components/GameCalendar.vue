@@ -1,5 +1,5 @@
 <template>
-  <div class="game-calendar">
+  <div class="game-calendar" :style="calendarBackgroundStyle">
     <div class="page-shell">
       <header class="page-header">
         <div class="title-group">
@@ -46,13 +46,18 @@
 
           <div class="calendar-summary">
             <div class="summary-item">
-              <strong>{{ currentActivities.length }}</strong>
+              <strong>{{ nonCharacterActivities.length }}</strong>
               <span>全部活动</span>
             </div>
             <div class="summary-divider"></div>
             <div class="summary-item">
               <strong>{{ ongoingCount }}</strong>
               <span>正在进行</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-item">
+              <strong>{{ currentCompletedCount }}</strong>
+              <span>当前已完成</span>
             </div>
           </div>
 
@@ -114,15 +119,56 @@
                 />
               </div>
 
-              <!-- 其他活动条：各自一行 -->
+              <!-- 未完成活动：各自一行 -->
               <ActivityBar
-                v-for="(activity, index) in otherActivities"
-                :key="index"
+                v-for="activity in incompleteActivities"
+                :key="getActivityKey(activity)"
                 :activity="activity"
                 :calendarStartDate="currentConfig.startDate"
                 :calendarEndDate="currentConfig.endDate"
                 :totalDays="timelineInfo.totalDays"
+                :completable="true"
+                :completed="false"
+                @toggle-completed="toggleActivityCompleted(activity)"
               />
+
+              <!-- 已完成活动：收纳在底部折叠区 -->
+              <section
+                class="completed-section"
+                v-if="completedActivities.length"
+              >
+                <button
+                  class="completed-section-toggle"
+                  type="button"
+                  :aria-expanded="completedExpanded"
+                  @click="completedExpanded = !completedExpanded"
+                >
+                  <span class="completed-section-title">
+                    <i class="completed-status-dot"></i>
+                    已完成
+                    <b>{{ completedActivities.length }}</b>
+                  </span>
+                  <span
+                    class="completed-chevron"
+                    :class="{ expanded: completedExpanded }"
+                    aria-hidden="true"
+                  ></span>
+                </button>
+
+                <div class="completed-list" v-show="completedExpanded">
+                  <ActivityBar
+                    v-for="activity in completedActivities"
+                    :key="getActivityKey(activity)"
+                    :activity="activity"
+                    :calendarStartDate="currentConfig.startDate"
+                    :calendarEndDate="currentConfig.endDate"
+                    :totalDays="timelineInfo.totalDays"
+                    :completable="true"
+                    :completed="true"
+                    @toggle-completed="toggleActivityCompleted(activity)"
+                  />
+                </div>
+              </section>
             </div>
           </div>
         </div>
@@ -149,6 +195,18 @@ import {
 const gameTypes = ref([]);
 const gameData = ref({});
 const loading = ref(true);
+
+function loadCompletedActivityKeys() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("completedActivities") || "[]");
+    return Array.isArray(saved) ? new Set(saved) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+const completedActivityKeys = ref(loadCompletedActivityKeys());
+const completedExpanded = ref(false);
 
 // 加载配置
 async function loadConfig() {
@@ -178,6 +236,15 @@ function switchGameType(key) {
 const currentConfig = computed(() => {
   const data = gameData.value[currentGameType.value];
   return data ? data.calendarConfig : { startDate: "", endDate: "" };
+});
+
+const calendarBackgroundStyle = computed(() => {
+  const selectedGame = gameTypes.value.find(
+    (gameType) => gameType.key === currentGameType.value,
+  );
+  return selectedGame?.bgImage
+    ? { backgroundImage: `url("${selectedGame.bgImage}")` }
+    : {};
 });
 
 // 解析活动时间字符串
@@ -256,9 +323,52 @@ const redActivityRows = computed(() => {
   return rows;
 });
 
-const otherActivities = computed(() => {
-  return currentActivities.value.filter((a) => a.type !== "red");
+const nonCharacterActivities = computed(() => {
+  return currentActivities.value
+    .filter((a) => a.type !== "red")
 });
+
+const incompleteActivities = computed(() => {
+  return nonCharacterActivities.value.filter(
+    (activity) => !isActivityCompleted(activity),
+  );
+});
+
+const completedActivities = computed(() => {
+  return nonCharacterActivities.value.filter((activity) =>
+    isActivityCompleted(activity),
+  );
+});
+
+function getActivityKey(activity) {
+  return [
+    currentGameType.value,
+    activity.name,
+    activity.startTime,
+    activity.endTime,
+  ].join("|");
+}
+
+function isActivityCompleted(activity) {
+  return completedActivityKeys.value.has(getActivityKey(activity));
+}
+
+function toggleActivityCompleted(activity) {
+  const key = getActivityKey(activity);
+  const updatedKeys = new Set(completedActivityKeys.value);
+
+  if (updatedKeys.has(key)) {
+    updatedKeys.delete(key);
+  } else {
+    updatedKeys.add(key);
+  }
+
+  completedActivityKeys.value = updatedKeys;
+  localStorage.setItem(
+    "completedActivities",
+    JSON.stringify([...updatedKeys]),
+  );
+}
 
 const formattedDateRange = computed(() => {
   if (!currentConfig.value.startDate) return "";
@@ -270,11 +380,24 @@ const formattedDateRange = computed(() => {
 });
 
 const ongoingCount = computed(() => {
-  return currentActivities.value.filter((activity) => {
+  return nonCharacterActivities.value.filter((activity) => {
     const start = parseActivityTime(activity.startTime, false);
     const end = parseActivityTime(activity.endTime, true);
     return start <= now.value && end > now.value;
   }).length;
+});
+
+const progressEligibleActivities = computed(() => {
+  return nonCharacterActivities.value.filter((activity) => {
+    const start = parseActivityTime(activity.startTime, false);
+    return start <= now.value;
+  });
+});
+
+const currentCompletedCount = computed(() => {
+  return progressEligibleActivities.value.filter((activity) =>
+    isActivityCompleted(activity),
+  ).length;
 });
 
 const today = new Date();
@@ -346,7 +469,10 @@ onUnmounted(() => {
 <style scoped>
 .game-calendar {
   height: 100%;
-  background: url("/config/background.jpg") no-repeat center center fixed;
+  background-color: #08111f;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
   background-size: cover;
   padding: clamp(24px, 4vw, 56px);
   box-sizing: border-box;
@@ -622,6 +748,8 @@ onUnmounted(() => {
   padding: 4px 0 14px;
   overflow-x: clip;
   overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   min-height: 200px;
   max-height: none;
   background: repeating-linear-gradient(
@@ -634,22 +762,86 @@ onUnmounted(() => {
 }
 
 .activities-area::-webkit-scrollbar {
-  width: 6px;
-}
-
-.activities-area::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.activities-area::-webkit-scrollbar-thumb {
-  background: #40536b;
-  border-radius: 3px;
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .activity-row.red-row {
   position: relative;
   height: 50px;
   margin-bottom: 10px;
+}
+
+.completed-section {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.completed-section-toggle {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+  background: rgba(15, 27, 43, 0.56);
+  color: #d9e2ee;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.completed-section-toggle:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(27, 41, 60, 0.7);
+}
+
+.completed-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.completed-section-title b {
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #aebdce;
+  font-size: 11px;
+}
+
+.completed-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8798ac;
+  box-shadow: 0 0 0 4px rgba(135, 152, 172, 0.12);
+}
+
+.completed-chevron {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid #91a3b8;
+  border-bottom: 2px solid #91a3b8;
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 180ms ease;
+}
+
+.completed-chevron.expanded {
+  transform: rotate(225deg) translate(-2px, -2px);
+}
+
+.completed-list {
+  padding-top: 10px;
 }
 
 .red-row .activity-bar {

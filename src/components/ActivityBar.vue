@@ -1,7 +1,10 @@
 <template>
   <div
     class="activity-bar"
-    :class="'type-' + activity.type"
+    :class="[
+      'type-' + activity.type,
+      { 'is-completed': completed },
+    ]"
     :style="barStyle"
     @mouseenter="showTooltip = true"
     @mousemove="onBarMouseMove"
@@ -15,7 +18,23 @@
         v-if="showTooltip"
         :style="{ left: tooltipFixedX + 'px', top: tooltipFixedY + 'px' }"
       >
-        {{ tooltipText }}
+        <div class="tooltip-heading">
+          <span class="tooltip-status" :class="`status-${activityStatus.key}`">
+            <i></i>{{ activityStatus.label }}
+          </span>
+          <span class="tooltip-remaining">{{ activityStatus.description }}</span>
+        </div>
+        <div class="tooltip-divider"></div>
+        <dl class="tooltip-times">
+          <div>
+            <dt>开始</dt>
+            <dd>{{ formattedStartTime }}</dd>
+          </div>
+          <div>
+            <dt>结束</dt>
+            <dd>{{ formattedEndTime }}</dd>
+          </div>
+        </dl>
       </div>
     </Teleport>
 
@@ -45,6 +64,21 @@
 
     <!-- 活动名称 -->
     <div class="activity-name">{{ activity.name }}</div>
+
+    <label
+      v-if="completable"
+      class="completion-toggle"
+      :title="completed ? '标记为未完成' : '标记为已完成'"
+      @click.stop
+    >
+      <input
+        type="checkbox"
+        :checked="completed"
+        :aria-label="`${activity.name}：${completed ? '已完成' : '未完成'}`"
+        @change="$emit('toggle-completed')"
+      />
+      <span class="checkmark" aria-hidden="true"></span>
+    </label>
 
     <!-- 右侧图标区域 -->
     <!-- <div class="right-icons">
@@ -80,7 +114,17 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  completable: {
+    type: Boolean,
+    default: false,
+  },
+  completed: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+defineEmits(["toggle-completed"]);
 
 const showTooltip = ref(false);
 const tooltipFixedX = ref(0);
@@ -100,22 +144,24 @@ function onBarMouseMove(e) {
   const areaRight = activitiesArea
     ? activitiesArea.getBoundingClientRect().right
     : window.innerWidth;
-  const tooltipWidth = 180;
+  const tooltipWidth = 280;
   const rightSpace = areaRight - e.clientX;
   tooltipFlipped.value = rightSpace < tooltipWidth;
 }
 
-const tooltipText = computed(() => {
+const activityStatus = computed(() => {
   const now = new Date();
   const actStart = parseTime(props.activity.startTime, false);
   const actEnd = parseTime(props.activity.endTime, true);
 
-  // 活动已结束
-  if (now >= actEnd) {
-    return `当前活动已结束`;
+  if (props.completed) {
+    return { key: "completed", label: "已完成", description: "已标记完成" };
   }
 
-  // 计算自然日之差（只算日期部分）
+  if (now >= actEnd) {
+    return { key: "ended", label: "已结束", description: "活动已经结束" };
+  }
+
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   if (now < actStart) {
@@ -125,7 +171,11 @@ const tooltipText = computed(() => {
       actStart.getDate(),
     );
     const diffDays = Math.ceil((startDay - todayStart) / (1000 * 60 * 60 * 24));
-    return `距离活动开始还有：${diffDays}天`;
+    return {
+      key: "upcoming",
+      label: "未开始",
+      description: `${diffDays} 天后开始`,
+    };
   } else {
     const endDay = new Date(
       actEnd.getFullYear(),
@@ -133,9 +183,29 @@ const tooltipText = computed(() => {
       actEnd.getDate(),
     );
     const diffDays = Math.ceil((endDay - todayStart) / (1000 * 60 * 60 * 24));
-    return `距离活动结束还有：${diffDays}天`;
+    return {
+      key: "ongoing",
+      label: "进行中",
+      description: `剩余 ${diffDays} 天`,
+    };
   }
 });
+
+function formatDisplayTime(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hour = String(date.getHours()).padStart(2, "0");
+  return `${year}/${month}/${day} ${hour}:00`;
+}
+
+const formattedStartTime = computed(() =>
+  formatDisplayTime(parseTime(props.activity.startTime, false)),
+);
+
+const formattedEndTime = computed(() =>
+  formatDisplayTime(parseTime(props.activity.endTime, true)),
+);
 
 function parseTime(timeStr, isEnd = false) {
   // timeStr 格式: "2026-05-07 10" 或 "2026-05-07"
@@ -267,17 +337,82 @@ const barStyle = computed(() => {
   background: #f4f7fb;
   box-shadow: 0 10px 28px rgba(2, 8, 20, 0.34);
   color: #182437;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 7px 10px;
-  border-radius: 8px;
-  white-space: nowrap;
+  width: 272px;
+  padding: 12px 14px;
+  border: 1px solid rgba(19, 34, 53, 0.1);
+  border-radius: 12px;
   z-index: 100;
   pointer-events: none;
 }
 
 .activity-tooltip.tooltip-left {
   transform: translateX(-100%);
+}
+
+.tooltip-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tooltip-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #22324a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tooltip-status i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #7d8da2;
+}
+
+.tooltip-status.status-ongoing i { background: #e39c3f; }
+.tooltip-status.status-upcoming i { background: #668dbb; }
+.tooltip-status.status-completed i { background: #698578; }
+.tooltip-status.status-ended i { background: #8993a0; }
+
+.tooltip-remaining {
+  color: #65758a;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.tooltip-divider {
+  height: 1px;
+  margin: 10px 0;
+  background: #e2e8f0;
+}
+
+.tooltip-times {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+
+.tooltip-times div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.tooltip-times dt {
+  color: #8a99ab;
+  font-size: 11px;
+}
+
+.tooltip-times dd {
+  margin: 0;
+  color: #26374f;
+  font-size: 11px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
 }
 
 .activity-bar.type-red {
@@ -349,6 +484,16 @@ const barStyle = computed(() => {
   color: #182033;
 }
 
+.activity-bar.is-completed {
+  background: linear-gradient(105deg, rgba(73, 82, 96, 0.9), rgba(94, 105, 120, 0.84));
+  border-color: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 5px 16px rgba(3, 9, 18, 0.16);
+}
+
+.activity-bar.is-completed .activity-name {
+  color: rgba(235, 240, 247, 0.68);
+}
+
 .char-icon {
   width: 112px;
   height: 40px;
@@ -381,6 +526,68 @@ const barStyle = computed(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+}
+
+.completion-toggle {
+  width: 28px;
+  height: 28px;
+  margin-left: 12px;
+  flex: 0 0 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.completion-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.completion-toggle input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkmark {
+  position: relative;
+  width: 19px;
+  height: 19px;
+  border: 1.5px solid rgba(255, 255, 255, 0.72);
+  border-radius: 6px;
+  background: rgba(8, 16, 28, 0.18);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.06);
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.completion-toggle:hover .checkmark {
+  border-color: #fff;
+  transform: scale(1.05);
+}
+
+.completion-toggle input:focus-visible + .checkmark {
+  outline: 2px solid rgba(255, 255, 255, 0.92);
+  outline-offset: 3px;
+}
+
+.completion-toggle input:checked + .checkmark {
+  border-color: #d8e0eb;
+  background: #d8e0eb;
+}
+
+.completion-toggle input:checked + .checkmark::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 3px;
+  width: 4px;
+  height: 8px;
+  border: solid #344154;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 /* .type-orange .activity-name {
