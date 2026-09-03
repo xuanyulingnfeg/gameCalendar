@@ -549,6 +549,30 @@ const barStyle = computed(() => {
   }
 }
 
+@media (orientation: landscape) and (max-height: 600px) and (max-width: 1050px) {
+  .activity-bar {
+    height: 44px;
+    margin-bottom: 8px;
+    padding-right: 10px;
+    padding-left: 10px;
+    border-radius: 10px;
+  }
+
+  .activity-bar.type-red {
+    padding-left: 4px;
+  }
+
+  .char-icon {
+    height: 36px;
+    margin-right: 8px;
+    border-radius: 8px;
+  }
+
+  .completion-toggle {
+    margin-left: 8px;
+  }
+}
+
 .completion-toggle {
   width: 28px;
   height: 28px;

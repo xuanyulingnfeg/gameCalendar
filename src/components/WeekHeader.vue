@@ -140,4 +140,25 @@ const weekendDays = computed(() => {
   bottom: 0;
   background: rgba(255, 255, 255, 0.035);
 }
+
+@media (orientation: landscape) and (max-height: 600px) and (max-width: 1050px) {
+  .timeline-header {
+    border-radius: 10px;
+  }
+
+  .timeline-container {
+    height: 42px;
+  }
+
+  .tick {
+    top: 28px;
+    height: 7px;
+  }
+
+  .date-label {
+    top: 11px;
+    padding-left: 7px;
+    font-size: 10px;
+  }
+}
 </style>

@@ -1163,4 +1163,222 @@ onUnmounted(() => {
     margin-left: calc(12px - var(--timeline-content-padding));
   }
 }
+
+@media (orientation: landscape) and (max-height: 600px) and (max-width: 1050px) {
+  .game-calendar {
+    padding:
+      max(8px, env(safe-area-inset-top))
+      max(10px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom))
+      max(10px, env(safe-area-inset-left));
+    background-attachment: scroll;
+  }
+
+  .page-shell {
+    gap: 8px;
+  }
+
+  .page-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .eyebrow,
+  .title-group p {
+    display: none;
+  }
+
+  .title-group {
+    flex: 0 0 auto;
+  }
+
+  .title-group h1 {
+    margin-top: 0;
+    font-size: clamp(20px, 3.2vw, 26px);
+    letter-spacing: -0.035em;
+  }
+
+  .game-type-switcher {
+    flex: 0 1 auto;
+    max-width: min(58vw, 360px);
+    gap: 6px;
+    padding: 3px;
+    overflow-x: auto;
+    border-radius: 12px;
+    scrollbar-width: none;
+  }
+
+  .game-type-switcher::-webkit-scrollbar {
+    display: none;
+  }
+
+  .game-type-btn {
+    flex: 0 0 116px;
+    width: 116px;
+    height: 40px;
+    border-radius: 9px;
+  }
+
+  .game-name {
+    left: 10px;
+    bottom: 7px;
+    font-size: 12px;
+  }
+
+  .selected-dot {
+    top: 8px;
+    right: 9px;
+    width: 6px;
+    height: 6px;
+  }
+
+  .calendar-container {
+    border-radius: 14px;
+  }
+
+  .calendar-toolbar {
+    min-height: 54px;
+    padding: 7px 12px;
+    grid-template-columns: minmax(120px, 1fr) auto auto;
+    gap: 14px;
+  }
+
+  .toolbar-kicker {
+    display: none;
+  }
+
+  .date-range {
+    margin-top: 0;
+    font-size: 14px;
+  }
+
+  .calendar-summary {
+    gap: 10px;
+  }
+
+  .summary-item {
+    gap: 4px;
+  }
+
+  .summary-item strong {
+    font-size: 18px;
+  }
+
+  .summary-item span,
+  .legend span {
+    font-size: 10px;
+  }
+
+  .summary-divider {
+    height: 20px;
+  }
+
+  .legend {
+    grid-column: auto;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .legend span {
+    gap: 5px;
+  }
+
+  .legend-dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  .calendar-content {
+    --timeline-content-padding: 12px;
+    min-width: max(100%, calc(var(--timeline-days) * 18px + 24px));
+    padding-top: 8px;
+    padding-bottom: 10px;
+    grid-template-rows: auto minmax(96px, 1fr);
+    gap: 8px;
+  }
+
+  .activities-area {
+    min-height: 96px;
+    padding-top: 2px;
+    padding-bottom: 8px;
+  }
+
+  .activity-row.red-row {
+    height: 44px;
+    margin-bottom: 8px;
+  }
+
+  .completed-section {
+    margin-top: 12px;
+    padding-top: 8px;
+  }
+
+  .completed-section-toggle {
+    height: 38px;
+    width: calc(var(--timeline-viewport-width, 100vw) - 20px);
+    margin-left: calc(10px - var(--timeline-content-padding));
+  }
+
+  .calendar-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) and (max-width: 700px) {
+  .page-header {
+    gap: 10px;
+  }
+
+  .title-group h1 {
+    font-size: 20px;
+  }
+
+  .game-type-switcher {
+    max-width: 62vw;
+  }
+
+  .game-type-btn {
+    flex-basis: 96px;
+    width: 96px;
+  }
+
+  .calendar-toolbar {
+    grid-template-columns: minmax(116px, 1fr) auto;
+    gap: 10px;
+  }
+
+  .legend {
+    display: none;
+  }
+
+  .summary-item span {
+    display: none;
+  }
+
+  .summary-item strong {
+    display: inline-flex;
+    align-items: baseline;
+  }
+
+  .summary-item strong::after {
+    margin-left: 3px;
+    color: #91a3b8;
+    font-size: 9px;
+    font-weight: 600;
+  }
+
+  .calendar-summary .summary-item:nth-child(1) strong::after {
+    content: "活动";
+  }
+
+  .calendar-summary .summary-item:nth-child(3) strong::after {
+    content: "进行";
+  }
+
+  .calendar-summary .summary-item:nth-child(5) strong::after {
+    content: "完成";
+  }
+}
 </style>
