@@ -435,11 +435,32 @@ const todayLabel = ref(getTodayLabel(today));
 const calendarContainerEl = ref(null);
 const calendarScrollEl = ref(null);
 const calendarContentEl = ref(null);
+const todayHeight = ref(0);
 
 // 动态计算今日指示器高度，覆盖整个活动区域
-const todayHeight = computed(() => {
-  return calendarContainerEl?.value?.offsetHeight || 0;
-});
+let calendarResizeObserver = null;
+
+watch(
+  calendarContainerEl,
+  (element) => {
+    calendarResizeObserver?.disconnect();
+    calendarResizeObserver = null;
+
+    if (!element) {
+      todayHeight.value = 0;
+      return;
+    }
+
+    const updateHeight = () => {
+      todayHeight.value = element.offsetHeight;
+    };
+
+    updateHeight();
+    calendarResizeObserver = new ResizeObserver(updateHeight);
+    calendarResizeObserver.observe(element);
+  },
+  { flush: "post" },
+);
 
 // 鼠标指示器
 const activitiesAreaEl = ref(null);
@@ -448,6 +469,10 @@ const mouseIndicatorX = ref(0);
 const mouseIndicatorLabel = ref("");
 
 function onActivitiesMouseMove(e) {
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    return;
+  }
+
   const rect = activitiesAreaEl.value.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const contentPadding = calendarContentEl.value
@@ -509,9 +534,15 @@ function onTimelineScroll() {
   syncTimelineScrollMetrics();
 }
 
+let resizeFrame = null;
+
 function onTimelineResize() {
-  syncTimelineScrollMetrics();
-  scrollTimelineToToday();
+  if (resizeFrame) cancelAnimationFrame(resizeFrame);
+  resizeFrame = requestAnimationFrame(() => {
+    syncTimelineScrollMetrics();
+    scrollTimelineToToday();
+    resizeFrame = null;
+  });
 }
 
 watch(
@@ -535,6 +566,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener("resize", onTimelineResize);
+  calendarResizeObserver?.disconnect();
+  if (resizeFrame) cancelAnimationFrame(resizeFrame);
   if (timer) {
     clearInterval(timer);
     timer = null;
@@ -1026,6 +1059,12 @@ onUnmounted(() => {
     width: calc(var(--timeline-viewport-width, 100vw) - 32px);
     margin-left: -8px;
     transform: translateX(var(--timeline-scroll-left, 0px));
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .mouse-indicator {
+    display: none;
   }
 }
 

@@ -6,9 +6,12 @@
       { 'is-completed': completed },
     ]"
     :style="barStyle"
-    @mouseenter="showTooltip = true"
+    @mouseenter="onBarMouseEnter"
     @mousemove="onBarMouseMove"
-    @mouseleave="showTooltip = false"
+    @mouseleave="onBarMouseLeave"
+    @pointerdown="onBarPointerDown"
+    @pointerup="onBarPointerUp"
+    @pointercancel="touchStart = null"
   >
     <!-- 悬浮提示 -->
     <Teleport to="body">
@@ -35,6 +38,55 @@
             <dd>{{ formattedEndTime }}</dd>
           </div>
         </dl>
+      </div>
+    </Teleport>
+
+    <Teleport to="body">
+      <div
+        v-if="showTouchDetails"
+        class="touch-details-backdrop"
+        @click.self="showTouchDetails = false"
+        @keydown.esc="showTouchDetails = false"
+      >
+        <section
+          class="touch-details-sheet"
+          role="dialog"
+          aria-modal="true"
+          :aria-label="activity.name"
+        >
+          <div class="touch-details-handle" aria-hidden="true"></div>
+          <div class="touch-details-heading">
+            <span
+              class="tooltip-status"
+              :class="`status-${activityStatus.key}`"
+            >
+              <i></i>{{ activityStatus.label }}
+            </span>
+            <button
+              class="touch-details-close"
+              type="button"
+              aria-label="关闭活动详情"
+              autofocus
+              @click="showTouchDetails = false"
+            >
+              ×
+            </button>
+          </div>
+          <h2>{{ activity.name }}</h2>
+          <p class="touch-details-description">
+            {{ activityStatus.description }}
+          </p>
+          <dl class="touch-details-times">
+            <div>
+              <dt>开始</dt>
+              <dd>{{ formattedStartTime }}</dd>
+            </div>
+            <div>
+              <dt>结束</dt>
+              <dd>{{ formattedEndTime }}</dd>
+            </div>
+          </dl>
+        </section>
       </div>
     </Teleport>
 
@@ -127,11 +179,27 @@ const props = defineProps({
 defineEmits(["toggle-completed"]);
 
 const showTooltip = ref(false);
+const showTouchDetails = ref(false);
 const tooltipFixedX = ref(0);
 const tooltipFixedY = ref(0);
 const tooltipFlipped = ref(false);
+let touchStart = null;
+
+function hasFinePointer() {
+  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+}
+
+function onBarMouseEnter() {
+  if (hasFinePointer()) showTooltip.value = true;
+}
+
+function onBarMouseLeave() {
+  showTooltip.value = false;
+}
 
 function onBarMouseMove(e) {
+  if (!hasFinePointer()) return;
+
   const bar = e.currentTarget;
   const barRect = bar.getBoundingClientRect();
 
@@ -147,6 +215,25 @@ function onBarMouseMove(e) {
   const tooltipWidth = 280;
   const rightSpace = areaRight - e.clientX;
   tooltipFlipped.value = rightSpace < tooltipWidth;
+}
+
+function onBarPointerDown(e) {
+  if (e.pointerType === "mouse") return;
+  touchStart = { x: e.clientX, y: e.clientY, pointerId: e.pointerId };
+}
+
+function onBarPointerUp(e) {
+  if (!touchStart || touchStart.pointerId !== e.pointerId) return;
+
+  const distance = Math.hypot(
+    e.clientX - touchStart.x,
+    e.clientY - touchStart.y,
+  );
+  touchStart = null;
+
+  if (distance > 8 || e.target.closest(".completion-toggle")) return;
+  showTooltip.value = false;
+  showTouchDetails.value = true;
 }
 
 const activityStatus = computed(() => {
@@ -348,6 +435,94 @@ const barStyle = computed(() => {
 
 .activity-tooltip.tooltip-left {
   transform: translateX(-100%);
+}
+
+.touch-details-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(2, 8, 20, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.touch-details-sheet {
+  width: min(100%, 520px);
+  padding: 8px 18px max(18px, env(safe-area-inset-bottom));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  background: #f4f7fb;
+  color: #182437;
+  box-shadow: 0 20px 60px rgba(2, 8, 20, 0.46);
+}
+
+.touch-details-handle {
+  width: 38px;
+  height: 4px;
+  margin: 0 auto 6px;
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.touch-details-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+}
+
+.touch-details-close {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 12px;
+  background: #e5ebf3;
+  color: #526278;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.touch-details-sheet h2 {
+  margin-top: 4px;
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.touch-details-description {
+  margin-top: 6px;
+  color: #65758a;
+  font-size: 13px;
+}
+
+.touch-details-times {
+  display: grid;
+  gap: 9px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #dce4ee;
+}
+
+.touch-details-times div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.touch-details-times dt {
+  color: #8492a5;
+  font-size: 12px;
+}
+
+.touch-details-times dd {
+  margin: 0;
+  color: #26374f;
+  font-size: 12px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
 }
 
 .tooltip-heading {
@@ -570,6 +745,34 @@ const barStyle = computed(() => {
 
   .completion-toggle {
     margin-left: 8px;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .activity-bar:hover {
+    filter: none;
+    transform: none;
+  }
+
+  .activity-tooltip {
+    display: none;
+  }
+
+  .completion-toggle {
+    width: 44px;
+    height: 44px;
+    margin-left: 4px;
+    flex-basis: 44px;
+  }
+
+  .checkmark {
+    width: 21px;
+    height: 21px;
+  }
+
+  .completion-toggle input:checked + .checkmark::after {
+    left: 7px;
+    top: 4px;
   }
 }
 
