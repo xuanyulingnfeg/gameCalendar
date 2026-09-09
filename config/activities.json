@@ -15,7 +15,7 @@
     "zzz": {
       "calendarConfig": {
         "startDate": "2026/07/29",
-        "endDate": "2026/09/09"
+        "endDate": "2026/11/30"
       },
       "activities": [
         {
@@ -55,9 +55,9 @@
           ]
         },
         {
-          "name": "玛瑟尔周年馈礼、法厄同年度大揭秘、潜能预演·狩猎游戏",
-          "startTime": "2026-07-29 06",
-          "endTime": "2026-09-09 06",
+          "name": "活动时间：",
+          "startTime": "2026-09-10 10",
+          "endTime": "2026-10-19 04",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -65,9 +65,19 @@
           "charIcons": []
         },
         {
-          "name": "云端礼赠",
-          "startTime": "2026-07-29 06",
-          "endTime": "2026-09-08 04",
+          "name": "活动时间：",
+          "startTime": "2026-09-16 10",
+          "endTime": "2026-10-05 04",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "活动时间：",
+          "startTime": "2026-09-23 10",
+          "endTime": "2026-10-20 04",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -75,9 +85,59 @@
           "charIcons": []
         },
         {
-          "name": "恰浪花逐夏而至",
+          "name": "活动时间：",
+          "startTime": "2026-09-23 04",
+          "endTime": "2026-09-28 04",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "活动时间：",
+          "startTime": "2026-09-30 10",
+          "endTime": "2026-10-19 04",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "活动时间：",
+          "startTime": "2026-09-30 10",
+          "endTime": "2026-10-20 04",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "活动时间：",
+          "startTime": "2026-10-03 10",
+          "endTime": "2026-10-19 04",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "活动时间：",
+          "startTime": "2026-10-14 04",
+          "endTime": "2026-10-19 04",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "活动时间：",
           "startTime": "2026-07-29 06",
-          "endTime": "2026-09-07 04",
+          "endTime": "2026-10-20 04",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -85,70 +145,10 @@
           "charIcons": []
         },
         {
-          "name": "咔嚓！焦点对决！",
-          "startTime": "2026-08-07 10",
-          "endTime": "2026-08-24 04",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "深度巡防-三倍赏金",
-          "startTime": "2026-08-12 04",
-          "endTime": "2026-08-17 04",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "「嗯呢」大派送！",
-          "startTime": "2026-08-19 10",
-          "endTime": "2026-09-08 04",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "咔滋酥脆出餐计划",
-          "startTime": "2026-08-19 10",
-          "endTime": "2026-09-07 04",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "极危通缉与悠游假期",
-          "startTime": "2026-08-24 10",
-          "endTime": "2026-09-07 04",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "叮咚！见习邮差派件中",
-          "startTime": "2026-08-28 10",
-          "endTime": "2026-09-14 04",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "实战特训-三倍悬赏",
-          "startTime": "2026-09-02 04",
-          "endTime": "2026-09-07 04",
-          "type": "gray",
+          "name": "活动时间：",
+          "startTime": "2026-07-29 06",
+          "endTime": "2026-11-30 04",
+          "type": "orange",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": false,
