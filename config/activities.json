@@ -55,6 +55,16 @@
           ]
         },
         {
+          "name": "天使应援大作战",
+          "startTime": "2026-09-09 11",
+          "endTime": "2026-11-30 04",
+          "type": "orange",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
           "name": "「弹球勇者」哐哐当！",
           "startTime": "2026-09-10 10",
           "endTime": "2026-10-19 04",
@@ -69,16 +79,6 @@
           "startTime": "2026-09-16 10",
           "endTime": "2026-10-05 04",
           "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "惊喜放映企划",
-          "startTime": "2026-09-23 10",
-          "endTime": "2026-10-20 04",
-          "type": "orange",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": false,
@@ -105,16 +105,6 @@
           "charIcons": []
         },
         {
-          "name": "「嗯呢」从天降",
-          "startTime": "2026-09-30 10",
-          "endTime": "2026-10-20 04",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
           "name": "跛脚乌鸦奇探录",
           "startTime": "2026-10-03 10",
           "endTime": "2026-10-19 04",
@@ -129,36 +119,6 @@
           "startTime": "2026-10-14 04",
           "endTime": "2026-10-19 04",
           "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "全新放送",
-          "startTime": "2026-09-09 11",
-          "endTime": "2026-10-20 04",
-          "type": "orange",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "天使应援大作战",
-          "startTime": "2026-09-09 11",
-          "endTime": "2026-11-30 04",
-          "type": "orange",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "潜能预演·烈火重锤",
-          "startTime": "2026-09-09 11",
-          "endTime": "2026-10-21 06",
-          "type": "orange",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": false,
