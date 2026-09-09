@@ -24,7 +24,7 @@
           "endTime": "2026-09-30 12",
           "type": "red",
           "icons": [],
-          "hasDollarSign": true,
+          "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
             "./zzz/kelalei.png",
@@ -37,7 +37,7 @@
           "endTime": "2026-10-20 15",
           "type": "red",
           "icons": [],
-          "hasDollarSign": true,
+          "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
             "./zzz/luokexi.png",
