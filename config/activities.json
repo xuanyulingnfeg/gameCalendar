@@ -19,39 +19,29 @@
       },
       "activities": [
         {
-          "name": "蕾米埃尔 - 限时频段",
-          "startTime": "2026-07-29 10",
-          "endTime": "2026-09-08 15",
+          "name": "克拉蕾、南宫羽 - 限时频段",
+          "startTime": "2026-09-09 11",
+          "endTime": "2026-09-30 12",
           "type": "red",
           "icons": [],
           "hasDollarSign": true,
           "hasCharIcon": true,
           "charIcons": [
-            "./zzz/leimiaier.png"
+            "./zzz/kelalei.png",
+            "./zzz/nangongyu.png"
           ]
         },
         {
-          "name": "爱芮 - 限时频段",
-          "startTime": "2026-07-29 10",
-          "endTime": "2026-08-19 12",
+          "name": "洛克茜、普罗米娅 - 限时频段",
+          "startTime": "2026-09-30 12",
+          "endTime": "2026-10-20 15",
           "type": "red",
           "icons": [],
           "hasDollarSign": true,
           "hasCharIcon": true,
           "charIcons": [
-            "./zzz/airui.png"
-          ]
-        },
-        {
-          "name": "希格莉德 - 限时频段",
-          "startTime": "2026-08-19 12",
-          "endTime": "2026-09-08 18",
-          "type": "red",
-          "icons": [],
-          "hasDollarSign": true,
-          "hasCharIcon": true,
-          "charIcons": [
-            "./zzz/xigelide.png"
+            "./zzz/luoxi.png",
+            "./zzz/puluomiya.png"
           ]
         },
         {
