@@ -189,14 +189,7 @@
 </template>
 
 <script setup>
-import {
-  ref,
-  computed,
-  nextTick,
-  onMounted,
-  onUnmounted,
-  watch,
-} from "vue";
+import { ref, computed, nextTick, onMounted, onUnmounted, watch } from "vue";
 import WeekHeader from "./WeekHeader.vue";
 import ActivityBar from "./ActivityBar.vue";
 import TodayIndicator from "./TodayIndicator.vue";
@@ -213,7 +206,9 @@ const loading = ref(true);
 
 function loadCompletedActivityKeys() {
   try {
-    const saved = JSON.parse(localStorage.getItem("completedActivities") || "[]");
+    const saved = JSON.parse(
+      localStorage.getItem("completedActivities") || "[]",
+    );
     return Array.isArray(saved) ? new Set(saved) : new Set();
   } catch {
     return new Set();
@@ -297,32 +292,38 @@ const currentActivities = computed(() => {
 
 // 将red活动按时间重叠分行
 const redActivityRows = computed(() => {
+  // 保留原始 startTime/endTime（用于 hover 展示真实时间），
+  // 另用 renderStartTime/renderEndTime 承载仅供日历绘制使用的时间调整。
   const reds = currentActivities.value
     .filter((a) => a.type === "red")
-    .map((a) => ({ ...a }));
+    .map((a) => ({
+      ...a,
+      renderStartTime: a.startTime,
+      renderEndTime: a.endTime,
+    }));
 
-  // 两个角色换取活动无缝衔接时，将前一个活动提前 4 小时结束。
+  // 两个角色换取活动无缝衔接时，将前一个活动的绘制结束时间提前 4 小时。
   for (let i = 1; i < reds.length; i++) {
-    const previousEnd = parseActivityTime(reds[i - 1].endTime, true);
-    const currentStart = parseActivityTime(reds[i].startTime, false);
+    const previousEnd = parseActivityTime(reds[i - 1].renderEndTime, true);
+    const currentStart = parseActivityTime(reds[i].renderStartTime, false);
 
     if (currentStart.getTime() === previousEnd.getTime()) {
       previousEnd.setHours(previousEnd.getHours() - 4);
-      reds[i - 1].endTime = formatActivityTime(previousEnd);
+      reds[i - 1].renderEndTime = formatActivityTime(previousEnd);
     } else if (currentStart > previousEnd) {
-      reds[i].startTime = reds[i - 1].endTime;
+      reds[i].renderStartTime = reds[i - 1].renderEndTime;
     }
   }
-  // 贪心分行：时间重叠的放不同行
+  // 贪心分行：时间重叠的放不同行（使用绘制时间判断重叠）
   const rows = [];
   for (const act of reds) {
-    const actStart = parseActivityTime(act.startTime, false);
-    const actEnd = parseActivityTime(act.endTime, true);
+    const actStart = parseActivityTime(act.renderStartTime, false);
+    const actEnd = parseActivityTime(act.renderEndTime, true);
     let placed = false;
     for (const row of rows) {
       const hasOverlap = row.some((existing) => {
-        const exStart = parseActivityTime(existing.startTime, false);
-        const exEnd = parseActivityTime(existing.endTime, true);
+        const exStart = parseActivityTime(existing.renderStartTime, false);
+        const exEnd = parseActivityTime(existing.renderEndTime, true);
         return actStart < exEnd && actEnd > exStart;
       });
       if (!hasOverlap) {
@@ -339,8 +340,7 @@ const redActivityRows = computed(() => {
 });
 
 const nonCharacterActivities = computed(() => {
-  return currentActivities.value
-    .filter((a) => a.type !== "red")
+  return currentActivities.value.filter((a) => a.type !== "red");
 });
 
 const incompleteActivities = computed(() => {
@@ -379,10 +379,7 @@ function toggleActivityCompleted(activity) {
   }
 
   completedActivityKeys.value = updatedKeys;
-  localStorage.setItem(
-    "completedActivities",
-    JSON.stringify([...updatedKeys]),
-  );
+  localStorage.setItem("completedActivities", JSON.stringify([...updatedKeys]));
 }
 
 const formattedDateRange = computed(() => {
@@ -921,7 +918,9 @@ onUnmounted(() => {
   background: rgba(15, 27, 43, 0.56);
   color: #d9e2ee;
   cursor: pointer;
-  transition: background-color 160ms ease, border-color 160ms ease;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
 }
 
 .completed-section-toggle:hover {
@@ -1070,8 +1069,7 @@ onUnmounted(() => {
 
 @media (max-width: 640px) and (orientation: portrait) {
   .game-calendar {
-    padding:
-      max(12px, env(safe-area-inset-top))
+    padding: max(12px, env(safe-area-inset-top))
       max(12px, env(safe-area-inset-right))
       max(12px, env(safe-area-inset-bottom))
       max(12px, env(safe-area-inset-left));
@@ -1205,11 +1203,9 @@ onUnmounted(() => {
 
 @media (orientation: landscape) and (max-height: 600px) and (max-width: 1050px) {
   .game-calendar {
-    padding:
-      max(8px, env(safe-area-inset-top))
+    padding: max(8px, env(safe-area-inset-top))
       max(10px, env(safe-area-inset-right))
-      max(8px, env(safe-area-inset-bottom))
-      max(10px, env(safe-area-inset-left));
+      max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
     background-attachment: scroll;
   }
 

@@ -1,10 +1,7 @@
 <template>
   <div
     class="activity-bar"
-    :class="[
-      'type-' + activity.type,
-      { 'is-completed': completed },
-    ]"
+    :class="['type-' + activity.type, { 'is-completed': completed }]"
     :style="barStyle"
     @mouseenter="onBarMouseEnter"
     @mousemove="onBarMouseMove"
@@ -25,7 +22,9 @@
           <span class="tooltip-status" :class="`status-${activityStatus.key}`">
             <i></i>{{ activityStatus.label }}
           </span>
-          <span class="tooltip-remaining">{{ activityStatus.description }}</span>
+          <span class="tooltip-remaining">{{
+            activityStatus.description
+          }}</span>
         </div>
         <div class="tooltip-divider"></div>
         <dl class="tooltip-times">
@@ -352,8 +351,16 @@ const barStyle = computed(() => {
 
   const totalHours = props.totalDays * 24;
 
-  const actStart = parseTime(props.activity.startTime, false);
-  const actEnd = parseTime(props.activity.endTime, true);
+  // 位置绘制优先使用 renderStartTime/renderEndTime（仅供日历绘制使用），
+  // hover 提示仍读取原始 startTime/endTime，因此不影响展示。
+  const actStart = parseTime(
+    props.activity.renderStartTime ?? props.activity.startTime,
+    false,
+  );
+  const actEnd = parseTime(
+    props.activity.renderEndTime ?? props.activity.endTime,
+    true,
+  );
 
   const startHoursOffset = (actStart - calStart) / (1000 * 60 * 60);
   const durationHours = (actEnd - actStart) / (1000 * 60 * 60);
@@ -410,7 +417,10 @@ const barStyle = computed(() => {
   box-sizing: border-box;
   border: 1px solid rgba(255, 255, 255, 0.12);
   container-type: inline-size;
-  transition: filter 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  transition:
+    filter 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .activity-bar:hover {
@@ -548,10 +558,18 @@ const barStyle = computed(() => {
   background: #7d8da2;
 }
 
-.tooltip-status.status-ongoing i { background: #e39c3f; }
-.tooltip-status.status-upcoming i { background: #668dbb; }
-.tooltip-status.status-completed i { background: #698578; }
-.tooltip-status.status-ended i { background: #8993a0; }
+.tooltip-status.status-ongoing i {
+  background: #e39c3f;
+}
+.tooltip-status.status-upcoming i {
+  background: #668dbb;
+}
+.tooltip-status.status-completed i {
+  background: #698578;
+}
+.tooltip-status.status-ended i {
+  background: #8993a0;
+}
 
 .tooltip-remaining {
   color: #65758a;
@@ -593,17 +611,29 @@ const barStyle = computed(() => {
 
 .activity-bar.type-red {
   padding: 0 10px 0 5px;
-  background: linear-gradient(105deg, rgba(194, 66, 91, 0.94), rgba(231, 98, 117, 0.9));
+  background: linear-gradient(
+    105deg,
+    rgba(194, 66, 91, 0.94),
+    rgba(231, 98, 117, 0.9)
+  );
   box-shadow: 0 7px 20px rgba(131, 32, 54, 0.2);
 }
 
 .activity-bar.type-orange {
-  background: linear-gradient(105deg, rgba(178, 119, 50, 0.94), rgba(218, 166, 84, 0.9));
+  background: linear-gradient(
+    105deg,
+    rgba(178, 119, 50, 0.94),
+    rgba(218, 166, 84, 0.9)
+  );
   box-shadow: 0 7px 20px rgba(106, 69, 21, 0.18);
 }
 
 .activity-bar.type-gray {
-  background: linear-gradient(105deg, rgba(72, 91, 115, 0.94), rgba(91, 115, 143, 0.9));
+  background: linear-gradient(
+    105deg,
+    rgba(72, 91, 115, 0.94),
+    rgba(91, 115, 143, 0.9)
+  );
   box-shadow: 0 7px 20px rgba(7, 17, 31, 0.2);
 }
 
@@ -620,8 +650,8 @@ const barStyle = computed(() => {
   right: 0;
   bottom: 0;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.13), transparent 45%),
-    linear-gradient(90deg, rgba(255,255,255,.07), transparent 32%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.13), transparent 45%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07), transparent 32%);
   pointer-events: none;
   border-radius: inherit;
 }
@@ -661,7 +691,11 @@ const barStyle = computed(() => {
 }
 
 .activity-bar.is-completed {
-  background: linear-gradient(105deg, rgba(73, 82, 96, 0.9), rgba(94, 105, 120, 0.84));
+  background: linear-gradient(
+    105deg,
+    rgba(73, 82, 96, 0.9),
+    rgba(94, 105, 120, 0.84)
+  );
   border-color: rgba(255, 255, 255, 0.09);
   box-shadow: 0 5px 16px rgba(3, 9, 18, 0.16);
 }
@@ -808,7 +842,10 @@ const barStyle = computed(() => {
   border-radius: 6px;
   background: rgba(8, 16, 28, 0.18);
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.06);
-  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
 }
 
 .completion-toggle:hover .checkmark {
