@@ -123,30 +123,31 @@
       },
       "activities": [
         {
-          "name": "清宵/达妮娅 - 限时换取",
-          "startTime": "2026-08-20 11",
-          "endTime": "2026-09-10 10",
+          "name": "心月狐/千咲/尤诺 - 限时换取",
+          "startTime": "2026-09-30 11",
+          "endTime": "2026-10-22 10",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./mc/qingxiao.png",
-            "./mc/daniya.png"
+            "./mc/xinyuehu.png",
+            "./mc/qianxiao.png",
+            "./mc/younuo.png"
           ]
         },
         {
-          "name": "景燃/绯雪/莫宁 - 限时换取",
-          "startTime": "2026-09-10 10",
-          "endTime": "2026-09-29 12",
+          "name": "锁冥/洛瑟/琳奈 - 限时换取",
+          "startTime": "2026-10-22 10",
+          "endTime": "2026-11-11 12",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./mc/jingran.png",
-            "./mc/feixue.png",
-            "./mc/moning.png"
+            "./mc/suoming.png",
+            "./mc/luose.png",
+            "./mc/linnai.png"
           ]
         },
         {
