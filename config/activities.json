@@ -272,6 +272,36 @@
           "hasDollarSign": false,
           "hasCharIcon": false,
           "charIcons": []
+        },
+        {
+          "name": "「咔滋！黄金双脆」",
+          "startTime": "2026-10-15 11",
+          "endTime": "2026-11-05 06",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "「夺金大作战」",
+          "startTime": "2026-10-19 05",
+          "endTime": "2026-11-02 05",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "「噗卡翻翻乐」",
+          "startTime": "2026-10-23 10",
+          "endTime": "2026-11-05 06",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
         }
       ]
     }
