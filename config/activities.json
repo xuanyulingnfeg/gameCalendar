@@ -9,6 +9,11 @@
       "key": "mc",
       "name": "鸣潮",
       "bgImage": "./mc/bg.jpeg"
+    },
+    {
+      "key": "yh",
+      "name": "异环",
+      "bgImage": "./yh/bg.png"
     }
   ],
   "gameData": {
@@ -204,6 +209,64 @@
           "name": "[踏潮探历・玄方地界]限时探索委托活动",
           "startTime": "2026-10-29 04",
           "endTime": "2026-11-11 04",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        }
+      ]
+    },
+    "yh": {
+      "calendarConfig": {
+        "startDate": "2026/09/24",
+        "endDate": "2026/11/05"
+      },
+      "activities": [
+        {
+          "name": "「噗卡乐园游记」",
+          "startTime": "2026-09-24 11",
+          "endTime": "2026-11-05 06",
+          "type": "orange",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "「活力焕能」",
+          "startTime": "2026-09-28 05",
+          "endTime": "2026-10-12 05",
+          "type": "gray",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "「全站深境」",
+          "startTime": "2026-09-28 05",
+          "endTime": "2026-11-05 06",
+          "type": "orange",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "「炭团的宝藏」",
+          "startTime": "2026-09-30 10",
+          "endTime": "2026-11-05 06",
+          "type": "orange",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "「像素溢出」",
+          "startTime": "2026-10-12 05",
+          "endTime": "2026-10-19 05",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
