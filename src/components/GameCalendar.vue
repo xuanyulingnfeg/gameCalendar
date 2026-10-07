@@ -310,8 +310,6 @@ const redActivityRows = computed(() => {
     if (currentStart.getTime() === previousEnd.getTime()) {
       previousEnd.setHours(previousEnd.getHours() - 4);
       reds[i - 1].renderEndTime = formatActivityTime(previousEnd);
-    } else if (currentStart > previousEnd) {
-      reds[i].renderStartTime = reds[i - 1].renderEndTime;
     }
   }
   // 贪心分行：时间重叠的放不同行（使用绘制时间判断重叠）
