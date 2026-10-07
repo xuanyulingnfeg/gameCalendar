@@ -142,7 +142,7 @@
           ]
         },
         {
-          "name": "锁冥/洛瑟菈/琳奈 - 限时换取",
+          "name": "锁暝/洛瑟菈/琳奈 - 限时换取",
           "startTime": "2026-10-22 10",
           "endTime": "2026-11-11 12",
           "type": "red",
@@ -224,6 +224,31 @@
       },
       "activities": [
         {
+          "name": "黑羽、安魂曲 - 限定棋盘",
+          "startTime": "2026-09-24 11",
+          "endTime": "2026-10-15 06",
+          "type": "red",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": true,
+          "charIcons": [
+            "./yh/heiyu.png",
+            "./yh/anhunqu.png"
+          ]
+        },
+        {
+          "name": "明音凛 - 限定棋盘",
+          "startTime": "2026-10-15 11",
+          "endTime": "2026-11-05 06",
+          "type": "red",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": true,
+          "charIcons": [
+            "./yh/mingyinlin.png"
+          ]
+        },
+        {
           "name": "「噗卡乐园游记」",
           "startTime": "2026-09-24 11",
           "endTime": "2026-11-05 06",
@@ -234,18 +259,8 @@
           "charIcons": []
         },
         {
-          "name": "「活力焕能」",
-          "startTime": "2026-09-28 05",
-          "endTime": "2026-10-12 05",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
           "name": "「全站深境」",
-          "startTime": "2026-09-28 05",
+          "startTime": "2026-09-24 11",
           "endTime": "2026-11-05 06",
           "type": "orange",
           "icons": [],
@@ -258,6 +273,16 @@
           "startTime": "2026-09-30 10",
           "endTime": "2026-11-05 06",
           "type": "orange",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": false,
+          "charIcons": []
+        },
+        {
+          "name": "「活力焕能」",
+          "startTime": "2026-09-28 05",
+          "endTime": "2026-10-12 05",
+          "type": "gray",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": false,
