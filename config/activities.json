@@ -24,29 +24,29 @@
       },
       "activities": [
         {
-          "name": "克拉蕾、南宫羽 - 限时频段",
-          "startTime": "2026-09-09 11",
-          "endTime": "2026-09-30 12",
+          "name": "菲欧妮、维琳娜 - 限时频段",
+          "startTime": "2026-10-21 11",
+          "endTime": "2026-11-11 12",
           "type": "red",
           "icons": [],
-          "hasDollarSign": false,
+          "hasDollarSign": true,
           "hasCharIcon": true,
           "charIcons": [
-            "./zzz/kelalei.png",
-            "./zzz/nangongyu.png"
+            "./zzz/feiouni.png",
+            "./zzz/weilinna.png"
           ]
         },
         {
-          "name": "洛克茜、普罗米娅 - 限时频段",
-          "startTime": "2026-09-30 12",
-          "endTime": "2026-10-20 15",
+          "name": "赛维里安、诺姆 - 限时频段",
+          "startTime": "2026-11-11 12",
+          "endTime": "2026-12-01 15",
           "type": "red",
           "icons": [],
-          "hasDollarSign": false,
+          "hasDollarSign": true,
           "hasCharIcon": true,
           "charIcons": [
-            "./zzz/luokexi.png",
-            "./zzz/puluomiya.png"
+            "./zzz/saiweilian.png",
+            "./zzz/nuomu.png"
           ]
         },
         {
