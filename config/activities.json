@@ -224,28 +224,42 @@
       },
       "activities": [
         {
-          "name": "黑羽、安魂曲 - 限定棋盘",
+          "name": "奥尔沐、曳尔沐、真红 - 限定棋盘",
           "startTime": "2026-09-24 11",
-          "endTime": "2026-10-15 06",
+          "endTime": "2026-11-26 06",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./yh/heiyu.png",
-            "./yh/anhunqu.png"
+            "./yh/aoermu.png",
+            "./yh/yeermu.png",
+            "./yh/zhenhong.png"
           ]
         },
         {
-          "name": "明音凛 - 限定棋盘",
-          "startTime": "2026-10-15 11",
+          "name": "真红 - 限定棋盘",
+          "startTime": "2026-11-05 11",
+          "endTime": "2026-11-26 06",
+          "type": "red",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": true,
+          "charIcons": [
+            "./yh/zhenhong.png"
+          ]
+        },
+        {
+          "name": "EXE、卡厄斯 - 限定棋盘",
+          "startTime": "2026-11-26 11",
           "endTime": "2026-11-05 06",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./yh/mingyinlin.png"
+            "./yh/exe.png",
+            "./yh/kaesi.png"
           ]
         },
         {
