@@ -224,21 +224,7 @@
       },
       "activities": [
         {
-          "name": "奥尔沐、曳尔沐、真红 - 限定棋盘",
-          "startTime": "2026-09-24 11",
-          "endTime": "2026-11-26 06",
-          "type": "red",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": true,
-          "charIcons": [
-            "./yh/aoermu.png",
-            "./yh/yeermu.png",
-            "./yh/zhenhong.png"
-          ]
-        },
-        {
-          "name": "真红 - 限定棋盘",
+          "name": "奥尔沐、真红 - 限定棋盘",
           "startTime": "2026-11-05 11",
           "endTime": "2026-11-26 06",
           "type": "red",
@@ -246,13 +232,14 @@
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
+            "./yh/aoermu.png",
             "./yh/zhenhong.png"
           ]
         },
         {
           "name": "EXE、卡厄斯 - 限定棋盘",
           "startTime": "2026-11-26 11",
-          "endTime": "2026-11-05 06",
+          "endTime": "2026-12-17 06",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
