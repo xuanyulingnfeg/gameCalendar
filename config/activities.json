@@ -224,7 +224,7 @@
       },
       "activities": [
         {
-          "name": "奥尔沐、真红 - 限定棋盘",
+          "name": "曳尔沐、真红 - 限定棋盘",
           "startTime": "2026-11-05 11",
           "endTime": "2026-11-26 06",
           "type": "red",
@@ -232,7 +232,7 @@
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./yh/aoermu.png",
+            "./yh/yeermu.png",
             "./yh/zhenhong.png"
           ]
         },
