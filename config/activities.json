@@ -138,7 +138,7 @@
           "charIcons": [
             "./mc/lili.png",
             "./mc/xigelika.png",
-            "./mc/chouyuan.png"
+            "./mc/qiuyuan.png"
           ]
         },
         {
@@ -150,7 +150,7 @@
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./mc/yangyang·xuanling.png",
+            "./mc/yangyangxuanling.png",
             "./mc/suisui.png",
             "./mc/feixue.png"
           ]
