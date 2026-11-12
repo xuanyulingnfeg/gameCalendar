@@ -128,31 +128,17 @@
       },
       "activities": [
         {
-          "name": "心月狐/千咲/尤诺 - 限时换取",
-          "startTime": "2026-09-30 11",
-          "endTime": "2026-10-22 10",
+          "name": "莉莉/西格莉卡/优远 - 限时换取",
+          "startTime": "2026-11-12 11",
+          "endTime": "2026-12-03 10",
           "type": "red",
           "icons": [],
           "hasDollarSign": false,
           "hasCharIcon": true,
           "charIcons": [
-            "./mc/xinyuehu.png",
-            "./mc/qianxiao.png",
-            "./mc/younuo.png"
-          ]
-        },
-        {
-          "name": "锁暝/洛瑟菈/琳奈 - 限时换取",
-          "startTime": "2026-10-22 10",
-          "endTime": "2026-11-11 12",
-          "type": "red",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": true,
-          "charIcons": [
-            "./mc/suoming.png",
-            "./mc/luosela.png",
-            "./mc/linnai.png"
+            "./mc/lili.png",
+            "./mc/xigelika.png",
+            "./mc/youyuan.png"
           ]
         },
         {
