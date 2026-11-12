@@ -128,7 +128,7 @@
       },
       "activities": [
         {
-          "name": "莉莉/西格莉卡/优远 - 限时换取",
+          "name": "莉莉/西格莉卡/仇远 - 限时换取",
           "startTime": "2026-11-12 11",
           "endTime": "2026-12-03 10",
           "type": "red",
@@ -138,7 +138,7 @@
           "charIcons": [
             "./mc/lili.png",
             "./mc/xigelika.png",
-            "./mc/youyuan.png"
+            "./mc/qiuyuan.png"
           ]
         },
         {
