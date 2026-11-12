@@ -123,8 +123,8 @@
     },
     "mc": {
       "calendarConfig": {
-        "startDate": "2026/09/30",
-        "endDate": "2026/11/11"
+        "startDate": "2026/11/12",
+        "endDate": "2026/12/21"
       },
       "activities": [
         {
@@ -142,9 +142,9 @@
           ]
         },
         {
-          "name": "[梦构匣中]区域探索活动",
-          "startTime": "2026-09-30 11",
-          "endTime": "2026-11-11 04",
+          "name": "[第二索拉：未名之梦]休闲活动",
+          "startTime": "2026-11-12 11",
+          "endTime": "2026-12-21 12",
           "type": "orange",
           "icons": [],
           "hasDollarSign": false,
@@ -152,19 +152,9 @@
           "charIcons": []
         },
         {
-          "name": "[团团勇者大乱斗]休闲活动",
-          "startTime": "2026-09-30 11",
-          "endTime": "2026-11-11 12",
-          "type": "orange",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "[天工寻物]限时战斗活动",
-          "startTime": "2026-10-08 04",
-          "endTime": "2026-10-26 04",
+          "name": "[拉海洛方块・逆转]休闲活动",
+          "startTime": "2026-11-19 04",
+          "endTime": "2026-12-03 04",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
@@ -172,9 +162,9 @@
           "charIcons": []
         },
         {
-          "name": "[朝月鱼涌]网页活动",
-          "startTime": "2026-10-15 10",
-          "endTime": "2026-11-01 10",
+          "name": "[呜呜企划・整备]限时委托活动",
+          "startTime": "2026-12-03 10",
+          "endTime": "2026-12-17 04",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
@@ -182,19 +172,9 @@
           "charIcons": []
         },
         {
-          "name": "[无音消除]休闲活动",
-          "startTime": "2026-10-22 10",
-          "endTime": "2026-11-09 04",
-          "type": "gray",
-          "icons": [],
-          "hasDollarSign": false,
-          "hasCharIcon": false,
-          "charIcons": []
-        },
-        {
-          "name": "[踏潮探历・玄方地界]限时探索委托活动",
-          "startTime": "2026-10-29 04",
-          "endTime": "2026-11-11 04",
+          "name": "[梦野寻奇]战斗活动",
+          "startTime": "2026-12-03 10",
+          "endTime": "2026-12-21 04",
           "type": "gray",
           "icons": [],
           "hasDollarSign": false,
