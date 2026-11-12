@@ -138,7 +138,21 @@
           "charIcons": [
             "./mc/lili.png",
             "./mc/xigelika.png",
-            "./mc/qiuyuan.png"
+            "./mc/chouyuan.png"
+          ]
+        },
+        {
+          "name": "秧秧·玄翎/穗穗/绯雪 - 限时换取",
+          "startTime": "2026-12-03 10",
+          "endTime": "2026-12-21 12",
+          "type": "red",
+          "icons": [],
+          "hasDollarSign": false,
+          "hasCharIcon": true,
+          "charIcons": [
+            "./mc/yangyang·xuanling.png",
+            "./mc/suisui.png",
+            "./mc/feixue.png"
           ]
         },
         {
